@@ -14,6 +14,7 @@
 	},
 	"dependencies": {
 		"@meshy/core": "workspace:*",
+		"@meshy/react": "workspace:*",
 		"@tailwindcss/vite": "^4.1.18",
 		"@tanstack/react-devtools": "latest",
 		"@tanstack/react-router": "latest",

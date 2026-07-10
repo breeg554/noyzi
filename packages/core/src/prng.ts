@@ -16,6 +16,20 @@ export function normalizeSeed(seed: Seed): string {
 	return String(seed);
 }
 
+export function isSeedHash(value: Seed): boolean {
+	return typeof value === "string" && /^[0-9a-z]{8}$/.test(value);
+}
+
+export function seedHash(input: Seed): string {
+	if (isSeedHash(input)) {
+		return input as string;
+	}
+	const str = normalizeSeed(input);
+	const h1 = hashString(str);
+	const h2 = hashString(`${h1.toString(36)}:${str}`);
+	return (h1.toString(36) + h2.toString(36)).padStart(8, "0").slice(0, 8);
+}
+
 export interface Rng {
 	next(): number;
 	range(min: number, max: number): number;

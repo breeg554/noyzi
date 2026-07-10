@@ -28,7 +28,9 @@ export function toSvg(spec: GradientSpec, options: SvgOptions = {}): string {
 				`<stop offset="1" stop-color="${blob.color.hex}" stop-opacity="0"/>` +
 				`</radialGradient>`,
 		);
-		blobRects.push(`<rect x="-25%" y="-25%" width="150%" height="150%" fill="url(#${id})"/>`);
+		blobRects.push(
+			`<rect x="-25%" y="-25%" width="150%" height="150%" fill="url(#${id})"/>`,
+		);
 	});
 
 	let blobLayer = blobRects.join("");
@@ -71,6 +73,9 @@ export function toSvg(spec: GradientSpec, options: SvgOptions = {}): string {
 	);
 }
 
-export function toSvgDataUri(spec: GradientSpec, options: SvgOptions = {}): string {
+export function toSvgDataUri(
+	spec: GradientSpec,
+	options: SvgOptions = {},
+): string {
 	return `data:image/svg+xml,${encodeURIComponent(toSvg(spec, options))}`;
 }
