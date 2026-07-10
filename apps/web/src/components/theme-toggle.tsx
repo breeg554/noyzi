@@ -19,6 +19,7 @@ function ThemeToggle() {
 		<Button
 			variant="ghost"
 			size="icon"
+			sound="toggle"
 			aria-label="Toggle theme"
 			onClick={toggleTheme}
 		>

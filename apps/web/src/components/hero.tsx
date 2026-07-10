@@ -1,6 +1,7 @@
 import { MeshyGradient } from "@meshy/react";
 import { Check, Copy } from "lucide-react";
 import { useState } from "react";
+import { useCopyGradient } from "#/components/gradient-card.tsx";
 import { Button } from "#/components/ui/button.tsx";
 
 const INSTALL_COMMAND = "npm install @meshy/react";
@@ -16,18 +17,10 @@ export function Hero() {
 	};
 
 	return (
-		<section className="flex flex-col items-center gap-5 px-4 py-20 text-center sm:py-24">
+		<section className="flex flex-col items-center gap-5 px-4 pt-8 pb-20 text-center sm:pt-10 sm:pb-24">
 			<div className="-space-x-3 flex">
 				{AVATAR_SEEDS.map((seed) => (
-					<MeshyGradient
-						key={seed}
-						seed={seed}
-						width={80}
-						height={80}
-						title={seed}
-						className="rounded-full ring-2 ring-background"
-						style={{ width: 40, height: 40 }}
-					/>
+					<HeroAvatar key={seed} seed={seed} />
 				))}
 			</div>
 
@@ -55,5 +48,27 @@ export function Hero() {
 				</span>
 			</Button>
 		</section>
+	);
+}
+
+function HeroAvatar({ seed }: { seed: string }) {
+	const { copy } = useCopyGradient(seed);
+
+	return (
+		<Button
+			variant="ghost"
+			onClick={copy}
+			aria-label={`Copy gradient for seed "${seed}"`}
+			className="relative size-auto cursor-pointer rounded-full p-0 hover:z-10 hover:scale-110 hover:bg-transparent dark:hover:bg-transparent"
+		>
+			<MeshyGradient
+				seed={seed}
+				width={80}
+				height={80}
+				title={seed}
+				className="rounded-full ring-2 ring-background"
+				style={{ width: 40, height: 40 }}
+			/>
+		</Button>
 	);
 }

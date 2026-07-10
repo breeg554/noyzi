@@ -15,13 +15,18 @@ export function CustomSeedCard() {
 	const [seed, setSeed] = useState("");
 	const [keyboardFocus, setKeyboardFocus] = useState(false);
 	const pointerRef = useRef(false);
+	const inputRef = useRef<HTMLInputElement>(null);
 	const activeSeed = seed.trim() || DEFAULT_SEED;
 	const { copied, copy } = useCopyGradient(activeSeed);
 
 	return (
 		<Card
-			onClick={copy}
-			className="group relative col-span-1 sm:col-span-2 md:col-span-2 row-span-1 md:row-span-2 cursor-pointer justify-center rounded-md border-none p-2 aspect-square shadow-none transition-colors duration-200 hover:bg-neutral-100 dark:hover:bg-[oklch(0.21_0_0)]"
+			onClick={() => {
+				pointerRef.current = true;
+				inputRef.current?.focus();
+				pointerRef.current = false;
+			}}
+			className="group relative col-span-1 sm:col-span-2 md:col-span-2 row-span-1 md:row-span-2 justify-center rounded-md border-none p-2 aspect-square shadow-none transition-colors duration-200 hover:bg-neutral-100 dark:hover:bg-[oklch(0.21_0_0)]"
 		>
 			<span className="absolute top-4 left-4 text-[11px] text-muted-foreground leading-none">
 				custom
@@ -38,6 +43,7 @@ export function CustomSeedCard() {
 					title={activeSeed}
 				/>
 				<Input
+					ref={inputRef}
 					value={seed}
 					onChange={(event) => setSeed(event.target.value)}
 					onClick={(event) => event.stopPropagation()}
@@ -49,7 +55,7 @@ export function CustomSeedCard() {
 						pointerRef.current = false;
 					}}
 					onBlur={() => setKeyboardFocus(false)}
-					placeholder="type a seed"
+					placeholder="type a seed..."
 					className={cn(
 						"max-w-56 border-none bg-transparent text-center shadow-none dark:bg-transparent",
 						!keyboardFocus && "focus-visible:ring-0",

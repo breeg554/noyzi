@@ -3,7 +3,6 @@ import { type ReactNode, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import { Badge } from "#/components/ui/badge.tsx";
 import { Button } from "#/components/ui/button.tsx";
-import { Skeleton } from "#/components/ui/skeleton.tsx";
 import type { GradientItem } from "#/lib/gradients.ts";
 import { useGallery } from "./context.ts";
 
@@ -30,7 +29,7 @@ function GalleryCount() {
 
 function GalleryGrid({ children }: { children: ReactNode }) {
 	return (
-		<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5">
+		<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5 2xl:grid-cols-6">
 			{children}
 		</div>
 	);
@@ -45,39 +44,7 @@ function GalleryItems({
 	return state.items.map((item, index) => children(item, index));
 }
 
-const PLACEHOLDER_IDS = [
-	"ph-a",
-	"ph-b",
-	"ph-c",
-	"ph-d",
-	"ph-e",
-	"ph-f",
-	"ph-g",
-	"ph-h",
-	"ph-i",
-	"ph-j",
-	"ph-k",
-	"ph-l",
-];
-
-function GalleryLoadingCards({ count = 6 }: { count?: number }) {
-	const { state } = useGallery();
-	if (!state.isLoadingMore) {
-		return null;
-	}
-	return PLACEHOLDER_IDS.slice(0, count).map((id) => (
-		<div
-			key={id}
-			className="flex aspect-square flex-col items-center justify-center gap-2 rounded-md bg-card p-2"
-		>
-			<Skeleton className="size-24 rounded-full" />
-			<Skeleton className="h-2.5 w-16" />
-		</div>
-	));
-}
-
-function GallerySentinel() {
-	const { actions } = useGallery();
+function GallerySentinel() {	const { actions } = useGallery();
 	const { ref, inView } = useInView({ rootMargin: "0px 0px 100% 0px" });
 
 	useEffect(() => {
@@ -99,8 +66,8 @@ function GalleryLoadMore({ children }: { children: ReactNode }) {
 	const { state, actions } = useGallery();
 	return (
 		<Button
-			variant="outline"
-			size="sm"
+			variant="ghost"
+			size="xs"
 			disabled={!state.hasMore || state.isLoadingMore}
 			onClick={actions.loadMore}
 		>
@@ -116,7 +83,6 @@ export const Gallery = {
 	Count: GalleryCount,
 	Grid: GalleryGrid,
 	Items: GalleryItems,
-	LoadingCards: GalleryLoadingCards,
 	Sentinel: GallerySentinel,
 	Footer: GalleryFooter,
 	LoadMore: GalleryLoadMore,

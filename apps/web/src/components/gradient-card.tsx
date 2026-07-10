@@ -6,6 +6,7 @@ import { type CSSProperties, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "#/components/ui/button.tsx";
 import { Card, CardContent } from "#/components/ui/card.tsx";
+import { playClick } from "#/lib/click-sound.ts";
 import { PAGE_SIZE } from "#/lib/gradients.ts";
 
 const AVATAR_SIZE = 112;
@@ -47,20 +48,22 @@ export function useCopyGradient(seed: string) {
 }
 
 export function GradientCard({ seed, index }: { seed: string; index: number }) {
-	const animated = index >= PAGE_SIZE;
 	const { copied, copy } = useCopyGradient(seed);
 	return (
 		<motion.div
-			initial={animated ? { opacity: 0, y: 8, filter: "blur(4px)" } : false}
+			initial={{ opacity: 0, y: 8, filter: "blur(4px)" }}
 			animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
 			transition={{
-				duration: 0.3,
+				duration: 0.5,
 				ease: [0.16, 1, 0.3, 1],
-				delay: (index % PAGE_SIZE) * 0.012,
+				delay: (index % PAGE_SIZE) * 0.02,
 			}}
 		>
 			<Card
-				onClick={copy}
+				onClick={() => {
+					playClick();
+					copy();
+				}}
 				className="group relative aspect-square cursor-pointer justify-center rounded-md border-none p-2 shadow-none transition-colors duration-200 hover:bg-neutral-100 dark:hover:bg-[oklch(0.21_0_0)]"
 			>
 				<span className="absolute top-4 left-4 text-[11px] text-muted-foreground leading-none">
@@ -131,6 +134,7 @@ export function DownloadButton({ seed }: { seed: string }) {
 		<Button
 			variant="ghost"
 			size="icon-xs"
+			sound="deep"
 			aria-label="Download image"
 			className="hover:bg-foreground/5"
 			onClick={(event) => {

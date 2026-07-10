@@ -1,10 +1,16 @@
 import { Link } from "@tanstack/react-router";
+import { motion } from "motion/react";
 
 import { ThemeToggle } from "#/components/theme-toggle.tsx";
 
 function Header() {
 	return (
-		<header className="sticky top-0 z-50">
+		<motion.header
+			initial={{ opacity: 0, filter: "blur(4px)" }}
+			animate={{ opacity: 1, filter: "blur(0px)" }}
+			transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+			className="sticky top-0 z-50"
+		>
 			<div
 				aria-hidden
 				className="pointer-events-none absolute inset-0 backdrop-blur-lg [mask-image:linear-gradient(to_bottom,black_40%,transparent)]"
@@ -20,7 +26,7 @@ function Header() {
 
 				<ThemeToggle />
 			</div>
-		</header>
+		</motion.header>
 	);
 }
 
