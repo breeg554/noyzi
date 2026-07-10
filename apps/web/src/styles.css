@@ -113,3 +113,15 @@ body {
 [data-sonner-toast][data-front='true'] {
   border-color: var(--toast-border, var(--normal-border));
 }
+
+/* Shiki dual-theme code blocks: transparent background, theme-driven colors. */
+.shiki,
+.shiki span {
+  color: var(--shiki-light);
+  background-color: transparent !important;
+}
+
+.dark .shiki,
+.dark .shiki span {
+  color: var(--shiki-dark);
+}

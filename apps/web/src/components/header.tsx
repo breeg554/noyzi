@@ -2,12 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { motion } from "motion/react";
 
 import { ThemeToggle } from "#/components/theme-toggle.tsx";
+import { playNavDocs, playNavHome } from "#/lib/click-sound.ts";
 
 function Header() {
 	return (
 		<motion.header
-			initial={{ opacity: 0, filter: "blur(4px)" }}
-			animate={{ opacity: 1, filter: "blur(0px)" }}
+			initial={{ opacity: 0 }}
+			animate={{ opacity: 1 }}
 			transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
 			className="sticky top-0 z-50"
 		>
@@ -23,6 +24,26 @@ function Header() {
 				<Link to="/" className="font-semibold text-lg tracking-tight">
 					meshy
 				</Link>
+
+				<nav
+					aria-label="Main"
+					className="-translate-x-1/2 absolute left-1/2 flex items-center gap-5 text-sm"
+				>
+					<Link
+						to="/"
+						onClick={playNavHome}
+						className="text-muted-foreground transition-colors hover:text-foreground data-[status=active]:text-foreground"
+					>
+						Home
+					</Link>
+					<Link
+						to="/docs"
+						onClick={playNavDocs}
+						className="text-muted-foreground transition-colors hover:text-foreground data-[status=active]:text-foreground"
+					>
+						Docs
+					</Link>
+				</nav>
 
 				<ThemeToggle />
 			</div>

@@ -1,5 +1,6 @@
 let ctx: AudioContext | null = null;
 let noiseBuffer: AudioBuffer | null = null;
+let swooshBuffer: AudioBuffer | null = null;
 
 function getNoiseBuffer(context: AudioContext): AudioBuffer {
 	if (!noiseBuffer) {
@@ -11,6 +12,18 @@ function getNoiseBuffer(context: AudioContext): AudioBuffer {
 		}
 	}
 	return noiseBuffer;
+}
+
+function getSwooshBuffer(context: AudioContext): AudioBuffer {
+	if (!swooshBuffer) {
+		const length = Math.ceil(context.sampleRate * 0.35);
+		swooshBuffer = context.createBuffer(1, length, context.sampleRate);
+		const data = swooshBuffer.getChannelData(0);
+		for (let i = 0; i < length; i++) {
+			data[i] = Math.random() * 2 - 1;
+		}
+	}
+	return swooshBuffer;
 }
 
 interface ThockOptions {
@@ -169,4 +182,59 @@ export function playToggle() {
 	shimmer.connect(shimmerGain).connect(ctx.destination);
 	shimmer.start(now);
 	shimmer.stop(now + 0.08);
+}
+
+interface SwooshOptions {
+	/** Bandpass start frequency in Hz. */
+	from: number;
+	/** Bandpass end frequency in Hz. */
+	to: number;
+	/** Total length in seconds. */
+	duration: number;
+	/** Peak volume. */
+	gain: number;
+}
+
+/**
+ * Soft "ssssh" swoosh: bandpassed noise with a filter sweep and a smooth
+ * attack/decay envelope. Sweep direction/pitch distinguishes the variants.
+ */
+function playSwoosh({ from, to, duration, gain }: SwooshOptions) {
+	if (typeof window === "undefined") {
+		return;
+	}
+	ctx ??= new AudioContext();
+	if (ctx.state === "suspended") {
+		void ctx.resume();
+	}
+
+	const now = ctx.currentTime;
+
+	const noise = ctx.createBufferSource();
+	noise.buffer = getSwooshBuffer(ctx);
+
+	const filter = ctx.createBiquadFilter();
+	filter.type = "bandpass";
+	filter.Q.setValueAtTime(0.9, now);
+	filter.frequency.setValueAtTime(from, now);
+	filter.frequency.exponentialRampToValueAtTime(to, now + duration * 0.8);
+
+	const envelope = ctx.createGain();
+	envelope.gain.setValueAtTime(0.0001, now);
+	envelope.gain.exponentialRampToValueAtTime(gain, now + duration * 0.25);
+	envelope.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+	noise.connect(filter).connect(envelope).connect(ctx.destination);
+	noise.start(now);
+	noise.stop(now + duration + 0.02);
+}
+
+/** Nav "Home": upward ssssh — brighter, opening. */
+export function playNavHome() {
+	playSwoosh({ from: 800, to: 3200, duration: 0.28, gain: 0.09 });
+}
+
+/** Nav "Docs": downward ssssh — darker, settling. */
+export function playNavDocs() {
+	playSwoosh({ from: 2600, to: 650, duration: 0.24, gain: 0.09 });
 }

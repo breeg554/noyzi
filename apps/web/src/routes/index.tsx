@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { motion } from "motion/react";
-import type { ReactNode } from "react";
 import { CustomSeedCard } from "#/components/custom-seed-card.tsx";
+import { FadeIn } from "#/components/fade-in.tsx";
 import { Gallery } from "#/components/gallery/gallery.tsx";
 import { GradientsProvider } from "#/components/gallery/provider.tsx";
 import { GradientCard } from "#/components/gradient-card.tsx";
@@ -14,24 +13,6 @@ export const Route = createFileRoute("/")({
 		await context.queryClient.prefetchInfiniteQuery(gradientsQuery);
 	},
 });
-
-function FadeIn({
-	delay = 0,
-	children,
-}: {
-	delay?: number;
-	children: ReactNode;
-}) {
-	return (
-		<motion.div
-			initial={{ opacity: 0, filter: "blur(4px)" }}
-			animate={{ opacity: 1, filter: "blur(0px)" }}
-			transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay }}
-		>
-			{children}
-		</motion.div>
-	);
-}
 
 function PreviewPage() {
 	return (
