@@ -24,8 +24,8 @@ export function MeshyGradient({
 }: MeshyGradientProps): JSX.Element {
 	const spec = generate(seedHash(seed), options);
 	const uri = toSvgDataUri(spec, {
-		width: width ?? 1000,
-		height: height ?? 1000,
+		width: width ? width * 1.5 : 1000,
+		height: height ? height * 1.5 : 1000,
 	});
 
 	const mergedStyle: CSSProperties = {

@@ -40,25 +40,20 @@ export function Hero() {
 				gradient — every time.
 			</p>
 
-			<button
-				type="button"
+			<Button
+				variant="outline"
 				onClick={copy}
-				className="mt-2 flex items-center gap-3 rounded-lg border border-border/60 bg-card py-2 pr-2 pl-4 font-mono text-sm transition-colors hover:bg-neutral-100 dark:hover:bg-[oklch(0.21_0_0)]"
+				aria-label="Copy install command"
+				className="mt-2 h-auto gap-3 rounded-lg border-border/60 bg-card py-2 pr-2 pl-4 font-mono font-normal shadow-none hover:bg-neutral-100 dark:border-border/60 dark:bg-card dark:hover:bg-[oklch(0.21_0_0)]"
 			>
 				<span>
 					<span className="select-none text-muted-foreground">$ </span>
 					{INSTALL_COMMAND}
 				</span>
-				<Button
-					variant="ghost"
-					size="icon-xs"
-					aria-label="Copy install command"
-					className="hover:bg-foreground/5"
-					asChild
-				>
-					<span>{copied ? <Check /> : <Copy />}</span>
-				</Button>
-			</button>
+				<span className="inline-flex size-6 items-center justify-center rounded-md [&_svg]:size-3">
+					{copied ? <Check /> : <Copy />}
+				</span>
+			</Button>
 		</section>
 	);
 }

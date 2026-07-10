@@ -9,8 +9,6 @@ import { Card, CardContent } from "#/components/ui/card.tsx";
 import { Input } from "#/components/ui/input.tsx";
 import { cn } from "#/lib/utils.ts";
 
-const PREVIEW_SIZE = 224;
-const RENDER_SIZE = PREVIEW_SIZE * 2;
 const DEFAULT_SEED = "meshy";
 
 export function CustomSeedCard() {
@@ -23,7 +21,7 @@ export function CustomSeedCard() {
 	return (
 		<Card
 			onClick={copy}
-			className="group relative col-span-2 row-span-2 cursor-pointer justify-center rounded-md border-none p-2 shadow-none transition-colors duration-200 hover:bg-neutral-100 dark:hover:bg-[oklch(0.21_0_0)]"
+			className="group relative col-span-1 sm:col-span-2 md:col-span-2 row-span-1 md:row-span-2 cursor-pointer justify-center rounded-md border-none p-2 aspect-square shadow-none transition-colors duration-200 hover:bg-neutral-100 dark:hover:bg-[oklch(0.21_0_0)]"
 		>
 			<span className="absolute top-4 left-4 text-[11px] text-muted-foreground leading-none">
 				custom
@@ -31,14 +29,13 @@ export function CustomSeedCard() {
 			<span className="absolute top-4 right-4 truncate text-[11px] text-muted-foreground leading-none">
 				{activeSeed}
 			</span>
-			<CardContent className="flex flex-col items-center gap-6 px-2">
+			<CardContent className="flex flex-col items-center gap-3 px-2 lg:gap-6">
 				<MeshyGradient
 					seed={activeSeed}
-					width={RENDER_SIZE}
-					height={RENDER_SIZE}
+					width={224}
+					height={224}
 					rounded={12}
 					title={activeSeed}
-					style={{ width: PREVIEW_SIZE, height: PREVIEW_SIZE }}
 				/>
 				<Input
 					value={seed}
