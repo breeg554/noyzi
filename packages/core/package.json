@@ -1,7 +1,7 @@
 {
 	"name": "@meshy/core",
 	"version": "0.1.0",
-	"description": "Seed-based deterministic gradient generator. Every seed maps to the same soft, grainy gradient — forever.",
+	"description": "Seed-based deterministic gradient generator. Every seed maps to the same soft mesh gradient — forever.",
 	"license": "MIT",
 	"type": "module",
 	"sideEffects": false,

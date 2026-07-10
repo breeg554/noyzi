@@ -12,7 +12,7 @@ import {
 	useRef,
 	useState,
 } from "react";
-import { frameStyle, type MeshyBaseProps } from "./shared.ts";
+import { cn, frameStyle, type MeshyBaseProps, SHADOW_CLASS } from "./shared.ts";
 
 export interface MeshyCanvasProps extends MeshyBaseProps {
 	fallback?: string;
@@ -25,8 +25,10 @@ export function MeshyCanvas({
 	options,
 	fallback,
 	fadeDuration = 400,
-	size,
+	width,
+	height,
 	rounded,
+	className,
 	style,
 	...rest
 }: MeshyCanvasProps): JSX.Element {
@@ -51,15 +53,15 @@ export function MeshyCanvas({
 		const paint = () => {
 			const rect = canvas.getBoundingClientRect();
 			const dpr = window.devicePixelRatio || 1;
-			const width = Math.max(1, Math.round(rect.width * dpr));
-			const height = Math.max(1, Math.round(rect.height * dpr));
-			toCanvas(spec, { width, height })
+			const pxWidth = Math.max(1, Math.round(rect.width * dpr));
+			const pxHeight = Math.max(1, Math.round(rect.height * dpr));
+			toCanvas(spec, { width: pxWidth, height: pxHeight })
 				.then((painted) => {
 					if (cancelled) {
 						return;
 					}
-					canvas.width = width;
-					canvas.height = height;
+					canvas.width = pxWidth;
+					canvas.height = pxHeight;
 					canvas.getContext("2d")?.drawImage(painted, 0, 0);
 					setReady(true);
 				})
@@ -91,7 +93,7 @@ export function MeshyCanvas({
 		position: "relative",
 		overflow: "hidden",
 		backgroundColor: fallback ?? spec.background.hex,
-		...frameStyle(size, rounded),
+		...frameStyle(width, height, rounded),
 		...style,
 	};
 
@@ -106,7 +108,12 @@ export function MeshyCanvas({
 	};
 
 	return (
-		<div role="img" {...rest} style={wrapperStyle}>
+		<div
+			role="img"
+			{...rest}
+			className={cn(SHADOW_CLASS, className)}
+			style={wrapperStyle}
+		>
 			<canvas ref={ref} style={canvasStyle} />
 		</div>
 	);

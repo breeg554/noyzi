@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 @import 'tailwindcss';
+@source '../../../packages/react/src';
 @plugin '@tailwindcss/typography';
 
 @import 'tw-animate-css';

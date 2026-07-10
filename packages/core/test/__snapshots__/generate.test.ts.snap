@@ -3,21 +3,21 @@
 exports[`generate spec is stable across releases (frozen snapshot) 1`] = `
 {
   "background": {
-    "hex": "#e6b18e",
+    "hex": "#e6ba9d",
     "oklch": {
-      "c": 0.078,
+      "c": 0.0645,
       "h": 54.4826,
-      "l": 0.8013,
+      "l": 0.821,
     },
   },
   "blobs": [
     {
       "color": {
-        "hex": "#d39d48",
+        "hex": "#d5aa69",
         "oklch": {
-          "c": 0.1202,
+          "c": 0.0971,
           "h": 76.6424,
-          "l": 0.7316,
+          "l": 0.764,
         },
       },
       "radius": 0.4175,
@@ -26,11 +26,11 @@ exports[`generate spec is stable across releases (frozen snapshot) 1`] = `
     },
     {
       "color": {
-        "hex": "#5aa348",
+        "hex": "#75ae67",
         "oklch": {
-          "c": 0.1462,
+          "c": 0.1172,
           "h": 139.8006,
-          "l": 0.6467,
+          "l": 0.6944,
         },
       },
       "radius": 0.499,
@@ -39,11 +39,11 @@ exports[`generate spec is stable across releases (frozen snapshot) 1`] = `
     },
     {
       "color": {
-        "hex": "#008d72",
+        "hex": "#009c85",
         "oklch": {
-          "c": 0.1462,
+          "c": 0.1172,
           "h": 177.6485,
-          "l": 0.5548,
+          "l": 0.6192,
         },
       },
       "radius": 0.3893,
@@ -52,11 +52,11 @@ exports[`generate spec is stable across releases (frozen snapshot) 1`] = `
     },
     {
       "color": {
-        "hex": "#00677e",
+        "hex": "#007d8f",
         "oklch": {
-          "c": 0.1202,
+          "c": 0.0971,
           "h": 211.8687,
-          "l": 0.4582,
+          "l": 0.54,
         },
       },
       "radius": 0.4227,
@@ -65,11 +65,11 @@ exports[`generate spec is stable across releases (frozen snapshot) 1`] = `
     },
     {
       "color": {
-        "hex": "#00435d",
+        "hex": "#2d5e75",
         "oklch": {
-          "c": 0.078,
+          "c": 0.0645,
           "h": 230.3329,
-          "l": 0.3579,
+          "l": 0.4579,
         },
       },
       "radius": 0.4931,
@@ -77,18 +77,12 @@ exports[`generate spec is stable across releases (frozen snapshot) 1`] = `
       "y": 0.612,
     },
   ],
-  "grain": {
-    "frequency": 0.7,
-    "octaves": 3,
-    "opacity": 0.55,
-    "seed": 5826,
-  },
   "seed": "meshy",
   "version": 1,
   "warp": {
     "frequency": 0.004,
-    "scale": 0.1095,
-    "seed": 26896,
+    "scale": 0.1328,
+    "seed": 5826,
   },
 }
 `;

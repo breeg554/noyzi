@@ -11,9 +11,9 @@ function fmt(value: number, decimals = 2): string {
 	return String(Math.round(value * f) / f);
 }
 
-/** Renders a gradient spec to an SVG string. The reference renderer — includes warp and grain. */
+/** Renders a gradient spec to an SVG string. The reference renderer — includes warp. */
 export function toSvg(spec: GradientSpec, options: SvgOptions = {}): string {
-	const { width = 800, height = 1000 } = options;
+	const { width = 1000, height = 1000 } = options;
 	const uid = `m${hashString(spec.seed).toString(36)}`;
 	const maxDim = Math.max(width, height);
 
@@ -47,25 +47,7 @@ export function toSvg(spec: GradientSpec, options: SvgOptions = {}): string {
 		blobLayer = `<g filter="url(#${id})">${blobLayer}</g>`;
 	}
 
-	let content = `<rect width="${width}" height="${height}" fill="${spec.background.hex}"/>${blobLayer}`;
-	if (spec.grain) {
-		const id = `${uid}-g`;
-		defs.push(
-			`<filter id="${id}" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">` +
-				`<feTurbulence type="fractalNoise" baseFrequency="${fmt(spec.grain.frequency, 4)}" numOctaves="${spec.grain.octaves}" seed="${spec.grain.seed}" stitchTiles="stitch"/>` +
-				`<feColorMatrix type="saturate" values="0"/>` +
-				`<feComponentTransfer>` +
-				`<feFuncR type="linear" slope="2.5" intercept="-0.25"/>` +
-				`<feFuncG type="linear" slope="2.5" intercept="-0.25"/>` +
-				`<feFuncB type="linear" slope="2.5" intercept="-0.25"/>` +
-				`<feFuncA type="linear" slope="0" intercept="${fmt(spec.grain.opacity)}"/>` +
-				`</feComponentTransfer>` +
-				`<feGaussianBlur stdDeviation="0.7" result="g"/>` +
-				`<feBlend in="SourceGraphic" in2="g" mode="multiply"/>` +
-				`</filter>`,
-		);
-		content = `<g filter="url(#${id})">${content}</g>`;
-	}
+	const content = `<rect width="${width}" height="${height}" fill="${spec.background.hex}"/>${blobLayer}`;
 
 	return (
 		`<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">` +

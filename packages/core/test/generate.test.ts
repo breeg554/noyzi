@@ -32,19 +32,6 @@ describe("generate", () => {
 		expect(generate("x", { colors: 99 }).blobs).toHaveLength(7);
 	});
 
-	test("grain can be disabled", () => {
-		expect(generate("x", { grain: false }).grain).toBeNull();
-	});
-
-	test("grain overrides are applied", () => {
-		const spec = generate("x", {
-			grain: { opacity: 0.2, frequency: 0.5, octaves: 3 },
-		});
-		expect(spec.grain?.opacity).toBe(0.2);
-		expect(spec.grain?.frequency).toBe(0.5);
-		expect(spec.grain?.octaves).toBe(3);
-	});
-
 	test("warp can be disabled", () => {
 		expect(generate("x", { warp: false }).warp).toBeNull();
 	});
@@ -55,9 +42,9 @@ describe("generate", () => {
 		expect(spec.warp?.scale).toBe(0.3);
 	});
 
-	test("disabling warp or grain does not change other fields", () => {
+	test("disabling warp does not change other fields", () => {
 		const full = generate("x");
-		const bare = generate("x", { warp: false, grain: false });
+		const bare = generate("x", { warp: false });
 		expect(bare.blobs).toEqual(full.blobs);
 		expect(bare.background).toEqual(full.background);
 	});

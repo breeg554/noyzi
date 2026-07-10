@@ -48,7 +48,7 @@ export async function toCanvas(
 	if (typeof document === "undefined") {
 		throw new Error("toCanvas requires a browser environment");
 	}
-	const { width = 800, height = 1000, scale = 1 } = options;
+	const { width = 1000, height = 1000, scale = 1 } = options;
 	const canvas = document.createElement("canvas");
 	canvas.width = Math.round(width * scale);
 	canvas.height = Math.round(height * scale);

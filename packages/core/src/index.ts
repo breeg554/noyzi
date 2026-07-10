@@ -4,7 +4,6 @@ export type {
 	GenerateOptions,
 	GradientBlob,
 	GradientSpec,
-	GrainSpec,
 	Layout,
 	WarpSpec,
 } from "./generate.ts";

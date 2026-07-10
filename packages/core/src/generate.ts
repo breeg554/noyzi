@@ -8,13 +8,6 @@ export interface GradientBlob {
 	color: ColorStop;
 }
 
-export interface GrainSpec {
-	seed: number;
-	frequency: number;
-	octaves: number;
-	opacity: number;
-}
-
 export interface WarpSpec {
 	seed: number;
 	frequency: number;
@@ -27,7 +20,6 @@ export interface GradientSpec {
 	background: ColorStop;
 	blobs: GradientBlob[];
 	warp: WarpSpec | null;
-	grain: GrainSpec | null;
 }
 
 export type Layout = "linear" | "orbit" | "scatter";
@@ -35,7 +27,6 @@ export type Layout = "linear" | "orbit" | "scatter";
 export interface GenerateOptions {
 	colors?: number;
 	layout?: Layout;
-	grain?: false | Partial<Omit<GrainSpec, "seed">>;
 	warp?: false | Partial<Omit<WarpSpec, "seed">>;
 }
 
@@ -105,17 +96,6 @@ export function generate(
 		}
 	}
 
-	const grainSeed = rng.int(1, 65535);
-	const grain: GrainSpec | null =
-		options.grain === false
-			? null
-			: {
-					seed: grainSeed,
-					frequency: round(options.grain?.frequency ?? 0.7),
-					octaves: Math.round(options.grain?.octaves ?? 3),
-					opacity: round(options.grain?.opacity ?? 0.55),
-				};
-
 	const warpSeed = rng.int(1, 65535);
 	const warpScale = rng.range(0.1, 0.18);
 	const warp: WarpSpec | null =
@@ -133,6 +113,5 @@ export function generate(
 		background: palette[0] as ColorStop,
 		blobs,
 		warp,
-		grain,
 	};
 }

@@ -6,7 +6,9 @@
 		"module": "ESNext",
 		"paths": {
 			"#/*": ["./src/*"],
-			"@/*": ["./src/*"]
+			"@/*": ["./src/*"],
+			"react": ["../../node_modules/@types/react"],
+			"react-dom": ["../../node_modules/@types/react-dom"]
 		},
 		"lib": ["ES2022", "DOM", "DOM.Iterable"],
 		"types": ["vite/client"],

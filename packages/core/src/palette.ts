@@ -22,10 +22,10 @@ function round(value: number, decimals = 4): number {
 export function generatePalette(rng: Rng, count: number): ColorStop[] {
 	const baseHue = rng.range(0, 360);
 	const drift = rng.range(100, 240) * (rng.next() < 0.5 ? -1 : 1);
-	const lightStart = rng.range(0.8, 0.9);
-	const lightEnd = rng.range(0.25, 0.4);
-	const chromaBase = rng.range(0.05, 0.09);
-	const chromaPeak = chromaBase + rng.range(0.04, 0.09);
+	const lightStart = rng.range(0.82, 0.9);
+	const lightEnd = rng.range(0.35, 0.5);
+	const chromaBase = rng.range(0.04, 0.075);
+	const chromaPeak = chromaBase + rng.range(0.03, 0.07);
 
 	const stops: ColorStop[] = [];
 	for (let i = 0; i < count; i++) {

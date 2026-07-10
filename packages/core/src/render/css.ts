@@ -9,7 +9,7 @@ function pct(value: number): string {
 	return `${Math.round(value * 10000) / 100}%`;
 }
 
-/** Renders a gradient spec to plain CSS properties. Lightest output — no warp or grain. */
+/** Renders a gradient spec to plain CSS properties. Lightest output — no warp. */
 export function toCss(spec: GradientSpec): CssOutput {
 	const layers = [...spec.blobs]
 		.reverse()

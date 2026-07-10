@@ -23,18 +23,6 @@ describe("toSvg", () => {
 		expect(svg.match(/<radialGradient/g)).toHaveLength(spec.blobs.length);
 	});
 
-	test("includes grain filter with spec seed", () => {
-		const spec = generate("grainy");
-		const svg = toSvg(spec);
-		expect(svg).toContain("feBlend");
-		expect(svg).toContain(`seed="${spec.grain?.seed}"`);
-	});
-
-	test("omits grain when disabled", () => {
-		const svg = toSvg(generate("plain", { grain: false }));
-		expect(svg).not.toContain("feBlend");
-	});
-
 	test("includes displacement warp with spec seed", () => {
 		const spec = generate("wavy");
 		const svg = toSvg(spec);
@@ -48,10 +36,10 @@ describe("toSvg", () => {
 		);
 	});
 
-	test("no turbulence at all when warp and grain are disabled", () => {
-		expect(
-			toSvg(generate("bare", { warp: false, grain: false })),
-		).not.toContain("feTurbulence");
+	test("no turbulence at all when warp is disabled", () => {
+		expect(toSvg(generate("bare", { warp: false }))).not.toContain(
+			"feTurbulence",
+		);
 	});
 
 	test("gradient ids are namespaced per seed", () => {
