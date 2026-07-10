@@ -3,6 +3,7 @@ import { CustomSeedCard } from "#/components/custom-seed-card.tsx";
 import { Gallery } from "#/components/gallery/gallery.tsx";
 import { GradientsProvider } from "#/components/gallery/provider.tsx";
 import { GradientCard } from "#/components/gradient-card.tsx";
+import { Hero } from "#/components/hero.tsx";
 import { gradientsQuery } from "#/lib/gradients.ts";
 
 export const Route = createFileRoute("/")({
@@ -16,6 +17,8 @@ function PreviewPage() {
 	return (
 		<GradientsProvider>
 			<main className="w-full p-3">
+				<Hero />
+
 				<Gallery.Header>
 					<Gallery.Count />
 				</Gallery.Header>

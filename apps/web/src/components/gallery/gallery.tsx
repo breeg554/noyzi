@@ -30,7 +30,7 @@ function GalleryCount() {
 
 function GalleryGrid({ children }: { children: ReactNode }) {
 	return (
-		<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
+		<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5">
 			{children}
 		</div>
 	);
