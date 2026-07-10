@@ -17,7 +17,10 @@ function GalleryHeader({
 }) {
 	return (
 		<header
-			className={cn("flex items-center justify-between px-0.5 pb-2", className)}
+			className={cn(
+				"flex flex-wrap items-center justify-between px-0.5 pb-2",
+				className,
+			)}
 		>
 			{children}
 		</header>

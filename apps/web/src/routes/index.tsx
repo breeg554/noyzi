@@ -42,7 +42,7 @@ function PreviewPage() {
 						aria-hidden
 						className="pointer-events-none absolute inset-x-0 -top-14 bottom-0 bg-linear-to-b from-background/70 via-background/40 to-transparent"
 					/>
-					<Gallery.Header className="relative px-3.5 py-2">
+					<Gallery.Header className="relative px-3.5 pb-2">
 						<Gallery.Count />
 						<Gallery.Toolbar />
 					</Gallery.Header>

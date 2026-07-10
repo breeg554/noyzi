@@ -1,6 +1,6 @@
 import { MeshyGradient } from "@meshy/react";
-import { Check, Copy } from "lucide-react";
-import { useState } from "react";
+import { Link } from "@tanstack/react-router";
+import { ArrowRight } from "lucide-react";
 import { useCopyGradient } from "#/components/gradient-card.tsx";
 import { Button } from "#/components/ui/button.tsx";
 
@@ -8,14 +8,6 @@ const INSTALL_COMMAND = "npm install @meshy/react";
 const AVATAR_SEEDS = ["mesh", "gradient", "seed"];
 
 export function Hero() {
-	const [copied, setCopied] = useState(false);
-
-	const copy = async () => {
-		await navigator.clipboard.writeText(INSTALL_COMMAND);
-		setCopied(true);
-		setTimeout(() => setCopied(false), 1500);
-	};
-
 	return (
 		<section className="flex flex-col items-center gap-5 px-4 pt-8 pb-20 text-center sm:pt-10 sm:pb-24">
 			<div className="-space-x-3 flex">
@@ -34,18 +26,19 @@ export function Hero() {
 			</p>
 
 			<Button
+				asChild
 				variant="outline"
-				onClick={copy}
-				aria-label="Copy install command"
-				className="mt-2 h-auto gap-3 rounded-lg border-border/60 bg-card py-2 pr-2 pl-4 font-mono font-normal shadow-none hover:bg-neutral-100 dark:border-border/60 dark:bg-card dark:hover:bg-[oklch(0.21_0_0)]"
+				className="group mt-2 h-auto gap-3 rounded-lg border-border/60 bg-card py-2 pr-2 pl-4 font-mono font-normal shadow-none hover:bg-neutral-100 dark:border-border/60 dark:bg-card dark:hover:bg-[oklch(0.21_0_0)]"
 			>
-				<span>
-					<span className="select-none text-muted-foreground">$ </span>
-					{INSTALL_COMMAND}
-				</span>
-				<span className="inline-flex size-6 items-center justify-center rounded-md [&_svg]:size-3">
-					{copied ? <Check /> : <Copy />}
-				</span>
+				<Link to="/docs" aria-label="Install meshy — read the docs">
+					<span>
+						<span className="select-none text-muted-foreground">$ </span>
+						{INSTALL_COMMAND}
+					</span>
+					<span className="inline-flex size-6 items-center justify-center rounded-md text-muted-foreground transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-foreground [&_svg]:size-3">
+						<ArrowRight />
+					</span>
+				</Link>
 			</Button>
 		</section>
 	);
