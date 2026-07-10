@@ -1,4 +1,10 @@
-import { generate, seedHash, toBlob, toCss } from "@meshy/core";
+import {
+	type GenerateOptions,
+	generate,
+	seedHash,
+	toBlob,
+	toCss,
+} from "@meshy/core";
 import { MeshyGradient } from "@meshy/react";
 import { Check, Copy, Download } from "lucide-react";
 import { motion } from "motion/react";
@@ -7,12 +13,19 @@ import { toast } from "sonner";
 import { Button } from "#/components/ui/button.tsx";
 import { Card, CardContent } from "#/components/ui/card.tsx";
 import { playClick } from "#/lib/click-sound.ts";
+import {
+	DEFAULT_GALLERY_OPTIONS,
+	type GalleryOptions,
+	ROUNDED_CLASS,
+	toGenerateOptions,
+} from "#/lib/gallery-options.ts";
 import { PAGE_SIZE } from "#/lib/gradients.ts";
+import { cn } from "#/lib/utils.ts";
 
 const EXPORT_SIZE = 1000;
 
-function gradientBlob(seed: string): Promise<Blob> {
-	const spec = generate(seedHash(seed));
+function gradientBlob(seed: string, options?: GenerateOptions): Promise<Blob> {
+	const spec = generate(seedHash(seed), options);
 	return toBlob(spec, {
 		width: EXPORT_SIZE,
 		height: EXPORT_SIZE,
@@ -20,11 +33,11 @@ function gradientBlob(seed: string): Promise<Blob> {
 	});
 }
 
-export function useCopyGradient(seed: string) {
+export function useCopyGradient(seed: string, options?: GenerateOptions) {
 	const [copied, setCopied] = useState(false);
 
 	const copy = async () => {
-		const spec = generate(seedHash(seed));
+		const spec = generate(seedHash(seed), options);
 		const { backgroundColor, backgroundImage } = toCss(spec);
 		toast(
 			<>
@@ -42,15 +55,24 @@ export function useCopyGradient(seed: string) {
 		setCopied(true);
 		setTimeout(() => setCopied(false), 1500);
 		await navigator.clipboard.write([
-			new ClipboardItem({ "image/png": gradientBlob(seed) }),
+			new ClipboardItem({ "image/png": gradientBlob(seed, options) }),
 		]);
 	};
 
 	return { copied, copy };
 }
 
-export function GradientCard({ seed, index }: { seed: string; index: number }) {
-	const { copied, copy } = useCopyGradient(seed);
+export function GradientCard({
+	seed,
+	index,
+	options = DEFAULT_GALLERY_OPTIONS,
+}: {
+	seed: string;
+	index: number;
+	options?: GalleryOptions;
+}) {
+	const generateOptions = toGenerateOptions(options);
+	const { copied, copy } = useCopyGradient(seed, generateOptions);
 	return (
 		<motion.div
 			initial={{ opacity: 0, y: 8, filter: "blur(4px)" }}
@@ -78,13 +100,17 @@ export function GradientCard({ seed, index }: { seed: string; index: number }) {
 					<div className="relative">
 						<MeshyGradient
 							seed={seed}
+							options={generateOptions}
 							artwork={{ width: 500, height: 500 }}
 							title={seed}
-							className="size-28 shrink-0 rounded-md transition-transform duration-200 ease-out group-hover:scale-110"
+							className={cn(
+								"size-28 shrink-0 transition-transform duration-200 ease-out group-hover:scale-110",
+								ROUNDED_CLASS[options.rounded],
+							)}
 						/>
 						<div className="-translate-x-1/2 absolute top-[110%] left-1/2 mt-4 flex translate-y-2 items-center gap-1 opacity-0 transition-all duration-200 ease-out group-hover:translate-y-0 group-hover:opacity-100">
 							<CopyButton copied={copied} onCopy={copy} />
-							<DownloadButton seed={seed} />
+							<DownloadButton seed={seed} options={generateOptions} />
 						</div>
 					</div>
 				</CardContent>
@@ -116,9 +142,15 @@ export function CopyButton({
 	);
 }
 
-export function DownloadButton({ seed }: { seed: string }) {
+export function DownloadButton({
+	seed,
+	options,
+}: {
+	seed: string;
+	options?: GenerateOptions;
+}) {
 	const download = async () => {
-		const spec = generate(seedHash(seed));
+		const spec = generate(seedHash(seed), options);
 		const blob = await toBlob(spec, {
 			width: EXPORT_SIZE,
 			height: EXPORT_SIZE,

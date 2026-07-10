@@ -4,11 +4,21 @@ import { useInView } from "react-intersection-observer";
 import { Badge } from "#/components/ui/badge.tsx";
 import { Button } from "#/components/ui/button.tsx";
 import type { GradientItem } from "#/lib/gradients.ts";
+import { cn } from "#/lib/utils.ts";
 import { useGallery } from "./context.ts";
+import { GalleryToolbar } from "./toolbar.tsx";
 
-function GalleryHeader({ children }: { children: ReactNode }) {
+function GalleryHeader({
+	className,
+	children,
+}: {
+	className?: string;
+	children: ReactNode;
+}) {
 	return (
-		<header className="flex items-baseline justify-between px-0.5 pb-2">
+		<header
+			className={cn("flex items-center justify-between px-0.5 pb-2", className)}
+		>
 			{children}
 		</header>
 	);
@@ -44,7 +54,8 @@ function GalleryItems({
 	return state.items.map((item, index) => children(item, index));
 }
 
-function GallerySentinel() {	const { actions } = useGallery();
+function GallerySentinel() {
+	const { actions } = useGallery();
 	const { ref, inView } = useInView({ rootMargin: "0px 0px 100% 0px" });
 
 	useEffect(() => {
@@ -81,6 +92,7 @@ export const Gallery = {
 	Header: GalleryHeader,
 	Title: GalleryTitle,
 	Count: GalleryCount,
+	Toolbar: GalleryToolbar,
 	Grid: GalleryGrid,
 	Items: GalleryItems,
 	Sentinel: GallerySentinel,

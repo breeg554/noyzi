@@ -7,17 +7,27 @@ import {
 } from "#/components/gradient-card.tsx";
 import { Card, CardContent } from "#/components/ui/card.tsx";
 import { Input } from "#/components/ui/input.tsx";
+import {
+	DEFAULT_GALLERY_OPTIONS,
+	type GalleryOptions,
+	toGenerateOptions,
+} from "#/lib/gallery-options.ts";
 import { cn } from "#/lib/utils.ts";
 
 const DEFAULT_SEED = "meshy";
 
-export function CustomSeedCard() {
+export function CustomSeedCard({
+	options = DEFAULT_GALLERY_OPTIONS,
+}: {
+	options?: GalleryOptions;
+}) {
 	const [seed, setSeed] = useState("");
 	const [keyboardFocus, setKeyboardFocus] = useState(false);
 	const pointerRef = useRef(false);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const activeSeed = seed.trim() || DEFAULT_SEED;
-	const { copied, copy } = useCopyGradient(activeSeed);
+	const generateOptions = toGenerateOptions(options);
+	const { copied, copy } = useCopyGradient(activeSeed, generateOptions);
 
 	return (
 		<Card
@@ -37,7 +47,18 @@ export function CustomSeedCard() {
 			<CardContent className="flex flex-col items-center gap-3 px-2 lg:gap-6">
 				<MeshyGradient
 					seed={activeSeed}
-					className="size-56 shrink-0 rounded-xl"
+					options={generateOptions}
+					className={cn(
+						"size-56 shrink-0",
+						// Scaled-up radii for the large preview; defaults match the old rounded-xl.
+						{
+							none: "rounded-none",
+							sm: "rounded-md",
+							md: "rounded-xl",
+							xl: "rounded-3xl",
+							full: "rounded-full",
+						}[options.rounded],
+					)}
 					title={activeSeed}
 				/>
 				<Input
@@ -61,7 +82,7 @@ export function CustomSeedCard() {
 				/>
 				<div className="flex translate-y-2 items-center gap-1 opacity-0 transition-all duration-200 ease-out group-hover:translate-y-0 group-hover:opacity-100">
 					<CopyButton copied={copied} onCopy={copy} />
-					<DownloadButton seed={activeSeed} />
+					<DownloadButton seed={activeSeed} options={generateOptions} />
 				</div>
 			</CardContent>
 		</Card>
