@@ -1,0 +1,94 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`generate spec is stable across releases (frozen snapshot) 1`] = `
+{
+  "background": {
+    "hex": "#e6b18e",
+    "oklch": {
+      "c": 0.078,
+      "h": 54.4826,
+      "l": 0.8013,
+    },
+  },
+  "blobs": [
+    {
+      "color": {
+        "hex": "#d39d48",
+        "oklch": {
+          "c": 0.1202,
+          "h": 76.6424,
+          "l": 0.7316,
+        },
+      },
+      "radius": 0.4175,
+      "x": 0.2697,
+      "y": -0.0116,
+    },
+    {
+      "color": {
+        "hex": "#5aa348",
+        "oklch": {
+          "c": 0.1462,
+          "h": 139.8006,
+          "l": 0.6467,
+        },
+      },
+      "radius": 0.499,
+      "x": 0.8754,
+      "y": -0.0035,
+    },
+    {
+      "color": {
+        "hex": "#008d72",
+        "oklch": {
+          "c": 0.1462,
+          "h": 177.6485,
+          "l": 0.5548,
+        },
+      },
+      "radius": 0.3893,
+      "x": 1.0284,
+      "y": 0.5076,
+    },
+    {
+      "color": {
+        "hex": "#00677e",
+        "oklch": {
+          "c": 0.1202,
+          "h": 211.8687,
+          "l": 0.4582,
+        },
+      },
+      "radius": 0.4227,
+      "x": 0.6032,
+      "y": 0.8676,
+    },
+    {
+      "color": {
+        "hex": "#00435d",
+        "oklch": {
+          "c": 0.078,
+          "h": 230.3329,
+          "l": 0.3579,
+        },
+      },
+      "radius": 0.4931,
+      "x": 0.0063,
+      "y": 0.612,
+    },
+  ],
+  "grain": {
+    "frequency": 0.7,
+    "octaves": 3,
+    "opacity": 0.55,
+    "seed": 5826,
+  },
+  "seed": "meshy",
+  "version": 1,
+  "warp": {
+    "frequency": 0.004,
+    "scale": 0.1095,
+    "seed": 26896,
+  },
+}
+`;

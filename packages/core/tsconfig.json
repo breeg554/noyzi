@@ -1,0 +1,22 @@
+{
+	"include": ["src/**/*.ts", "test/**/*.ts", "tsdown.config.ts"],
+	"compilerOptions": {
+		"target": "ES2022",
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": true,
+		"lib": ["ES2022"],
+		"types": ["bun"],
+		"strict": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUncheckedIndexedAccess": true,
+		"exactOptionalPropertyTypes": true,
+		"verbatimModuleSyntax": true,
+		"isolatedDeclarations": true,
+		"declaration": true,
+		"skipLibCheck": true,
+		"noEmit": true
+	}
+}
