@@ -16,10 +16,12 @@ export function normalizeSeed(seed: Seed): string {
 	return String(seed);
 }
 
+/** Checks whether a value is already a `seedHash` result (8 lowercase base36 chars). */
 export function isSeedHash(value: Seed): boolean {
 	return typeof value === "string" && /^[0-9a-z]{8}$/.test(value);
 }
 
+/** Hashes any string or number into a short seed like `"f12f1h6x"`. Idempotent for already-hashed values. */
 export function seedHash(input: Seed): string {
 	if (isSeedHash(input)) {
 		return input as string;

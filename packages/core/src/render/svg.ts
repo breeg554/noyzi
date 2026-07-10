@@ -11,6 +11,7 @@ function fmt(value: number, decimals = 2): string {
 	return String(Math.round(value * f) / f);
 }
 
+/** Renders a gradient spec to an SVG string. The reference renderer — includes warp and grain. */
 export function toSvg(spec: GradientSpec, options: SvgOptions = {}): string {
 	const { width = 800, height = 1000 } = options;
 	const uid = `m${hashString(spec.seed).toString(36)}`;
@@ -73,6 +74,7 @@ export function toSvg(spec: GradientSpec, options: SvgOptions = {}): string {
 	);
 }
 
+/** Renders a gradient spec to a `data:image/svg+xml` URI, ready for `background-image` or `<img src>`. */
 export function toSvgDataUri(
 	spec: GradientSpec,
 	options: SvgOptions = {},

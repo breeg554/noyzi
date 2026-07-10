@@ -15,6 +15,7 @@ function channelToHex(x: number): string {
 		.padStart(2, "0");
 }
 
+/** Converts an OKLCH color to a `#rrggbb` hex string, clamped to sRGB. */
 export function oklchToHex(color: Oklch): string {
 	const hRad = (color.h * Math.PI) / 180;
 	const a = color.c * Math.cos(hRad);

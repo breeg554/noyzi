@@ -19,6 +19,7 @@ function loadImage(src: string): Promise<HTMLImageElement> {
 	});
 }
 
+/** Rasterizes the exact SVG output onto an existing canvas. Browser-only. */
 export async function drawToCanvas(
 	spec: GradientSpec,
 	canvas: HTMLCanvasElement | OffscreenCanvas,
@@ -39,6 +40,7 @@ export async function drawToCanvas(
 	ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 }
 
+/** Rasterizes a gradient spec to a new `<canvas>`, pixel-identical to the SVG. Browser-only. */
 export async function toCanvas(
 	spec: GradientSpec,
 	options: RasterOptions = {},
@@ -54,6 +56,7 @@ export async function toCanvas(
 	return canvas;
 }
 
+/** Encodes a gradient as an image `Blob` (PNG by default). Browser-only. */
 export async function toBlob(
 	spec: GradientSpec,
 	options: RasterOptions & EncodeOptions = {},
@@ -74,6 +77,7 @@ export async function toBlob(
 	});
 }
 
+/** Encodes a gradient as a raster data URL (PNG by default). Browser-only. */
 export async function toDataUrl(
 	spec: GradientSpec,
 	options: RasterOptions & EncodeOptions = {},

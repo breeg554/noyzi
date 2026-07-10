@@ -48,6 +48,7 @@ function round(value: number, decimals = 4): number {
 	return Math.round(value * f) / f;
 }
 
+/** Generates a deterministic gradient spec from a seed. Same seed, same gradient — forever. */
 export function generate(
 	seed: Seed,
 	options: GenerateOptions = {},

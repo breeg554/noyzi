@@ -15,6 +15,7 @@ export interface MeshyGradientProps
 	height?: number;
 }
 
+/** Deterministic seed-based gradient as a `<div>` with an SVG background. SSR-safe. */
 export function MeshyGradient({
 	seed,
 	options,

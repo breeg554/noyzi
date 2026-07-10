@@ -39,6 +39,7 @@ export function generatePalette(rng: Rng, count: number): ColorStop[] {
 	return stops;
 }
 
+/** Returns the exact color stops a seed's gradient uses: `[background, ...blobColors]`. Count is clamped to 2..8. */
 export function paletteFromSeed(seed: Seed, count = 6): ColorStop[] {
 	const clamped = Math.min(8, Math.max(2, Math.floor(count)));
 	return generatePalette(createRng(seed), clamped);

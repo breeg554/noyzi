@@ -21,6 +21,7 @@ export interface MeshyCanvasProps
 	height?: number;
 }
 
+/** Deterministic seed-based gradient painted onto a `<canvas>`. Client-only — throws on the server; use `MeshyGradient` for SSR. */
 export function MeshyCanvas({
 	seed,
 	options,
