@@ -1,0 +1,17 @@
+{
+	"name": "meshy",
+	"private": true,
+	"workspaces": [
+		"apps/*"
+	],
+	"scripts": {
+		"dev": "bun run --filter web dev",
+		"build": "bun run --filter web build",
+		"check": "biome check .",
+		"format": "biome format --write .",
+		"lint": "biome lint ."
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.4.5"
+	}
+}
