@@ -14,7 +14,7 @@ export function toCss(spec: GradientSpec): CssOutput {
 		.reverse()
 		.map(
 			(blob) =>
-				`radial-gradient(circle at ${pct(blob.x)} ${pct(blob.y)}, ${blob.color.hex} 0%, ${blob.color.hex}00 ${pct(blob.radius)})`,
+				`radial-gradient(circle at ${pct(blob.x)} ${pct(blob.y)}, ${blob.color.hex} 0%, ${blob.color.hex}cc ${pct(blob.radius * 0.45)}, ${blob.color.hex}00 ${pct(blob.radius)})`,
 		);
 
 	return {

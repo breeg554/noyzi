@@ -1,5 +1,5 @@
 import { type Oklch, oklchToHex } from "./color.ts";
-import type { Rng } from "./prng.ts";
+import { createRng, type Rng, type Seed } from "./prng.ts";
 
 export interface ColorStop {
 	hex: string;
@@ -37,4 +37,9 @@ export function generatePalette(rng: Rng, count: number): ColorStop[] {
 		stops.push({ hex: oklchToHex(oklch), oklch });
 	}
 	return stops;
+}
+
+export function paletteFromSeed(seed: Seed, count = 6): ColorStop[] {
+	const clamped = Math.min(8, Math.max(2, Math.floor(count)));
+	return generatePalette(createRng(seed), clamped);
 }

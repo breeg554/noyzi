@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { renderToString } from "react-dom/server";
-import { MeshyGradient, seedHash } from "../src/index.ts";
+import { MeshyCanvas, MeshyGradient, seedHash } from "../src/index.ts";
 
 describe("MeshyGradient (SSR)", () => {
 	test("renders to a string on the server without DOM access", () => {
@@ -58,5 +58,19 @@ describe("MeshyGradient (SSR)", () => {
 		expect(seed).toMatch(/^[0-9a-z]{8}$/);
 		const html = renderToString(<MeshyGradient seed={seed} />);
 		expect(html).toContain("data:image/svg+xml");
+	});
+});
+
+describe("MeshyCanvas (SSR)", () => {
+	test("throws a clear error when rendered on the server", () => {
+		expect(() => renderToString(<MeshyCanvas seed="dawn" />)).toThrow(
+			"client-only",
+		);
+	});
+
+	test("error message points to the SSR-safe alternative", () => {
+		expect(() => renderToString(<MeshyCanvas seed="dawn" />)).toThrow(
+			"MeshyGradient",
+		);
 	});
 });

@@ -5,7 +5,7 @@
 		"module": "ESNext",
 		"moduleResolution": "bundler",
 		"allowImportingTsExtensions": true,
-		"lib": ["ES2022"],
+		"lib": ["ES2022", "DOM"],
 		"types": ["bun"],
 		"strict": true,
 		"noUnusedLocals": true,

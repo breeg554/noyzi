@@ -5,6 +5,6 @@ exports[`toSvg svg output is stable (frozen snapshot) 1`] = `"<svg xmlns="http:/
 exports[`toCss css output is stable (frozen snapshot) 1`] = `
 {
   "backgroundColor": "#e6b18e",
-  "backgroundImage": "radial-gradient(circle at 0.63% 61.2%, #00435d 0%, #00435d00 49.31%), radial-gradient(circle at 60.32% 86.76%, #00677e 0%, #00677e00 42.27%), radial-gradient(circle at 102.84% 50.76%, #008d72 0%, #008d7200 38.93%), radial-gradient(circle at 87.54% -0.35%, #5aa348 0%, #5aa34800 49.9%), radial-gradient(circle at 26.97% -1.16%, #d39d48 0%, #d39d4800 41.75%)",
+  "backgroundImage": "radial-gradient(circle at 0.63% 61.2%, #00435d 0%, #00435dcc 22.19%, #00435d00 49.31%), radial-gradient(circle at 60.32% 86.76%, #00677e 0%, #00677ecc 19.02%, #00677e00 42.27%), radial-gradient(circle at 102.84% 50.76%, #008d72 0%, #008d72cc 17.52%, #008d7200 38.93%), radial-gradient(circle at 87.54% -0.35%, #5aa348 0%, #5aa348cc 22.46%, #5aa34800 49.9%), radial-gradient(circle at 26.97% -1.16%, #d39d48 0%, #d39d48cc 18.79%, #d39d4800 41.75%)",
 }
 `;
