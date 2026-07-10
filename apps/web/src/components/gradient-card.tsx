@@ -28,7 +28,7 @@ export function GradientCard({ seed, index }: { seed: string; index: number }) {
 				delay: (index % PAGE_SIZE) * 0.012,
 			}}
 		>
-			<Card className="group relative aspect-square justify-center rounded-md border-none p-2 shadow-none transition-colors duration-200 hover:bg-neutral-100 dark:hover:bg-muted">
+			<Card className="group relative aspect-square justify-center rounded-md border-none p-2 shadow-none transition-colors duration-200 hover:bg-neutral-100 dark:hover:bg-[oklch(0.21_0_0)]">
 				<span className="absolute top-4 left-4 text-[11px] text-muted-foreground leading-none">
 					{String(index + 1).padStart(4, "0")}
 				</span>
@@ -57,7 +57,7 @@ export function GradientCard({ seed, index }: { seed: string; index: number }) {
 	);
 }
 
-function CopyButton({ seed }: { seed: string }) {
+export function CopyButton({ seed }: { seed: string }) {
 	const [copied, setCopied] = useState(false);
 
 	const copy = async () => {
@@ -81,7 +81,7 @@ function CopyButton({ seed }: { seed: string }) {
 	);
 }
 
-function DownloadButton({ seed }: { seed: string }) {
+export function DownloadButton({ seed }: { seed: string }) {
 	const download = async () => {
 		const spec = generate(seedHash(seed));
 		const url = await toDataUrl(spec, {

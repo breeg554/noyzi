@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { CustomSeedCard } from "#/components/custom-seed-card.tsx";
 import { Gallery } from "#/components/gallery/gallery.tsx";
 import { GradientsProvider } from "#/components/gallery/provider.tsx";
 import { GradientCard } from "#/components/gradient-card.tsx";
@@ -20,6 +21,7 @@ function PreviewPage() {
 				</Gallery.Header>
 
 				<Gallery.Grid>
+					<CustomSeedCard />
 					<Gallery.Items>
 						{(item, index) => (
 							<GradientCard key={item.seed} seed={item.seed} index={index} />
