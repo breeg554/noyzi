@@ -1,6 +1,10 @@
 import { MeshyGradient } from "@meshy/react";
 import { useRef, useState } from "react";
-import { CopyButton, DownloadButton } from "#/components/gradient-card.tsx";
+import {
+	CopyButton,
+	DownloadButton,
+	useCopyGradient,
+} from "#/components/gradient-card.tsx";
 import { Card, CardContent } from "#/components/ui/card.tsx";
 import { Input } from "#/components/ui/input.tsx";
 import { cn } from "#/lib/utils.ts";
@@ -14,9 +18,13 @@ export function CustomSeedCard() {
 	const [keyboardFocus, setKeyboardFocus] = useState(false);
 	const pointerRef = useRef(false);
 	const activeSeed = seed.trim() || DEFAULT_SEED;
+	const { copied, copy } = useCopyGradient(activeSeed);
 
 	return (
-		<Card className="group relative col-span-2 row-span-2 justify-center rounded-md border-none p-2 shadow-none transition-colors duration-200 hover:bg-neutral-100 dark:hover:bg-[oklch(0.21_0_0)]">
+		<Card
+			onClick={copy}
+			className="group relative col-span-2 row-span-2 cursor-pointer justify-center rounded-md border-none p-2 shadow-none transition-colors duration-200 hover:bg-neutral-100 dark:hover:bg-[oklch(0.21_0_0)]"
+		>
 			<span className="absolute top-4 left-4 text-[11px] text-muted-foreground leading-none">
 				custom
 			</span>
@@ -35,6 +43,7 @@ export function CustomSeedCard() {
 				<Input
 					value={seed}
 					onChange={(event) => setSeed(event.target.value)}
+					onClick={(event) => event.stopPropagation()}
 					onPointerDown={() => {
 						pointerRef.current = true;
 					}}
@@ -50,7 +59,7 @@ export function CustomSeedCard() {
 					)}
 				/>
 				<div className="flex translate-y-2 items-center gap-1 opacity-0 transition-all duration-200 ease-out group-hover:translate-y-0 group-hover:opacity-100">
-					<CopyButton seed={activeSeed} />
+					<CopyButton copied={copied} onCopy={copy} />
 					<DownloadButton seed={activeSeed} />
 				</div>
 			</CardContent>
