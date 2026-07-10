@@ -11,32 +11,28 @@ import {
 	useEffect,
 	useMemo,
 	useRef,
+	useState,
 } from "react";
 
 export interface MeshyCanvasProps
-	extends Omit<JSX.IntrinsicElements["canvas"], "children"> {
+	extends Omit<JSX.IntrinsicElements["div"], "children"> {
 	seed: Seed;
 	options?: GenerateOptions;
-	width?: number;
-	height?: number;
+	fallback?: string;
+	fadeDuration?: number;
 }
 
-/** Deterministic seed-based gradient painted onto a `<canvas>`. Client-only — throws on the server; use `MeshyGradient` for SSR. */
+/** Deterministic seed-based gradient painted onto a `<canvas>`. SSR renders a solid placeholder that the gradient fades over on the client. */
 export function MeshyCanvas({
 	seed,
 	options,
-	width = 800,
-	height = 1000,
+	fallback,
+	fadeDuration = 400,
 	style,
 	...rest
 }: MeshyCanvasProps): JSX.Element {
-	if (typeof document === "undefined") {
-		throw new Error(
-			"MeshyCanvas is a client-only component and cannot be rendered on the server. Use MeshyGradient for SSR.",
-		);
-	}
-
 	const ref = useRef<HTMLCanvasElement>(null);
+	const [ready, setReady] = useState(false);
 	const optionsKey = options === undefined ? "" : JSON.stringify(options);
 
 	const opts = useMemo<GenerateOptions | undefined>(
@@ -52,37 +48,66 @@ export function MeshyCanvas({
 			return;
 		}
 		let cancelled = false;
-		toCanvas(spec, { width, height })
-			.then((painted) => {
-				if (cancelled) {
+
+		const paint = () => {
+			const rect = canvas.getBoundingClientRect();
+			const dpr = window.devicePixelRatio || 1;
+			const width = Math.max(1, Math.round(rect.width * dpr));
+			const height = Math.max(1, Math.round(rect.height * dpr));
+			toCanvas(spec, { width, height })
+				.then((painted) => {
+					if (cancelled) {
+						return;
+					}
+					canvas.width = width;
+					canvas.height = height;
+					canvas.getContext("2d")?.drawImage(painted, 0, 0);
+					setReady(true);
+				})
+				.catch(() => {});
+		};
+
+		paint();
+
+		let observer: ResizeObserver | undefined;
+		if (typeof ResizeObserver !== "undefined") {
+			let initial = true;
+			observer = new ResizeObserver(() => {
+				if (initial) {
+					initial = false;
 					return;
 				}
-				const ctx = canvas.getContext("2d");
-				if (!ctx) {
-					return;
-				}
-				ctx.clearRect(0, 0, canvas.width, canvas.height);
-				ctx.drawImage(painted, 0, 0, canvas.width, canvas.height);
-			})
-			.catch(() => {});
+				paint();
+			});
+			observer.observe(canvas);
+		}
+
 		return () => {
 			cancelled = true;
+			observer?.disconnect();
 		};
-	}, [spec, width, height]);
+	}, [spec]);
 
-	const mergedStyle: CSSProperties = {
-		backgroundColor: spec.background.hex,
+	const wrapperStyle: CSSProperties = {
+		position: "relative",
+		overflow: "hidden",
+		backgroundColor: fallback ?? spec.background.hex,
 		...style,
 	};
 
+	const canvasStyle: CSSProperties = {
+		position: "absolute",
+		inset: 0,
+		width: "100%",
+		height: "100%",
+		opacity: ready ? 1 : 0,
+		filter: ready ? "none" : "blur(12px)",
+		transition: `opacity ${fadeDuration}ms ease, filter ${fadeDuration}ms ease`,
+	};
+
 	return (
-		<canvas
-			ref={ref}
-			width={width}
-			height={height}
-			role="img"
-			{...rest}
-			style={mergedStyle}
-		/>
+		<div role="img" {...rest} style={wrapperStyle}>
+			<canvas ref={ref} style={canvasStyle} />
+		</div>
 	);
 }

@@ -54,12 +54,13 @@ export function toSvg(spec: GradientSpec, options: SvgOptions = {}): string {
 			`<filter id="${id}" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">` +
 				`<feTurbulence type="fractalNoise" baseFrequency="${fmt(spec.grain.frequency, 4)}" numOctaves="${spec.grain.octaves}" seed="${spec.grain.seed}" stitchTiles="stitch"/>` +
 				`<feColorMatrix type="saturate" values="0"/>` +
-				`<feComponentTransfer result="g">` +
+				`<feComponentTransfer>` +
 				`<feFuncR type="linear" slope="2.5" intercept="-0.25"/>` +
 				`<feFuncG type="linear" slope="2.5" intercept="-0.25"/>` +
 				`<feFuncB type="linear" slope="2.5" intercept="-0.25"/>` +
 				`<feFuncA type="linear" slope="0" intercept="${fmt(spec.grain.opacity)}"/>` +
 				`</feComponentTransfer>` +
+				`<feGaussianBlur stdDeviation="0.7" result="g"/>` +
 				`<feBlend in="SourceGraphic" in2="g" mode="multiply"/>` +
 				`</filter>`,
 		);

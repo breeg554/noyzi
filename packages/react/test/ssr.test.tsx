@@ -62,15 +62,22 @@ describe("MeshyGradient (SSR)", () => {
 });
 
 describe("MeshyCanvas (SSR)", () => {
-	test("throws a clear error when rendered on the server", () => {
-		expect(() => renderToString(<MeshyCanvas seed="dawn" />)).toThrow(
-			"client-only",
-		);
+	test("renders a canvas placeholder on the server", () => {
+		const html = renderToString(<MeshyCanvas seed="dawn" />);
+		expect(html).toContain("<canvas");
+		expect(html).toContain('role="img"');
+		expect(html).toContain("background-color:");
+		expect(html).toContain("blur(12px)");
 	});
 
-	test("error message points to the SSR-safe alternative", () => {
-		expect(() => renderToString(<MeshyCanvas seed="dawn" />)).toThrow(
-			"MeshyGradient",
-		);
+	test("server output is deterministic (hydration-safe)", () => {
+		const a = renderToString(<MeshyCanvas seed="dawn" />);
+		const b = renderToString(<MeshyCanvas seed="dawn" />);
+		expect(a).toBe(b);
+	});
+
+	test("fallback overrides the placeholder color", () => {
+		const html = renderToString(<MeshyCanvas seed="dawn" fallback="#123456" />);
+		expect(html).toContain("background-color:#123456");
 	});
 });
