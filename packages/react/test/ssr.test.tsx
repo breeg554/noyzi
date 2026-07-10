@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { renderToString } from "react-dom/server";
-import { MeshyCanvas, MeshyGradient, seedHash } from "../src/index.ts";
+import { MeshyGradient, seedHash } from "../src/index.ts";
 
 describe("MeshyGradient (SSR)", () => {
 	test("renders to a string on the server without DOM access", () => {
@@ -38,6 +38,16 @@ describe("MeshyGradient (SSR)", () => {
 		expect(html).toContain("background-image:");
 	});
 
+	test("sizing and rounding come from className", () => {
+		const html = renderToString(
+			<MeshyGradient seed="dawn" className="size-10 rounded-full" />,
+		);
+		expect(html).toContain("size-10");
+		expect(html).toContain("rounded-full");
+		expect(html).not.toContain("width:");
+		expect(html).not.toContain("border-radius:");
+	});
+
 	test("className can override the default shadow", () => {
 		const html = renderToString(
 			<MeshyGradient seed="dawn" className="shadow-none" />,
@@ -69,58 +79,15 @@ describe("MeshyGradient (SSR)", () => {
 		expect(html).toContain("data:image/svg+xml");
 	});
 
-	test("width and height size the element and the artwork", () => {
-		const html = renderToString(
-			<MeshyGradient seed="dawn" width={48} height={48} />,
-		);
-		expect(html).toContain("width:48px");
-		expect(html).toContain("height:48px");
-		expect(html).toContain(encodeURIComponent('width="48"'));
-		expect(html).toContain(encodeURIComponent('height="48"'));
-	});
-
-	test("without width and height the artwork defaults to a square", () => {
+	test("artwork defaults to a 1000×1000 square", () => {
 		const html = renderToString(<MeshyGradient seed="dawn" />);
-		expect(html).not.toContain("width:");
 		expect(html).toContain(encodeURIComponent('viewBox="0 0 1000 1000"'));
 	});
 
-	test("rounded applies border radius", () => {
-		const circle = renderToString(
-			<MeshyGradient seed="dawn" width={32} height={32} rounded="full" />,
-		);
-		expect(circle).toContain("border-radius:9999px");
-		const px = renderToString(<MeshyGradient seed="dawn" rounded={6} />);
-		expect(px).toContain("border-radius:6px");
-	});
-});
-
-describe("MeshyCanvas (SSR)", () => {
-	test("renders a canvas placeholder on the server", () => {
-		const html = renderToString(<MeshyCanvas seed="dawn" />);
-		expect(html).toContain("<canvas");
-		expect(html).toContain('role="img"');
-		expect(html).toContain("background-color:");
-		expect(html).toContain("blur(12px)");
-	});
-
-	test("server output is deterministic (hydration-safe)", () => {
-		const a = renderToString(<MeshyCanvas seed="dawn" />);
-		const b = renderToString(<MeshyCanvas seed="dawn" />);
-		expect(a).toBe(b);
-	});
-
-	test("fallback overrides the placeholder color", () => {
-		const html = renderToString(<MeshyCanvas seed="dawn" fallback="#123456" />);
-		expect(html).toContain("background-color:#123456");
-	});
-
-	test("width, height and rounded apply to the wrapper", () => {
+	test("artwork sets the intrinsic SVG dimensions", () => {
 		const html = renderToString(
-			<MeshyCanvas seed="dawn" width={48} height={48} rounded="full" />,
+			<MeshyGradient seed="dawn" artwork={{ width: 1600, height: 400 }} />,
 		);
-		expect(html).toContain("width:48px");
-		expect(html).toContain("height:48px");
-		expect(html).toContain("border-radius:9999px");
+		expect(html).toContain(encodeURIComponent('viewBox="0 0 1600 400"'));
 	});
 });

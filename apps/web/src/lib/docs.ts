@@ -156,33 +156,26 @@ anchor.click();`,
 		id: "meshygradient",
 		name: "<MeshyGradient />",
 		pkg: "@meshy/react",
-		signature: `interface MeshyGradientProps extends MeshyBaseProps {}
+		signature: `interface MeshyGradientProps extends MeshyBaseProps {
+  /** Intrinsic artwork size. Only the aspect ratio affects the
+   *  result (the SVG is vector). Defaults to 1000×1000. */
+  artwork?: { width?: number; height?: number };
+}
 
 interface MeshyBaseProps
   extends Omit<JSX.IntrinsicElements["div"], "children"> {
   seed: Seed;
   options?: GenerateOptions;
-  width?: number;
-  height?: number;
-  rounded?: number | "full";
 }`,
 		description:
-			'<div role="img"> with an SVG data-URI background. SSR-safe, zero client JS. width/height size element and artwork (rendered at 1.5×); omit them to size with CSS and cover-fill.',
-		example: `<MeshyGradient seed="ada" width={40} height={40} rounded="full" />`,
-	},
-	{
-		id: "meshycanvas",
-		name: "<MeshyCanvas />",
-		pkg: "@meshy/react",
-		signature: `interface MeshyCanvasProps extends MeshyBaseProps {
-  /** Placeholder color while the canvas paints. */
-  fallback?: string;
-  /** Fade-in duration in ms. Default: 400. */
-  fadeDuration?: number;
-}`,
-		description:
-			"Gradient on a <canvas> at device pixel ratio, repainted on resize. SSR renders a solid placeholder (background hex or fallback) the canvas fades over — no layout shift.",
-		example: `<MeshyCanvas seed="ada" rounded={12} className="h-40 w-full" />`,
+			'<div role="img"> with an SVG data-URI background. SSR-safe, zero client JS. Size and shape it with your own CSS — the artwork cover-fills the element. Use artwork to match the aspect ratio of non-square elements.',
+		example: `<MeshyGradient seed="ada" className="size-10 rounded-full" />
+
+<MeshyGradient
+  seed="ada"
+  artwork={{ width: 1600, height: 400 }}
+  className="h-40 w-full rounded-lg"
+/>`,
 	},
 ];
 

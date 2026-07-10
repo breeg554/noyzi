@@ -1,6 +1,6 @@
 import type { GenerateOptions, Seed } from "@meshy/core";
 import { type ClassValue, clsx } from "clsx";
-import type { CSSProperties, JSX } from "react";
+import type { JSX } from "react";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]): string {
@@ -14,25 +14,4 @@ export interface MeshyBaseProps
 	extends Omit<JSX.IntrinsicElements["div"], "children"> {
 	seed: Seed;
 	options?: GenerateOptions;
-	/** Element width in CSS px. Omit to size the element with your own CSS. */
-	width?: number;
-	/** Element height in CSS px. Omit to size the element with your own CSS. */
-	height?: number;
-	/** Border radius in pixels, or `"full"` for a circle. */
-	rounded?: number | "full";
-}
-
-export function frameStyle(
-	width: number | undefined,
-	height: number | undefined,
-	rounded: number | "full" | undefined,
-): CSSProperties {
-	return {
-		...(width !== undefined && { width }),
-		...(height !== undefined && { height }),
-		...(width !== undefined && height !== undefined && { flexShrink: 0 }),
-		...(rounded !== undefined && {
-			borderRadius: rounded === "full" ? "9999px" : rounded,
-		}),
-	};
 }

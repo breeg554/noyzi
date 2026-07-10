@@ -17,7 +17,7 @@ export const Route = createFileRoute("/docs")({
 const GET_STARTED_EXAMPLE = `import { MeshyGradient } from "@meshy/react";
 
 export function Avatar({ email }: { email: string }) {
-	return <MeshyGradient seed={email} width={40} height={40} rounded="full" />;
+	return <MeshyGradient seed={email} className="size-10 rounded-full" />;
 }`;
 
 function DocsPage() {
@@ -75,12 +75,9 @@ function GetStarted() {
 					image. Runs anywhere.
 				</li>
 				<li>
-					<code className="font-mono text-foreground">@meshy/react</code> —
-					components on top:{" "}
-					<code className="font-mono">&lt;MeshyGradient /&gt;</code> (SSR-safe,
-					zero client JS) and{" "}
-					<code className="font-mono">&lt;MeshyCanvas /&gt;</code> (canvas with
-					SSR fallback).
+					<code className="font-mono text-foreground">@meshy/react</code> —{" "}
+					<code className="font-mono">&lt;MeshyGradient /&gt;</code> on top:
+					SSR-safe, zero client JS.
 				</li>
 			</ul>
 

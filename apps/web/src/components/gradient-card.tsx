@@ -9,8 +9,6 @@ import { Card, CardContent } from "#/components/ui/card.tsx";
 import { playClick } from "#/lib/click-sound.ts";
 import { PAGE_SIZE } from "#/lib/gradients.ts";
 
-const AVATAR_SIZE = 112;
-const GRADIENT_SIZE = AVATAR_SIZE * 2;
 const EXPORT_SIZE = 1000;
 
 function gradientBlob(seed: string): Promise<Blob> {
@@ -76,12 +74,9 @@ export function GradientCard({ seed, index }: { seed: string; index: number }) {
 					<div className="relative">
 						<MeshyGradient
 							seed={seed}
-							width={GRADIENT_SIZE}
-							height={GRADIENT_SIZE}
-							rounded={6}
+							artwork={{ width: 500, height: 500 }}
 							title={seed}
-							className="transition-transform duration-200 ease-out group-hover:scale-110"
-							style={{ width: AVATAR_SIZE, height: AVATAR_SIZE }}
+							className="size-28 shrink-0 rounded-md transition-transform duration-200 ease-out group-hover:scale-110"
 						/>
 						<div className="-translate-x-1/2 absolute top-[110%] left-1/2 mt-4 flex translate-y-2 items-center gap-1 opacity-0 transition-all duration-200 ease-out group-hover:translate-y-0 group-hover:opacity-100">
 							<CopyButton copied={copied} onCopy={copy} />

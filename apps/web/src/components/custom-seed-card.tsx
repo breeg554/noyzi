@@ -37,9 +37,7 @@ export function CustomSeedCard() {
 			<CardContent className="flex flex-col items-center gap-3 px-2 lg:gap-6">
 				<MeshyGradient
 					seed={activeSeed}
-					width={224}
-					height={224}
-					rounded={12}
+					className="size-56 shrink-0 rounded-xl"
 					title={activeSeed}
 				/>
 				<Input

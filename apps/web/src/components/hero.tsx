@@ -63,11 +63,8 @@ function HeroAvatar({ seed }: { seed: string }) {
 		>
 			<MeshyGradient
 				seed={seed}
-				width={80}
-				height={80}
 				title={seed}
-				className="rounded-full ring-2 ring-background"
-				style={{ width: 40, height: 40 }}
+				className="size-10 shrink-0 rounded-full ring-2 ring-background"
 			/>
 		</Button>
 	);
