@@ -1,7 +1,6 @@
 import {
 	type GenerateOptions,
 	generate,
-	type Seed,
 	seedHash,
 	toCanvas,
 } from "@meshy/core";
@@ -13,11 +12,9 @@ import {
 	useRef,
 	useState,
 } from "react";
+import { frameStyle, type MeshyBaseProps } from "./shared.ts";
 
-export interface MeshyCanvasProps
-	extends Omit<JSX.IntrinsicElements["div"], "children"> {
-	seed: Seed;
-	options?: GenerateOptions;
+export interface MeshyCanvasProps extends MeshyBaseProps {
 	fallback?: string;
 	fadeDuration?: number;
 }
@@ -28,6 +25,8 @@ export function MeshyCanvas({
 	options,
 	fallback,
 	fadeDuration = 400,
+	size,
+	rounded,
 	style,
 	...rest
 }: MeshyCanvasProps): JSX.Element {
@@ -92,6 +91,7 @@ export function MeshyCanvas({
 		position: "relative",
 		overflow: "hidden",
 		backgroundColor: fallback ?? spec.background.hex,
+		...frameStyle(size, rounded),
 		...style,
 	};
 

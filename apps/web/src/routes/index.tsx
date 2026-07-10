@@ -5,19 +5,15 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { setResponseHeader } from "@tanstack/react-start/server";
 import { LRUCache } from "lru-cache";
+import { motion } from "motion/react";
+import { useEffect } from "react";
+import { useInView } from "react-intersection-observer";
 
 const PAGE_SIZE = 50;
-
-const SPANS = [20, 26, 32, 38, 46] as const;
+const AVATAR_SIZE = 96;
 
 interface CardItem {
 	seed: string;
-	span: number;
-}
-
-function spanForSeed(seed: string): number {
-	const n = Number.parseInt(seedHash(seed).slice(0, 6), 36);
-	return SPANS[n % SPANS.length] as number;
 }
 
 const pageCache = new LRUCache<number, CardItem[]>({ max: 100 });
@@ -35,69 +31,70 @@ const getGradientsPage = createServerFn({ method: "GET" })
 		if (cached) {
 			return cached;
 		}
-		const items = Array.from({ length: PAGE_SIZE }, (_, i) => {
-			const seed = seedHash(page * PAGE_SIZE + i);
-			return { seed, span: spanForSeed(seed) };
-		});
+		const items = Array.from({ length: PAGE_SIZE }, (_, i) => ({
+			seed: seedHash(page * PAGE_SIZE + i),
+		}));
 		pageCache.set(page, items);
 		return items;
 	});
 
 const gradientsQuery = infiniteQueryOptions({
 	queryKey: ["gradients"],
-	queryFn: ({ pageParam }) => getGradientsPage({ data: pageParam }),
+	queryFn: async ({ pageParam }) => getGradientsPage({ data: pageParam }),
 	initialPageParam: 0,
-	getNextPageParam: (_last: CardItem[], pages: CardItem[][]) => pages.length,
+	getNextPageParam: (
+		_last: CardItem[],
+		_pages: CardItem[][],
+		lastPageParam: number,
+	) => lastPageParam + 1,
 	staleTime: Number.POSITIVE_INFINITY,
 });
 
 export const Route = createFileRoute("/")({
 	component: PreviewPage,
-	loader: ({ context }) =>
-		context.queryClient.prefetchInfiniteQuery(gradientsQuery),
+	loader: async ({ context }) => {
+		await context.queryClient.prefetchInfiniteQuery(gradientsQuery);
+	},
 });
 
 function PreviewPage() {
-	const { data, fetchNextPage, isFetchingNextPage } =
+	const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
 		useInfiniteQuery(gradientsQuery);
 
-	const observeSentinel = (el: HTMLDivElement | null) => {
-		if (!el) {
-			return;
-		}
-		const observer = new IntersectionObserver(
-			(entries) => {
-				if (entries[0]?.isIntersecting) {
-					fetchNextPage({ cancelRefetch: false });
-				}
-			},
-			{ rootMargin: "0px 0px 100% 0px" },
-		);
-		observer.observe(el);
-		return () => observer.disconnect();
-	};
+	const { ref, inView } = useInView({ rootMargin: "0px 0px 100% 0px" });
 
-	const items = data?.pages.flat() ?? [];
+	useEffect(() => {
+		if (inView && hasNextPage && !isFetchingNextPage) {
+			fetchNextPage();
+		}
+	}, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+	const pages = data?.pages ?? [];
+	const total = pages.reduce((n, page) => n + page.length, 0);
 
 	return (
 		<main className="w-full px-2 py-3">
 			<header className="flex items-baseline justify-between px-0.5 pb-2">
 				<h1 className="text-xs font-semibold tracking-tight">meshy</h1>
 				<p className="text-[10px] tabular-nums text-muted-foreground">
-					{items.length} gradients
+					{total} gradients
 				</p>
 			</header>
 
-			<div
-				className="grid grid-cols-2 gap-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
-				style={{ gridAutoRows: "4px" }}
-			>
-				{items.map((item) => (
-					<GradientCard key={item.seed} item={item} />
-				))}
+			<div className="grid grid-cols-2 gap-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+				{pages.map((page, pageIndex) =>
+					page.map((item, index) => (
+						<GradientCard
+							key={item.seed}
+							item={item}
+							index={index}
+							animated={pageIndex > 0}
+						/>
+					)),
+				)}
 			</div>
 
-			<div ref={observeSentinel} className="h-px" />
+			<div ref={ref} className="h-px" />
 
 			<div className="flex items-center justify-center py-4">
 				{isFetchingNextPage ? (
@@ -112,20 +109,36 @@ function PreviewPage() {
 	);
 }
 
-function GradientCard({ item }: { item: CardItem }) {
+function GradientCard({
+	item,
+	index,
+	animated,
+}: {
+	item: CardItem;
+	index: number;
+	animated: boolean;
+}) {
 	return (
-		<figure
-			className="group relative m-0 overflow-hidden rounded-sm"
-			style={{ gridRowEnd: `span ${item.span}` }}
+		<motion.figure
+			initial={animated ? { opacity: 0, y: 8, filter: "blur(4px)" } : false}
+			animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+			transition={{
+				duration: 0.3,
+				ease: [0.16, 1, 0.3, 1],
+				delay: index * 0.012,
+			}}
+			className="group m-0 flex aspect-square flex-col items-center justify-center gap-2 rounded-md border border-border/60 bg-card p-2 transition-colors duration-200 hover:border-border hover:bg-muted"
 		>
 			<MeshyGradient
 				seed={item.seed}
+				size={AVATAR_SIZE}
+				rounded="full"
 				title={item.seed}
-				className="absolute inset-0"
+				className="transition-transform duration-200 ease-out group-hover:scale-110"
 			/>
-			<figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/35 to-transparent px-1.5 pb-1 pt-3 text-[10px] font-medium leading-none text-white/90 opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+			<figcaption className="w-full truncate text-center text-[10px] leading-none text-muted-foreground transition-colors duration-200 group-hover:text-foreground">
 				{item.seed}
 			</figcaption>
-		</figure>
+		</motion.figure>
 	);
 }

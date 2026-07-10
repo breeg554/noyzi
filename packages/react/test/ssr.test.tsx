@@ -59,6 +59,31 @@ describe("MeshyGradient (SSR)", () => {
 		const html = renderToString(<MeshyGradient seed={seed} />);
 		expect(html).toContain("data:image/svg+xml");
 	});
+
+	test("size renders a fixed square generated at size * density", () => {
+		const html = renderToString(<MeshyGradient seed="dawn" size={48} />);
+		expect(html).toContain("width:48px");
+		expect(html).toContain("height:48px");
+		expect(html).toContain(encodeURIComponent('width="96"'));
+		expect(html).toContain(encodeURIComponent('height="96"'));
+	});
+
+	test("density overrides the multiplier", () => {
+		const html = renderToString(
+			<MeshyGradient seed="dawn" size={48} density={1} />,
+		);
+		expect(html).toContain(encodeURIComponent('width="48"'));
+		expect(html).toContain(encodeURIComponent('height="48"'));
+	});
+
+	test("rounded applies border radius", () => {
+		const circle = renderToString(
+			<MeshyGradient seed="dawn" size={32} rounded="full" />,
+		);
+		expect(circle).toContain("border-radius:9999px");
+		const px = renderToString(<MeshyGradient seed="dawn" rounded={6} />);
+		expect(px).toContain("border-radius:6px");
+	});
 });
 
 describe("MeshyCanvas (SSR)", () => {
@@ -79,5 +104,14 @@ describe("MeshyCanvas (SSR)", () => {
 	test("fallback overrides the placeholder color", () => {
 		const html = renderToString(<MeshyCanvas seed="dawn" fallback="#123456" />);
 		expect(html).toContain("background-color:#123456");
+	});
+
+	test("size and rounded apply to the wrapper", () => {
+		const html = renderToString(
+			<MeshyCanvas seed="dawn" size={48} rounded="full" />,
+		);
+		expect(html).toContain("width:48px");
+		expect(html).toContain("height:48px");
+		expect(html).toContain("border-radius:9999px");
 	});
 });

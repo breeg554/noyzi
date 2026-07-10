@@ -4,3 +4,4 @@ export type { MeshyCanvasProps } from "./MeshyCanvas.tsx";
 export { MeshyCanvas } from "./MeshyCanvas.tsx";
 export type { MeshyGradientProps } from "./MeshyGradient.tsx";
 export { MeshyGradient } from "./MeshyGradient.tsx";
+export type { MeshyBaseProps } from "./shared.ts";
