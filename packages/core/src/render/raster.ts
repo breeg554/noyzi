@@ -6,8 +6,23 @@ export interface RasterOptions extends SvgOptions {
 }
 
 export interface EncodeOptions {
+	/** Image MIME type. Defaults to `"image/webp"` (PNG fallback where unsupported). */
 	type?: string;
+	/** Lossy quality in [0, 1]. Defaults to 1 for WebP. */
 	quality?: number;
+}
+
+const DEFAULT_TYPE = "image/webp";
+const DEFAULT_QUALITY = 1;
+
+function resolveEncoding(options: EncodeOptions): {
+	type: string;
+	quality: number | undefined;
+} {
+	const type = options.type ?? DEFAULT_TYPE;
+	const quality =
+		options.quality ?? (type === DEFAULT_TYPE ? DEFAULT_QUALITY : undefined);
+	return { type, quality };
 }
 
 function loadImage(src: string): Promise<HTMLImageElement> {
@@ -56,12 +71,13 @@ export async function toCanvas(
 	return canvas;
 }
 
-/** Encodes a gradient as an image `Blob` (PNG by default). Browser-only. */
+/** Encodes a gradient as an image `Blob` — WebP by default, PNG fallback where unsupported (check `blob.type`). Browser-only. */
 export async function toBlob(
 	spec: GradientSpec,
 	options: RasterOptions & EncodeOptions = {},
 ): Promise<Blob> {
 	const canvas = await toCanvas(spec, options);
+	const { type, quality } = resolveEncoding(options);
 	return new Promise((resolve, reject) => {
 		canvas.toBlob(
 			(blob) => {
@@ -71,17 +87,18 @@ export async function toBlob(
 					reject(new Error("Canvas encoding failed"));
 				}
 			},
-			options.type ?? "image/png",
-			options.quality,
+			type,
+			quality,
 		);
 	});
 }
 
-/** Encodes a gradient as a raster data URL (PNG by default). Browser-only. */
+/** Encodes a gradient as a raster data URL — WebP by default, PNG fallback where unsupported (check the `data:image/...` prefix). Browser-only. */
 export async function toDataUrl(
 	spec: GradientSpec,
 	options: RasterOptions & EncodeOptions = {},
 ): Promise<string> {
 	const canvas = await toCanvas(spec, options);
-	return canvas.toDataURL(options.type ?? "image/png", options.quality);
+	const { type, quality } = resolveEncoding(options);
+	return canvas.toDataURL(type, quality);
 }

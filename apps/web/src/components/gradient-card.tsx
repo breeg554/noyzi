@@ -1,4 +1,4 @@
-import { generate, seedHash, toBlob, toCss, toDataUrl } from "@meshy/core";
+import { generate, seedHash, toBlob, toCss } from "@meshy/core";
 import { MeshyGradient } from "@meshy/react";
 import { Check, Copy, Download } from "lucide-react";
 import { motion } from "motion/react";
@@ -13,7 +13,11 @@ const EXPORT_SIZE = 1000;
 
 function gradientBlob(seed: string): Promise<Blob> {
 	const spec = generate(seedHash(seed));
-	return toBlob(spec, { width: EXPORT_SIZE, height: EXPORT_SIZE });
+	return toBlob(spec, {
+		width: EXPORT_SIZE,
+		height: EXPORT_SIZE,
+		type: "image/webp",
+	});
 }
 
 export function useCopyGradient(seed: string) {
@@ -115,14 +119,17 @@ export function CopyButton({
 export function DownloadButton({ seed }: { seed: string }) {
 	const download = async () => {
 		const spec = generate(seedHash(seed));
-		const url = await toDataUrl(spec, {
+		const blob = await toBlob(spec, {
 			width: EXPORT_SIZE,
 			height: EXPORT_SIZE,
 		});
+		const extension = blob.type === "image/webp" ? "webp" : "png";
+		const url = URL.createObjectURL(blob);
 		const anchor = document.createElement("a");
 		anchor.href = url;
-		anchor.download = `meshy-${seed}.png`;
+		anchor.download = `meshy-${seed}.${extension}`;
 		anchor.click();
+		URL.revokeObjectURL(url);
 	};
 
 	return (

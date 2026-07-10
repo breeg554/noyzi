@@ -133,10 +133,13 @@ await drawToCanvas(generate("ada"), canvas, { width: 400, height: 400 });`,
 		signature:
 			"function toBlob(\n  spec: GradientSpec,\n  options?: RasterOptions & EncodeOptions,\n): Promise<Blob>",
 		description:
-			"Gradient → image Blob. PNG by default; type and quality configurable. For clipboard, uploads, downloads. Browser-only.",
+			"Gradient → image Blob. WebP by default (~10x smaller than PNG for gradients); browsers without WebP encoding fall back to PNG — check blob.type. For clipboard, uploads, downloads. Browser-only.",
 		example: `const blob = await toBlob(generate("ada"), { width: 1000 });
+
+// ClipboardItem requires PNG — opt out of WebP:
+const png = await toBlob(generate("ada"), { type: "image/png" });
 await navigator.clipboard.write([
-  new ClipboardItem({ "image/png": blob }),
+  new ClipboardItem({ "image/png": png }),
 ]);`,
 	},
 	{
@@ -145,11 +148,14 @@ await navigator.clipboard.write([
 		pkg: "@meshy/core",
 		signature:
 			"function toDataUrl(\n  spec: GradientSpec,\n  options?: RasterOptions & EncodeOptions,\n): Promise<string>",
-		description: "Gradient → raster data URL (PNG by default). Browser-only.",
+		description:
+			"Gradient → raster data URL. WebP by default, PNG fallback where unsupported — check the data:image/... prefix. Browser-only.",
 		example: `const url = await toDataUrl(generate("ada"));
 const anchor = document.createElement("a");
 anchor.href = url;
-anchor.download = "meshy-ada.png";
+anchor.download = url.startsWith("data:image/webp")
+  ? "meshy-ada.webp"
+  : "meshy-ada.png";
 anchor.click();`,
 	},
 	{
