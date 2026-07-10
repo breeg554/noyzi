@@ -7,7 +7,10 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
+import { Header } from "#/components/header.tsx";
 import appCss from "../styles.css?url";
+
+const themeScript = `(function(){try{var t=localStorage.getItem("theme");var d=t?t==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;if(d)document.documentElement.classList.add("dark")}catch(e){}})();`;
 
 export const Route = createRootRouteWithContext<{
 	queryClient: QueryClient;
@@ -31,17 +34,23 @@ export const Route = createRootRouteWithContext<{
 				href: appCss,
 			},
 		],
+		scripts: [
+			{
+				children: themeScript,
+			},
+		],
 	}),
 	shellComponent: RootDocument,
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
 	return (
-		<html lang="en">
+		<html lang="en" suppressHydrationWarning>
 			<head>
 				<HeadContent />
 			</head>
 			<body>
+				<Header />
 				{children}
 				<TanStackDevtools
 					config={{

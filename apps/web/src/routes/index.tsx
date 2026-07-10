@@ -14,9 +14,8 @@ export const Route = createFileRoute("/")({
 function PreviewPage() {
 	return (
 		<GradientsProvider>
-			<main className="w-full px-2 py-3">
+			<main className="w-full p-3">
 				<Gallery.Header>
-					<Gallery.Title>meshy</Gallery.Title>
 					<Gallery.Count />
 				</Gallery.Header>
 

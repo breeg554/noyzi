@@ -30,7 +30,7 @@ function GalleryCount() {
 
 function GalleryGrid({ children }: { children: ReactNode }) {
 	return (
-		<div className="grid grid-cols-2 gap-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+		<div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
 			{children}
 		</div>
 	);
@@ -68,7 +68,7 @@ function GalleryLoadingCards({ count = 6 }: { count?: number }) {
 	return PLACEHOLDER_IDS.slice(0, count).map((id) => (
 		<div
 			key={id}
-			className="flex aspect-square flex-col items-center justify-center gap-2 rounded-xl border border-border/60 p-2"
+			className="flex aspect-square flex-col items-center justify-center gap-2 rounded-md bg-card p-2"
 		>
 			<Skeleton className="size-24 rounded-full" />
 			<Skeleton className="h-2.5 w-16" />
