@@ -1,4 +1,6 @@
-Welcome to your new TanStack Start app! 
+# Noyzi website
+
+The website, documentation, gallery, and [examples](https://noyzi.dev/examples) for Noyzi.
 
 # Getting Started
 

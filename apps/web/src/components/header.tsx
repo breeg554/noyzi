@@ -45,6 +45,13 @@ function Header() {
 					>
 						Docs
 					</Link>
+					<Link
+						to="/examples"
+						onClick={playNavHome}
+						className="text-muted-foreground transition-colors hover:text-foreground data-[status=active]:text-foreground"
+					>
+						Examples
+					</Link>
 				</nav>
 
 				<div className="flex items-center">

@@ -13,6 +13,7 @@
 <p align="center">
   <a href="https://noyzi.dev">Website</a> ·
   <a href="https://noyzi.dev/docs">Docs</a> ·
+  <a href="https://noyzi.dev/examples">Examples</a> ·
   <a href="https://www.npmjs.com/package/@noyzi/core">npm</a> ·
   <a href="https://github.com/breeg554/noyzi">GitHub</a>
 </p>
