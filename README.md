@@ -17,7 +17,7 @@
   <a href="https://github.com/breeg554/noyzi">GitHub</a>
 </p>
 
-![Noyzi examples](./apps/web/public/screenshot.webp)
+![Noyzi examples](./apps/web/public/og.png)
 
 ## Packages
 
