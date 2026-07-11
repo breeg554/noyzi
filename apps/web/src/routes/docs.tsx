@@ -9,9 +9,17 @@ import {
 	CollapsibleTrigger,
 } from "#/components/ui/collapsible.tsx";
 import { DOC_PACKAGES, type DocEntry, entriesForPackage } from "#/lib/docs.ts";
+import { createMeta } from "#/lib/meta.ts";
 
 export const Route = createFileRoute("/docs")({
 	component: DocsPage,
+	head: () =>
+		createMeta({
+			title: "Docs",
+			description:
+				"Get started with Noyzi. Installation, usage, and API reference.",
+			path: "/docs",
+		}),
 });
 
 const GET_STARTED_EXAMPLE = `import { NoyziGradient } from "@noyzi/react";

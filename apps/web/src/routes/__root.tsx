@@ -9,6 +9,7 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
 import { Header } from "#/components/header.tsx";
 import { Toaster } from "#/components/ui/sonner.tsx";
+import { createMeta } from "#/lib/meta.ts";
 import appCss from "../styles.css?url";
 
 const themeScript = `(function(){try{var t=localStorage.getItem("theme");var d=t?t==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;if(d)document.documentElement.classList.add("dark")}catch(e){}})();`;
@@ -17,18 +18,7 @@ export const Route = createRootRouteWithContext<{
 	queryClient: QueryClient;
 }>()({
 	head: () => ({
-		meta: [
-			{
-				charSet: "utf-8",
-			},
-			{
-				name: "viewport",
-				content: "width=device-width, initial-scale=1",
-			},
-			{
-				title: "Noyzi",
-			},
-		],
+		...createMeta(),
 		links: [
 			{
 				rel: "stylesheet",

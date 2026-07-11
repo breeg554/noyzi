@@ -12,11 +12,16 @@ import {
 	resolveGalleryOptions,
 } from "#/lib/gallery-options.ts";
 import { gradientsQuery } from "#/lib/gradients.ts";
+import { createMeta } from "#/lib/meta.ts";
 import { cn } from "#/lib/utils.ts";
 
 export const Route = createFileRoute("/")({
 	component: PreviewPage,
 	validateSearch: parseGallerySearch,
+	head: () =>
+		createMeta({
+			title: "Noyzi — Mesh gradients from any seed",
+		}),
 	loader: async ({ context }) => {
 		await context.queryClient.prefetchInfiniteQuery(gradientsQuery);
 	},
