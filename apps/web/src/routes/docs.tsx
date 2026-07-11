@@ -5,6 +5,7 @@ import { CodeBlock } from "#/components/code-block.tsx";
 import { DocPreview } from "#/components/doc-preview.tsx";
 import { FadeIn } from "#/components/fade-in.tsx";
 import { InstallBlock } from "#/components/install-block.tsx";
+import { OutputLab } from "#/components/output-lab.tsx";
 import {
 	Collapsible,
 	CollapsibleContent,
@@ -62,9 +63,28 @@ function DocsPage() {
 							))}
 						</section>
 					))}
+
+					<OutputLabSection />
 				</main>
 			</FadeIn>
 		</div>
+	);
+}
+
+function OutputLabSection() {
+	return (
+		<section id="output-lab" className="scroll-mt-20 border-b py-16">
+			<h2 className="font-semibold text-3xl tracking-tighter">Output lab</h2>
+			<p className="mt-4 max-w-2xl text-muted-foreground text-sm leading-relaxed">
+				Compare the same gradient across every renderer. CSS is the lightest but
+				does not include the noise warp; SVG, React, canvas, and raster outputs
+				share the reference artwork. Raster weight varies by seed, dimensions,
+				quality, and browser encoder.
+			</p>
+			<div className="mt-6">
+				<OutputLab />
+			</div>
+		</section>
 	);
 }
 
@@ -189,6 +209,12 @@ function PackagesSidebar() {
 					</CollapsibleContent>
 				</Collapsible>
 			))}
+			<AnchorLink
+				id="output-lab"
+				className="font-mono text-muted-foreground text-xs transition-colors hover:text-foreground"
+			>
+				Output lab
+			</AnchorLink>
 		</nav>
 	);
 }
