@@ -1,5 +1,7 @@
 export type DocPackage = "@noyzi/core" | "@noyzi/react";
 
+export type DocPreviewKind = "palette";
+
 export interface DocEntry {
 	/** Anchor id, e.g. "generate". */
 	id: string;
@@ -14,6 +16,8 @@ export interface DocEntry {
 	note?: string;
 	/** Usage example. */
 	example?: string;
+	/** Optional interactive preview rendered after the example. */
+	preview?: DocPreviewKind;
 }
 
 export const DOC_ENTRIES: DocEntry[] = [
@@ -62,6 +66,7 @@ isSeedHash("ada@example.com"); // false`,
 		example: `const [background, ...accents] = paletteFromSeed("ada");
 background.hex; // "#1b2a4a"
 background.oklch; // { l, c, h }`,
+		preview: "palette",
 	},
 	{
 		id: "oklchtohex",

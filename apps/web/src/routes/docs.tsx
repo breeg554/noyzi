@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronDown, Link as LinkIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { CodeBlock } from "#/components/code-block.tsx";
+import { DocPreview } from "#/components/doc-preview.tsx";
 import { FadeIn } from "#/components/fade-in.tsx";
 import {
 	Collapsible,
@@ -202,6 +203,8 @@ function MethodSection({ entry }: { entry: DocEntry }) {
 					code={entry.example}
 				/>
 			) : null}
+
+			{entry.preview ? <DocPreview className="mt-4" /> : null}
 
 			{entry.note ? (
 				<p className="mt-4 max-w-2xl text-muted-foreground text-sm leading-relaxed">
