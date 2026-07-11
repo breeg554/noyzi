@@ -12,6 +12,7 @@ on:
           - patch
           - minor
           - major
+          - retry
 
 permissions:
   contents: write
@@ -65,13 +66,15 @@ jobs:
       - name: Build project
         run: bun run build
 
-      - name: Bump package versions
+      - name: Select package version
         id: version
         env:
           BUMP: ${{ inputs.bump }}
         run: |
-          (cd packages/core && bun pm version "$BUMP" --no-git-tag-version --force)
-          (cd packages/react && bun pm version "$BUMP" --no-git-tag-version --force)
+          if [ "$BUMP" != "retry" ]; then
+            (cd packages/core && bun pm version "$BUMP" --no-git-tag-version --force)
+            (cd packages/react && bun pm version "$BUMP" --no-git-tag-version --force)
+          fi
           CORE_VERSION="$(node -p "require('./packages/core/package.json').version")"
           REACT_VERSION="$(node -p "require('./packages/react/package.json').version")"
           test "$CORE_VERSION" = "$REACT_VERSION"
@@ -85,6 +88,7 @@ jobs:
           (cd packages/react && bun pm pack --destination ../../release)
 
       - name: Commit and tag release
+        if: inputs.bump != 'retry'
         env:
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           VERSION: ${{ steps.version.outputs.version }}
@@ -100,13 +104,23 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           VERSION: ${{ steps.version.outputs.version }}
-        run: npm publish "release/noyzi-core-$VERSION.tgz" --access public
+        run: |
+          if npm view "@noyzi/core@$VERSION" version >/dev/null 2>&1; then
+            echo "@noyzi/core@$VERSION is already published."
+          else
+            npm publish "./release/noyzi-core-$VERSION.tgz" --access public
+          fi
 
       - name: Publish React
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           VERSION: ${{ steps.version.outputs.version }}
-        run: npm publish "release/noyzi-react-$VERSION.tgz" --access public
+        run: |
+          if npm view "@noyzi/react@$VERSION" version >/dev/null 2>&1; then
+            echo "@noyzi/react@$VERSION is already published."
+          else
+            npm publish "./release/noyzi-react-$VERSION.tgz" --access public
+          fi
 
       - name: Write summary
         env:
