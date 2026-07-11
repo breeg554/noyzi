@@ -333,13 +333,13 @@ function BrandSystem() {
 		<div className="grid grid-cols-[0.82fr_1.18fr] gap-3 sm:gap-4">
 			<div className="flex aspect-square items-center justify-center rounded-xl border border-border/70 bg-card">
 				<NoyziGradient
-					seed="serein"
+					seed={125}
 					className="size-24 rounded-[26%] sm:size-32"
 				/>
 			</div>
 			<div className="relative row-span-2 min-h-80 overflow-hidden rounded-xl border border-border/70">
 				<NoyziGradient
-					seed="serein"
+					seed={33}
 					artwork={{ width: 500, height: 760 }}
 					className="absolute inset-0 shadow-none"
 				/>
@@ -354,7 +354,7 @@ function BrandSystem() {
 			</div>
 			<div className="relative flex min-h-32 flex-col justify-between overflow-hidden rounded-xl border border-border/70 bg-card p-4 sm:p-5">
 				<NoyziGradient
-					seed="serein"
+					seed={99}
 					className="absolute -right-8 -bottom-8 size-28 rounded-full opacity-90 shadow-none"
 				/>
 				<span className="relative font-mono text-[9px] text-muted-foreground">
@@ -379,8 +379,10 @@ function FullPageExample() {
 				artwork={{ width: 1600, height: 900 }}
 				className="absolute inset-0 shadow-none"
 			/>
+			<div className="absolute inset-0 bg-black/15" />
+			<div className="absolute inset-0 bg-linear-to-t from-black/55 via-transparent to-black/25" />
 
-			<div className="relative flex h-full flex-col justify-between p-5 text-white [text-shadow:0_1px_12px_rgb(0_0_0/0.35)] sm:p-8 lg:p-10">
+			<div className="relative flex h-full flex-col justify-between p-5 text-white sm:p-8 lg:p-10">
 				<div className="flex items-center justify-between border-white/35 border-b pb-4">
 					<span className="font-semibold text-sm tracking-tight sm:text-base">
 						Elsewhere
