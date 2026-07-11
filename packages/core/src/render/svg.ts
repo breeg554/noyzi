@@ -47,7 +47,19 @@ export function toSvg(spec: GradientSpec, options: SvgOptions = {}): string {
 		blobLayer = `<g filter="url(#${id})">${blobLayer}</g>`;
 	}
 
-	const content = `<rect width="${width}" height="${height}" fill="${spec.background.hex}"/>${blobLayer}`;
+	let vignetteLayer = "";
+	if (spec.vignette) {
+		const id = `${uid}-v`;
+		defs.push(
+			`<radialGradient id="${id}" cx="0.5" cy="0.5" r="0.7">` +
+				`<stop offset="0.6" stop-color="#000" stop-opacity="0"/>` +
+				`<stop offset="1" stop-color="#000" stop-opacity="${fmt(spec.vignette.strength, 4)}"/>` +
+				`</radialGradient>`,
+		);
+		vignetteLayer = `<rect width="${width}" height="${height}" fill="url(#${id})"/>`;
+	}
+
+	const content = `<rect width="${width}" height="${height}" fill="${spec.background.hex}"/>${blobLayer}${vignetteLayer}`;
 
 	return (
 		`<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">` +

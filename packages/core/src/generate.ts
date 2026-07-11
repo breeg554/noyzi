@@ -18,12 +18,17 @@ export interface WarpSpec {
 	scale: number;
 }
 
+export interface VignetteSpec {
+	strength: number;
+}
+
 export interface GradientSpec {
 	version: 1;
 	seed: string;
 	background: ColorStop;
 	blobs: GradientBlob[];
 	warp: WarpSpec | null;
+	vignette: VignetteSpec | null;
 }
 
 export type Layout = "linear" | "orbit" | "scatter";
@@ -32,6 +37,7 @@ export interface GenerateOptions {
 	colors?: number;
 	layout?: Layout;
 	warp?: false | Partial<Omit<WarpSpec, "seed">>;
+	vignette?: false | Partial<VignetteSpec>;
 }
 
 function clamp(value: number, min: number, max: number): number {
@@ -113,11 +119,17 @@ export function generate(
 					scale: round(options.warp?.scale ?? warpScale),
 				};
 
+	const vignette: VignetteSpec | null =
+		options.vignette === false
+			? null
+			: { strength: round(options.vignette?.strength ?? 0.18) };
+
 	return {
 		version: 1,
 		seed: normalizeSeed(seed),
 		background: palette[0] as ColorStop,
 		blobs,
 		warp,
+		vignette,
 	};
 }

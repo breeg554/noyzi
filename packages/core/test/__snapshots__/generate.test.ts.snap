@@ -79,6 +79,9 @@ exports[`generate spec is stable across releases (frozen snapshot) 1`] = `
   ],
   "seed": "noyzi",
   "version": 1,
+  "vignette": {
+    "strength": 0.18,
+  },
   "warp": {
     "frequency": 0.004,
     "scale": 0.1208,

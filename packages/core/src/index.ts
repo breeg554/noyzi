@@ -5,6 +5,7 @@ export type {
 	GradientBlob,
 	GradientSpec,
 	Layout,
+	VignetteSpec,
 	WarpSpec,
 } from "./generate.ts";
 export { generate } from "./generate.ts";

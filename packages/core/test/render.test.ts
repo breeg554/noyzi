@@ -17,10 +17,10 @@ describe("toSvg", () => {
 		expect(svg).toContain('viewBox="0 0 400 300"');
 	});
 
-	test("contains one radial gradient per blob", () => {
+	test("contains one radial gradient per blob plus vignette", () => {
 		const spec = generate("count");
 		const svg = toSvg(spec);
-		expect(svg.match(/<radialGradient/g)).toHaveLength(spec.blobs.length);
+		expect(svg.match(/<radialGradient/g)).toHaveLength(spec.blobs.length + 1);
 	});
 
 	test("includes displacement warp with spec seed", () => {
@@ -49,6 +49,34 @@ describe("toSvg", () => {
 		expect(idOf(a)).toBeDefined();
 		expect(idOf(a)).not.toBe(idOf(b));
 	});
+
+	test("vignette is on by default", () => {
+		const spec = generate("dirty");
+		expect(spec.vignette).toEqual({ strength: 0.18 });
+		const svg = toSvg(spec);
+		expect(svg).toContain('stop-color="#000" stop-opacity="0.18"');
+	});
+
+	test("vignette can be disabled", () => {
+		const svg = toSvg(generate("clean", { vignette: false }));
+		expect(svg).not.toContain('stop-color="#000"');
+	});
+
+	test("vignette accepts custom strength", () => {
+		const svg = toSvg(generate("dirty", { vignette: { strength: 0.3 } }));
+		expect(svg).toContain('stop-opacity="0.3"');
+	});
+
+	test("vignette does not change blob geometry", () => {
+		const clean = generate("stable", { vignette: false });
+		const dirty = generate("stable");
+		expect(dirty.blobs).toEqual(clean.blobs);
+		expect(dirty.warp).toEqual(clean.warp);
+	});
+
+	test("dirty svg output is stable (frozen snapshot)", () => {
+		expect(toSvg(generate("noyzi"))).toMatchSnapshot("dirty-default");
+	});
 });
 
 describe("toSvgDataUri", () => {
@@ -75,15 +103,25 @@ describe("toCss", () => {
 		expect(toCss(spec).backgroundColor).toBe(spec.background.hex);
 	});
 
-	test("contains one layer per blob, darkest first", () => {
+	test("contains one layer per blob plus vignette, darkest blob first", () => {
 		const spec = generate("layers");
 		const css = toCss(spec);
 		expect(css.backgroundImage.match(/radial-gradient/g)).toHaveLength(
-			spec.blobs.length,
+			spec.blobs.length + 1,
 		);
 		const lastBlob = spec.blobs[spec.blobs.length - 1];
 		expect(css.backgroundImage.indexOf(lastBlob?.color.hex ?? "")).toBeLessThan(
 			css.backgroundImage.indexOf(spec.blobs[0]?.color.hex ?? ""),
 		);
+	});
+
+	test("includes vignette layer by default", () => {
+		const css = toCss(generate("dirty"));
+		expect(css.backgroundImage).toContain("rgba(0,0,0,0.18) 100%)");
+	});
+
+	test("omits vignette layer when disabled", () => {
+		const css = toCss(generate("clean", { vignette: false }));
+		expect(css.backgroundImage).not.toContain("rgba(0,0,0");
 	});
 });

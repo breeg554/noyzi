@@ -28,17 +28,24 @@ export const DOC_ENTRIES: DocEntry[] = [
 		signature:
 			"function generate(seed: Seed, options?: GenerateOptions): GradientSpec",
 		description:
-			"Seed in, GradientSpec out: palette, layout (linear | orbit | scatter), 1–7 blobs, optional noise warp. Plain serializable object — feed it to any renderer.",
-		note: "colors clamps to 2–8 (default 6). Warp is what makes it a mesh: seeded fractal noise displaces the blob pixels (SVG feTurbulence + feDisplacementMap), smearing perfect circles into organic, fluid shapes. warp: false keeps the clean radial circles instead — the same look toCss() produces.",
+			"Seed in, GradientSpec out: palette, layout (linear | orbit | scatter), 1–7 blobs, optional noise warp and vignette. Plain serializable object — feed it to any renderer.",
+		note: "colors clamps to 2–8 (default 6). Warp is what makes it a mesh: seeded fractal noise displaces the blob pixels (SVG feTurbulence + feDisplacementMap), smearing perfect circles into organic, fluid shapes. warp: false keeps the clean radial circles instead. vignette darkens the edges — on by default, disable with false or tweak with { strength }.",
 		example: `import { generate, seedHash } from "@noyzi/core";
 
-// GradientSpec: { version, seed, background, blobs, warp }
+// GradientSpec: { version, seed, background, blobs, warp, vignette }
 const spec = generate(seedHash("ada"));
 spec.background.hex; // "#1b2a4a"
 spec.blobs.length; // 1-7 positioned color blobs
 
-// without warp: blobs stay perfect circles — flat, geometric
-const flat = generate("ada", { colors: 4, warp: false });`,
+// clean look: perfect circles, no vignette
+const flat = generate("ada", {
+  colors: 4,
+  warp: false,
+  vignette: false,
+});
+
+// or a heavier vignette
+const moody = generate("ada", { vignette: { strength: 0.3 } });`,
 	},
 	{
 		id: "seedhash",
@@ -88,7 +95,7 @@ background.oklch; // { l, c, h }`,
 		pkg: "@noyzi/core",
 		signature: "function toCss(spec: GradientSpec): CssOutput",
 		description:
-			"Spec → backgroundColor + stacked radial-gradient layers. Lightest output, no warp — good for placeholders and accents.",
+			"Spec → backgroundColor + stacked background layers: radial-gradient blobs plus the vignette overlay. Lightest output, no warp — good for placeholders and accents.",
 		example: `const { backgroundColor, backgroundImage } = toCss(generate("ada"));
 
 <div style={{ backgroundColor, backgroundImage }} />`,
