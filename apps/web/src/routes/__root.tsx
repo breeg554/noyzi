@@ -7,6 +7,7 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
+import { Footer } from "#/components/footer.tsx";
 import { Header } from "#/components/header.tsx";
 import { Toaster } from "#/components/ui/sonner.tsx";
 import { createMeta } from "#/lib/meta.ts";
@@ -44,9 +45,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			<head>
 				<HeadContent />
 			</head>
-			<body>
+			<body className="flex min-h-screen flex-col">
 				<Header />
-				{children}
+				<div className="flex-1">{children}</div>
+				<Footer />
 				<Toaster />
 				<TanStackDevtools
 					config={{
