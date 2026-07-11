@@ -1,8 +1,9 @@
 import { NoyziGradient } from "@noyzi/react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
-import { useCopyGradientImage } from "#/components/gradient-card.tsx";
+import { useCopyGradientComponent } from "#/components/gradient-card.tsx";
 import { Button } from "#/components/ui/button.tsx";
+import { DEFAULT_GALLERY_OPTIONS } from "#/lib/gallery-options.ts";
 
 const INSTALL_COMMAND = "bun add @noyzi/core";
 const AVATAR_SEEDS = ["mesh", "gradient", "seed"];
@@ -45,13 +46,17 @@ export function Hero() {
 }
 
 function HeroAvatar({ seed }: { seed: string }) {
-	const { copy } = useCopyGradientImage(seed);
+	const { copy } = useCopyGradientComponent(
+		seed,
+		DEFAULT_GALLERY_OPTIONS,
+		"size-10 shrink-0 rounded-full ring-2 ring-background",
+	);
 
 	return (
 		<Button
 			variant="ghost"
 			onClick={copy}
-			aria-label={`Copy gradient for seed "${seed}"`}
+			aria-label={`Copy component for seed "${seed}"`}
 			className="relative size-auto cursor-pointer rounded-full p-0 hover:z-10 hover:scale-110 hover:bg-transparent dark:hover:bg-transparent"
 		>
 			<NoyziGradient
