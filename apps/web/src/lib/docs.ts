@@ -143,7 +143,7 @@ await drawToCanvas(generate("ada"), canvas, { width: 400, height: 400 });`,
 		signature:
 			"function toBlob(\n  spec: GradientSpec,\n  options?: RasterOptions & EncodeOptions,\n): Promise<Blob>",
 		description:
-			"Gradient → image Blob. WebP by default at quality 0.95 (~10x smaller than PNG for gradients); browsers without WebP encoding fall back to PNG — check blob.type. For clipboard, uploads, downloads. Browser-only.",
+			"Gradient → image Blob. WebP by default at quality 0.9 (~10x smaller than PNG for gradients); browsers without WebP encoding fall back to PNG — check blob.type. For clipboard, uploads, downloads. Browser-only.",
 		example: `const blob = await toBlob(generate("ada"), { width: 1000 });
 
 // ClipboardItem requires PNG — opt out of WebP:
@@ -159,7 +159,7 @@ await navigator.clipboard.write([
 		signature:
 			"function toDataUrl(\n  spec: GradientSpec,\n  options?: RasterOptions & EncodeOptions,\n): Promise<string>",
 		description:
-			"Gradient → raster data URL. WebP by default at quality 0.95, PNG fallback where unsupported — check the data:image/... prefix. Browser-only.",
+			"Gradient → raster data URL. WebP by default at quality 0.9, PNG fallback where unsupported — check the data:image/... prefix. Browser-only.",
 		example: `const url = await toDataUrl(generate("ada"));
 const anchor = document.createElement("a");
 anchor.href = url;

@@ -22,7 +22,7 @@ import {
 import { cn } from "#/lib/utils.ts";
 
 const EXPORT_SIZE = 2048;
-const EXPORT_QUALITY = 0.85;
+const EXPORT_QUALITY = 0.9;
 
 function gradientBlob(
 	seed: string,
