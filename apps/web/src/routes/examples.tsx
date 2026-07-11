@@ -1,10 +1,11 @@
 import { NoyziGradient } from "@noyzi/react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Play } from "lucide-react";
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { FadeIn } from "#/components/fade-in.tsx";
-import { useCopyGradientImage } from "#/components/gradient-card.tsx";
+import { useCopyGradientComponent } from "#/components/gradient-card.tsx";
 import { Button } from "#/components/ui/button.tsx";
+import { DEFAULT_GALLERY_OPTIONS } from "#/lib/gallery-options.ts";
 import { createMeta } from "#/lib/meta.ts";
 import { cn } from "#/lib/utils.ts";
 
@@ -27,16 +28,13 @@ const SHAPES = [
 	{ seed: "diamond", className: "rotate-45 rounded-xl" },
 	{
 		seed: "hexagon",
-		style: {
-			clipPath: "polygon(25% 7%,75% 7%,100% 50%,75% 93%,25% 93%,0 50%)",
-		},
+		className:
+			"[clip-path:polygon(25%_7%,75%_7%,100%_50%,75%_93%,25%_93%,0_50%)]",
 	},
 	{
 		seed: "spark",
-		style: {
-			clipPath:
-				"polygon(50% 0,61% 36%,100% 50%,61% 64%,50% 100%,39% 64%,0 50%,39% 36%)",
-		},
+		className:
+			"[clip-path:polygon(50%_0,61%_36%,100%_50%,61%_64%,50%_100%,39%_64%,0_50%,39%_36%)]",
 	},
 	{
 		seed: "pebble",
@@ -45,7 +43,6 @@ const SHAPES = [
 ] satisfies Array<{
 	seed: string;
 	className?: string;
-	style?: CSSProperties;
 }>;
 
 const TEAM = [
@@ -96,7 +93,6 @@ function ExamplesPage() {
 								<CopyableGradient
 									seed={shape.seed}
 									className={cn("size-20", shape.className)}
-									style={shape.style}
 								/>
 								<span className="font-mono text-[10px] text-muted-foreground">
 									{String(index + 1).padStart(2, "0")}
@@ -105,7 +101,7 @@ function ExamplesPage() {
 						))}
 					</div>
 					<p className="mt-3 text-center text-[11px] text-muted-foreground">
-						Select any shape to copy its artwork
+						Select any shape to copy its component
 					</p>
 				</section>
 			</FadeIn>
@@ -193,26 +189,27 @@ function ExamplesPage() {
 function CopyableGradient({
 	seed,
 	className,
-	style,
 }: {
 	seed: string;
 	className?: string;
-	style?: CSSProperties;
 }) {
-	const { copy } = useCopyGradientImage(seed);
+	const { copy } = useCopyGradientComponent(
+		seed,
+		DEFAULT_GALLERY_OPTIONS,
+		className,
+	);
 
 	return (
 		<button
 			type="button"
 			onClick={copy}
-			aria-label={`Copy gradient for ${seed}`}
+			aria-label={`Copy component for ${seed}`}
 			className="cursor-copy transition-transform duration-300 ease-out hover:scale-110 focus-visible:scale-110"
 		>
 			<NoyziGradient
 				seed={seed}
 				title={seed}
 				className={cn("shadow-[0_10px_24px_-10px_rgba(0,0,0,0.5)]", className)}
-				style={style}
 			/>
 		</button>
 	);

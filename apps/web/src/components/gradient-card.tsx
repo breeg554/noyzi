@@ -69,7 +69,11 @@ export function useCopyGradientImage(seed: string, options?: GenerateOptions) {
 	return { copied, copy };
 }
 
-function componentSnippet(seed: string, options: GalleryOptions): string {
+function componentSnippet(
+	seed: string,
+	options: GalleryOptions,
+	className = `size-32 ${ROUNDED_CLASS[options.rounded]}`,
+): string {
 	const optionParts: string[] = [];
 	if (options.colors !== DEFAULT_GALLERY_OPTIONS.colors) {
 		optionParts.push(`colors: ${options.colors}`);
@@ -85,21 +89,21 @@ function componentSnippet(seed: string, options: GalleryOptions): string {
 	if (optionParts.length > 0) {
 		lines.push(`  options={{ ${optionParts.join(", ")} }}`);
 	}
-	lines.push(
-		`  className=${JSON.stringify(`size-32 ${ROUNDED_CLASS[options.rounded]}`)}`,
-		"/>",
-	);
+	lines.push(`  className=${JSON.stringify(className)}`, "/>");
 	return lines.join("\n");
 }
 
 export function useCopyGradientComponent(
 	seed: string,
 	options: GalleryOptions,
+	className?: string,
 ) {
 	const [copied, setCopied] = useState(false);
 
 	const copy = async () => {
-		await navigator.clipboard.writeText(componentSnippet(seed, options));
+		await navigator.clipboard.writeText(
+			componentSnippet(seed, options, className),
+		);
 		const spec = generate(seedHash(seed), toGenerateOptions(options));
 		const { backgroundColor, backgroundImage } = toCss(spec);
 		toast(
