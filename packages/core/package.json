@@ -1,6 +1,6 @@
 {
 	"name": "@noyzi/core",
-	"version": "0.1.2",
+	"version": "0.1.3",
 	"description": "Seed-based deterministic gradient generator. Every seed maps to the same soft mesh gradient — forever.",
 	"author": {
 		"name": "breeg554",
