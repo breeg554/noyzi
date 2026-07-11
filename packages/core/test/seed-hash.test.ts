@@ -6,15 +6,26 @@ describe("seedHash", () => {
 		expect(seedHash("dawid@example.com")).toBe(seedHash("dawid@example.com"));
 	});
 
-	test("output is 8 lowercase base36 chars", () => {
-		for (const input of ["", "a", "hello world", "user-123", 42, 99999999]) {
+	test("output is 8 lowercase base36 chars for non-integer input", () => {
+		for (const input of ["", "a", "hello world", "user-123", "1.5"]) {
 			expect(seedHash(input)).toMatch(/^[0-9a-z]{8}$/);
 		}
+	});
+
+	test("integer-like seeds pass through as their string form", () => {
+		expect(seedHash(42)).toBe("42");
+		expect(seedHash("42")).toBe("42");
+		expect(seedHash(-7)).toBe("-7");
+		expect(seedHash(99999999)).toBe("99999999");
 	});
 
 	test("is idempotent for already-hashed input", () => {
 		const hashed = seedHash("dawid@example.com");
 		expect(seedHash(hashed)).toBe(hashed);
+	});
+
+	test("is idempotent for integer-like input", () => {
+		expect(seedHash(seedHash(42))).toBe(seedHash(42));
 	});
 
 	test("isSeedHash detects hashed values", () => {

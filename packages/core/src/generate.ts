@@ -1,4 +1,8 @@
-import { type ColorStop, generatePalette } from "./palette.ts";
+import {
+	type ColorStop,
+	generatePalette,
+	sequentialBaseHue,
+} from "./palette.ts";
 import { createRng, normalizeSeed, type Seed } from "./prng.ts";
 
 export interface GradientBlob {
@@ -46,7 +50,9 @@ export function generate(
 ): GradientSpec {
 	const rng = createRng(seed);
 	const colorCount = clamp(Math.floor(options.colors ?? 6), 2, 8);
-	const palette = generatePalette(rng, colorCount);
+	// Integer-like seeds (sequential ids) get golden-angle-spread base hues
+	// so adjacent seeds look maximally different.
+	const palette = generatePalette(rng, colorCount, sequentialBaseHue(seed));
 
 	const layouts: Layout[] = ["linear", "orbit", "scatter"];
 	const layout = options.layout ?? rng.pick(layouts);

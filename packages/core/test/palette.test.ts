@@ -1,11 +1,23 @@
 import { describe, expect, test } from "bun:test";
 import {
 	generate,
+	isSequentialSeed,
 	paletteFromSeed,
 	seedHash,
 	toCanvas,
 	toDataUrl,
 } from "../src/index.ts";
+
+describe("isSequentialSeed", () => {
+	test("detects integer-like seeds", () => {
+		expect(isSequentialSeed(42)).toBe(true);
+		expect(isSequentialSeed("42")).toBe(true);
+		expect(isSequentialSeed(-7)).toBe(true);
+		expect(isSequentialSeed("meshy")).toBe(false);
+		expect(isSequentialSeed("user-42")).toBe(false);
+		expect(isSequentialSeed(1.5)).toBe(false);
+	});
+});
 
 describe("paletteFromSeed", () => {
 	test("is deterministic", () => {

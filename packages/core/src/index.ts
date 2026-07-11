@@ -11,7 +11,7 @@ export { generate } from "./generate.ts";
 export type { ColorStop } from "./palette.ts";
 export { paletteFromSeed } from "./palette.ts";
 export type { Seed } from "./prng.ts";
-export { isSeedHash, seedHash } from "./prng.ts";
+export { isSeedHash, isSequentialSeed, seedHash } from "./prng.ts";
 export type { CssOutput } from "./render/css.ts";
 export { toCss } from "./render/css.ts";
 export type { EncodeOptions, RasterOptions } from "./render/raster.ts";

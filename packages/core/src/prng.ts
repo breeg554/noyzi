@@ -21,8 +21,25 @@ export function isSeedHash(value: Seed): boolean {
 	return typeof value === "string" && /^[0-9a-z]{8}$/.test(value);
 }
 
-/** Hashes any string or number into a short seed like `"f12f1h6x"`. Idempotent for already-hashed values. */
+/**
+ * Whether a seed is integer-like (`42` or `"42"`). Such seeds are kept as-is
+ * by `seedHash` so sequential ids get golden-angle-spread hues.
+ */
+export function isSequentialSeed(seed: Seed): boolean {
+	const str = normalizeSeed(seed);
+	return /^-?\d{1,15}$/.test(str) && Number.isSafeInteger(Number(str));
+}
+
+/**
+ * Normalizes any string or number into a seed. Integer-like seeds (`42` or
+ * `"42"`) pass through as their string form so sequential ids keep their
+ * golden-angle hue spread; everything else is hashed into a short seed like
+ * `"f12f1h6x"`. Idempotent.
+ */
 export function seedHash(input: Seed): string {
+	if (isSequentialSeed(input)) {
+		return normalizeSeed(input);
+	}
 	if (isSeedHash(input)) {
 		return input as string;
 	}

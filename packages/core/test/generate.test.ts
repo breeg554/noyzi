@@ -74,4 +74,28 @@ describe("generate", () => {
 			}
 		}
 	});
+
+	test("sequential integer seeds get spread base hues", () => {
+		const circularDistance = (a: number, b: number) => {
+			const d = Math.abs(a - b) % 360;
+			return Math.min(d, 360 - d);
+		};
+		// Background hue = base hue + jitter in [-16, 16]; golden-angle spread
+		// guarantees adjacent ids stay far apart even with jitter.
+		for (let n = 1; n < 20; n++) {
+			const a = generate(n).background.oklch.h;
+			const b = generate(n + 1).background.oklch.h;
+			expect(circularDistance(a, b)).toBeGreaterThan(60);
+		}
+	});
+
+	test("integer seeds follow the golden angle", () => {
+		const GOLDEN_ANGLE = 137.50776405003785;
+		for (const n of [1, 7, 42, 1000]) {
+			const expected = ((n * GOLDEN_ANGLE) % 360) + (n < 0 ? 360 : 0);
+			const actual = generate(n).background.oklch.h;
+			const d = Math.abs(actual - expected) % 360;
+			expect(Math.min(d, 360 - d)).toBeLessThanOrEqual(16);
+		}
+	});
 });
