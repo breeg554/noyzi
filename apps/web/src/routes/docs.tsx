@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronDown, Link as LinkIcon } from "lucide-react";
+import { ChevronDown, ExternalLink, Link as LinkIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { CodeBlock } from "#/components/code-block.tsx";
 import { DocPreview } from "#/components/doc-preview.tsx";
@@ -10,7 +10,13 @@ import {
 	CollapsibleContent,
 	CollapsibleTrigger,
 } from "#/components/ui/collapsible.tsx";
-import { DOC_PACKAGES, type DocEntry, entriesForPackage } from "#/lib/docs.ts";
+import { playExternalLink } from "#/lib/click-sound.ts";
+import {
+	DOC_PACKAGES,
+	type DocEntry,
+	type DocPackage,
+	entriesForPackage,
+} from "#/lib/docs.ts";
 import { createMeta } from "#/lib/meta.ts";
 
 export const Route = createFileRoute("/docs")({
@@ -30,6 +36,11 @@ export function Avatar({ email }: { email: string }) {
 	return <NoyziGradient seed={email} className="size-10 rounded-full" />;
 }`;
 
+const PACKAGE_URLS: Record<DocPackage, string> = {
+	"@noyzi/core": "https://www.npmjs.com/package/@noyzi/core",
+	"@noyzi/react": "https://www.npmjs.com/package/@noyzi/react",
+};
+
 function DocsPage() {
 	return (
 		<div className="mx-auto flex w-full max-w-5xl gap-10 px-4 pt-8 pb-20 sm:px-6">
@@ -44,7 +55,7 @@ function DocsPage() {
 					{DOC_PACKAGES.map((pkg) => (
 						<section key={pkg}>
 							<h2 className="mt-16 border-b pb-3 font-mono text-muted-foreground text-xs tracking-wide">
-								{pkg}
+								<PackageLink pkg={pkg} />
 							</h2>
 							{entriesForPackage(pkg).map((entry) => (
 								<MethodSection key={entry.id} entry={entry} />
@@ -74,13 +85,13 @@ function GetStarted() {
 			</h2>
 			<ul className="mt-4 flex max-w-2xl flex-col gap-3 text-muted-foreground text-sm leading-relaxed">
 				<li>
-					<code className="font-mono text-foreground">@noyzi/core</code> —
-					framework-agnostic, zero-dependency engine: seed →{" "}
+					<PackageLink pkg="@noyzi/core" /> — framework-agnostic,
+					zero-dependency engine: seed →{" "}
 					<code className="font-mono">GradientSpec</code> → CSS / SVG / canvas /
 					image. Runs anywhere.
 				</li>
 				<li>
-					<code className="font-mono text-foreground">@noyzi/react</code> —{" "}
+					<PackageLink pkg="@noyzi/react" /> —{" "}
 					<code className="font-mono">&lt;NoyziGradient /&gt;</code> on top:
 					SSR-safe, zero client JS.
 				</li>
@@ -103,6 +114,22 @@ function GetStarted() {
 				code={GET_STARTED_EXAMPLE}
 			/>
 		</section>
+	);
+}
+
+function PackageLink({ pkg }: { pkg: DocPackage }) {
+	return (
+		<a
+			href={PACKAGE_URLS[pkg]}
+			target="_blank"
+			rel="noreferrer"
+			aria-label={`${pkg} on npm`}
+			onClick={playExternalLink}
+			className="inline-flex items-center gap-1 font-mono text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
+		>
+			{pkg}
+			<ExternalLink className="size-3" />
+		</a>
 	);
 }
 

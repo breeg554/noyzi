@@ -5,6 +5,7 @@ import {
 	playBoop,
 	playClick,
 	playDeepClick,
+	playExternalLink,
 	playToggle,
 } from "#/lib/click-sound.ts";
 import { cn } from "#/lib/utils.ts";
@@ -54,7 +55,7 @@ function Button({
 }: React.ComponentProps<"button"> &
 	VariantProps<typeof buttonVariants> & {
 		asChild?: boolean;
-		sound?: "click" | "deep" | "toggle" | "boop";
+		sound?: "click" | "deep" | "toggle" | "boop" | "external";
 	}) {
 	const Comp = asChild ? Slot.Root : "button";
 
@@ -71,6 +72,8 @@ function Button({
 					playToggle();
 				} else if (sound === "boop") {
 					playBoop();
+				} else if (sound === "external") {
+					playExternalLink();
 				} else {
 					playClick();
 				}

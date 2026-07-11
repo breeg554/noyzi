@@ -184,6 +184,42 @@ export function playToggle() {
 	shimmer.stop(now + 0.08);
 }
 
+export function playExternalLink() {
+	if (typeof window === "undefined") {
+		return;
+	}
+	ctx ??= new AudioContext();
+	if (ctx.state === "suspended") {
+		void ctx.resume();
+	}
+
+	const now = ctx.currentTime;
+	const sweep = ctx.createOscillator();
+	const sweepGain = ctx.createGain();
+	const sweepPan = ctx.createStereoPanner();
+	sweep.type = "triangle";
+	sweep.frequency.setValueAtTime(760, now);
+	sweep.frequency.exponentialRampToValueAtTime(360, now + 0.08);
+	sweepGain.gain.setValueAtTime(0.0001, now);
+	sweepGain.gain.exponentialRampToValueAtTime(0.035, now + 0.006);
+	sweepGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.1);
+	sweepPan.pan.setValueAtTime(-0.2, now);
+	sweepPan.pan.linearRampToValueAtTime(0.35, now + 0.08);
+	sweep.connect(sweepGain).connect(sweepPan).connect(ctx.destination);
+	sweep.start(now);
+	sweep.stop(now + 0.11);
+
+	const tail = ctx.createOscillator();
+	const tailGain = ctx.createGain();
+	tail.type = "sine";
+	tail.frequency.setValueAtTime(980, now + 0.045);
+	tailGain.gain.setValueAtTime(0.009, now + 0.045);
+	tailGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.11);
+	tail.connect(tailGain).connect(ctx.destination);
+	tail.start(now + 0.045);
+	tail.stop(now + 0.12);
+}
+
 /**
  * Playful, cartoonish two-note "boo-dup" for the filters toggle. Nothing
  * like the other sounds: two round triangle-wave notes hopping up a fifth

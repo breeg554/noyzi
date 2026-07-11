@@ -1,7 +1,9 @@
 import { Link } from "@tanstack/react-router";
+import { Github } from "lucide-react";
 import { motion } from "motion/react";
 
 import { ThemeToggle } from "#/components/theme-toggle.tsx";
+import { Button } from "#/components/ui/button.tsx";
 import { playNavDocs, playNavHome } from "#/lib/click-sound.ts";
 
 function Header() {
@@ -45,7 +47,19 @@ function Header() {
 					</Link>
 				</nav>
 
-				<ThemeToggle />
+				<div className="flex items-center">
+					<Button asChild variant="ghost" size="icon" sound="external">
+						<a
+							href="https://github.com/breeg554/noyzi"
+							target="_blank"
+							rel="noreferrer"
+							aria-label="Noyzi on GitHub"
+						>
+							<Github />
+						</a>
+					</Button>
+					<ThemeToggle />
+				</div>
 			</div>
 		</motion.header>
 	);
