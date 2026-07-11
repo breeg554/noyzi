@@ -49,6 +49,26 @@ document.body.style.backgroundImage = `url("${image}")`;
 
 The same input and options always produce the same result—across sessions, devices, and servers.
 
+## API
+
+| Function | Returns | Description |
+| --- | --- | --- |
+| `generate(seed, options?)` | `GradientSpec` | Creates a deterministic gradient specification. Configure its color count, layout, warp, and vignette. |
+| `seedHash(input)` | `string` | Converts a string or number into a short, reusable seed. Sequential numeric IDs remain sequential. |
+| `isSeedHash(value)` | `boolean` | Checks whether a value already has the eight-character `seedHash` format. |
+| `isSequentialSeed(seed)` | `boolean` | Checks whether a seed is a safe integer or an integer-like string. |
+| `paletteFromSeed(seed, count?)` | `ColorStop[]` | Returns the exact deterministic color palette for a seed. The count is clamped from 2 to 8. |
+| `oklchToHex(color)` | `string` | Converts an OKLCH color to a clamped sRGB `#rrggbb` value. |
+| `toCss(spec)` | `CssOutput` | Produces `backgroundColor` and `backgroundImage` CSS properties. Includes vignette, but not warp. |
+| `toSvg(spec, options?)` | `string` | Renders the full gradient, including warp, as an SVG string. |
+| `toSvgDataUri(spec, options?)` | `string` | Renders an SVG data URI ready for an image source or CSS background. |
+| `drawToCanvas(spec, canvas, options?)` | `Promise<void>` | Draws the SVG renderer's output onto an existing browser canvas. |
+| `toCanvas(spec, options?)` | `Promise<HTMLCanvasElement>` | Creates and renders a new browser canvas, with optional dimensions and scale. |
+| `toBlob(spec, options?)` | `Promise<Blob>` | Encodes a browser raster image as WebP by default, with PNG or another supported MIME type available. |
+| `toDataUrl(spec, options?)` | `Promise<string>` | Encodes a browser raster image as a data URL. |
+
+See the [full API documentation](https://noyzi.dev/docs) for options, types, and examples.
+
 ## Pick your renderer
 
 ```ts
