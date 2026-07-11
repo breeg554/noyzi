@@ -1,7 +1,7 @@
 const defaults = {
 	title: "Noyzi",
 	description:
-		"Deterministic mesh gradients from any seed. Same seed, same gradient — every time.",
+		"Turn any email, username or id into a unique mesh gradient. Deterministic, SSR-safe, no stored assets.",
 	url: "https://noyzi.dev",
 	image: "https://noyzi.dev/og.png",
 };

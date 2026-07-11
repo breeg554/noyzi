@@ -8,6 +8,7 @@ import {
 	CollapsibleTrigger,
 } from "#/components/ui/collapsible.tsx";
 import { Slider } from "#/components/ui/slider.tsx";
+import { Switch } from "#/components/ui/switch.tsx";
 import { ToggleGroup, ToggleGroupItem } from "#/components/ui/toggle-group.tsx";
 import { playBoop } from "#/lib/click-sound.ts";
 import {
@@ -60,6 +61,12 @@ export function GalleryToolbar() {
 
 				<Separator />
 
+				<ControlLabel label="warp">
+					<WarpControl options={options} update={update} />
+				</ControlLabel>
+
+				<Separator />
+
 				<ControlLabel label="rounded">
 					<RoundedControl options={options} update={update} />
 				</ControlLabel>
@@ -90,6 +97,9 @@ export function GalleryToolbar() {
 						</MobileRow>
 						<MobileRow label="layout">
 							<LayoutControl options={options} update={update} />
+						</MobileRow>
+						<MobileRow label="warp">
+							<WarpControl options={options} update={update} />
 						</MobileRow>
 						<MobileRow label="rounded">
 							<RoundedControl options={options} update={update} />
@@ -171,6 +181,19 @@ function RoundedControl({ options, update }: ControlProps) {
 				</ToggleGroupItem>
 			))}
 		</ToggleGroup>
+	);
+}
+
+function WarpControl({ options, update }: ControlProps) {
+	return (
+		<Switch
+			checked={options.warp}
+			onCheckedChange={(warp) => {
+				playBoop();
+				update({ warp });
+			}}
+			aria-label="Noise warp"
+		/>
 	);
 }
 

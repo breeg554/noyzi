@@ -13,12 +13,14 @@ export interface GalleryOptions {
 	colors: number;
 	layout: LayoutOption;
 	rounded: RoundedOption;
+	warp: boolean;
 }
 
 export const DEFAULT_GALLERY_OPTIONS: GalleryOptions = {
 	colors: 6,
 	layout: "auto",
 	rounded: "md",
+	warp: true,
 };
 
 /** Search params mirror `GalleryOptions`, with defaults omitted from the URL. */
@@ -52,6 +54,9 @@ export function parseGallerySearch(
 	if (isRounded(search.rounded) && search.rounded !== "md") {
 		result.rounded = search.rounded;
 	}
+	if (search.warp === false || search.warp === "false") {
+		result.warp = false;
+	}
 
 	return result;
 }
@@ -72,6 +77,9 @@ export function toGallerySearch(options: GalleryOptions): GallerySearch {
 	if (options.rounded !== DEFAULT_GALLERY_OPTIONS.rounded) {
 		search.rounded = options.rounded;
 	}
+	if (options.warp !== DEFAULT_GALLERY_OPTIONS.warp) {
+		search.warp = options.warp;
+	}
 	return search;
 }
 
@@ -79,7 +87,8 @@ export function isDefaultGalleryOptions(options: GalleryOptions): boolean {
 	return (
 		options.colors === DEFAULT_GALLERY_OPTIONS.colors &&
 		options.layout === DEFAULT_GALLERY_OPTIONS.layout &&
-		options.rounded === DEFAULT_GALLERY_OPTIONS.rounded
+		options.rounded === DEFAULT_GALLERY_OPTIONS.rounded &&
+		options.warp === DEFAULT_GALLERY_OPTIONS.warp
 	);
 }
 
@@ -87,13 +96,14 @@ export function toGenerateOptions(options: GalleryOptions): GenerateOptions {
 	return {
 		colors: options.colors,
 		layout: options.layout === "auto" ? undefined : options.layout,
+		warp: options.warp ? undefined : false,
 	};
 }
 
 export const ROUNDED_CLASS: Record<RoundedOption, string> = {
 	none: "rounded-none",
-	sm: "rounded-sm",
-	md: "rounded-md",
-	xl: "rounded-xl",
+	sm: "rounded-lg",
+	md: "rounded-2xl",
+	xl: "rounded-[2.5rem]",
 	full: "rounded-full",
 };

@@ -50,12 +50,11 @@ export function CustomSeedCard({
 					options={generateOptions}
 					className={cn(
 						"size-56 shrink-0",
-						// Scaled-up radii for the large preview; defaults match the old rounded-xl.
 						{
 							none: "rounded-none",
-							sm: "rounded-md",
-							md: "rounded-xl",
-							xl: "rounded-3xl",
+							sm: "rounded-2xl",
+							md: "rounded-[2rem]",
+							xl: "rounded-[5rem]",
 							full: "rounded-full",
 						}[options.rounded],
 					)}

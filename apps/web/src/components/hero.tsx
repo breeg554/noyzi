@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { useCopyGradient } from "#/components/gradient-card.tsx";
 import { Button } from "#/components/ui/button.tsx";
 
-const INSTALL_COMMAND = "npm install @noyzi/react";
+const INSTALL_COMMAND = "bun add @noyzi/core";
 const AVATAR_SEEDS = ["mesh", "gradient", "seed"];
 
 export function Hero() {
@@ -20,9 +20,9 @@ export function Hero() {
 				Beautiful mesh gradients from any seed
 			</h1>
 
-			<p className="max-w-md text-pretty text-muted-foreground text-sm leading-relaxed sm:text-base">
-				Deterministic, SSR-safe gradient avatars for React. Same seed, same
-				gradient — every time.
+			<p className="max-w-xl text-balance text-muted-foreground text-sm leading-relaxed sm:text-base">
+				Turn any email, username or id into a unique gradient. Deterministic,
+				SSR-safe, no stored assets.
 			</p>
 
 			<Button

@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { CodeBlock } from "#/components/code-block.tsx";
 import { DocPreview } from "#/components/doc-preview.tsx";
 import { FadeIn } from "#/components/fade-in.tsx";
+import { InstallBlock } from "#/components/install-block.tsx";
 import {
 	Collapsible,
 	CollapsibleContent,
@@ -66,12 +67,7 @@ function GetStarted() {
 				assets.
 			</p>
 
-			<CodeBlock
-				className="mt-6"
-				label="Terminal"
-				lang="bash"
-				code={"npm install @noyzi/core @noyzi/react"}
-			/>
+			<InstallBlock className="mt-6" packages="@noyzi/core @noyzi/react" />
 
 			<h2 className="mt-10 font-semibold text-xl tracking-tight">
 				The packages
@@ -79,7 +75,7 @@ function GetStarted() {
 			<ul className="mt-4 flex max-w-2xl flex-col gap-3 text-muted-foreground text-sm leading-relaxed">
 				<li>
 					<code className="font-mono text-foreground">@noyzi/core</code> —
-					zero-dependency engine: seed →{" "}
+					framework-agnostic, zero-dependency engine: seed →{" "}
 					<code className="font-mono">GradientSpec</code> → CSS / SVG / canvas /
 					image. Runs anywhere.
 				</li>

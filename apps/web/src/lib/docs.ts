@@ -29,10 +29,15 @@ export const DOC_ENTRIES: DocEntry[] = [
 			"function generate(seed: Seed, options?: GenerateOptions): GradientSpec",
 		description:
 			"Seed in, GradientSpec out: palette, layout (linear | orbit | scatter), 1–7 blobs, optional noise warp. Plain serializable object — feed it to any renderer.",
-		note: "colors clamps to 2–8 (default 6). warp: false disables the displacement filter.",
+		note: "colors clamps to 2–8 (default 6). Warp is what makes it a mesh: seeded fractal noise displaces the blob pixels (SVG feTurbulence + feDisplacementMap), smearing perfect circles into organic, fluid shapes. warp: false keeps the clean radial circles instead — the same look toCss() produces.",
 		example: `import { generate, seedHash } from "@noyzi/core";
 
+// GradientSpec: { version, seed, background, blobs, warp }
 const spec = generate(seedHash("ada"));
+spec.background.hex; // "#1b2a4a"
+spec.blobs.length; // 1-7 positioned color blobs
+
+// without warp: blobs stay perfect circles — flat, geometric
 const flat = generate("ada", { colors: 4, warp: false });`,
 	},
 	{
