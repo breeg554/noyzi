@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "motion/react";
+import { useDeferredValue, useMemo } from "react";
 import { CustomSeedCard } from "#/components/custom-seed-card.tsx";
 import { FadeIn } from "#/components/fade-in.tsx";
 import { Gallery } from "#/components/gallery/gallery.tsx";
@@ -11,6 +12,7 @@ import {
 	resolveGalleryOptions,
 } from "#/lib/gallery-options.ts";
 import { gradientsQuery } from "#/lib/gradients.ts";
+import { cn } from "#/lib/utils.ts";
 
 export const Route = createFileRoute("/")({
 	component: PreviewPage,
@@ -22,7 +24,13 @@ export const Route = createFileRoute("/")({
 
 function PreviewPage() {
 	const search = Route.useSearch();
-	const options = resolveGalleryOptions(search);
+	// Stable identity so memoized cards skip rerenders when nothing changed.
+	const options = useMemo(() => resolveGalleryOptions(search), [search]);
+	// The toolbar (URL state) updates urgently; the grid of hundreds of cards
+	// catches up in an interruptible background render instead of blocking
+	// every slider/toggle interaction.
+	const deferredOptions = useDeferredValue(options);
+	const isStale = options !== deferredOptions;
 
 	return (
 		<GradientsProvider>
@@ -56,7 +64,14 @@ function PreviewPage() {
 				</motion.div>
 
 				<FadeIn delay={0.15}>
-					<Gallery.Grid>
+					<Gallery.Grid
+						className={cn(
+							"transition-opacity duration-200",
+							isStale && "opacity-60",
+						)}
+					>
+						{/* The single custom card gets urgent options for instant
+						    feedback; the grid follows with the deferred value. */}
 						<CustomSeedCard options={options} />
 						<Gallery.Items>
 							{(item, index) => (
@@ -64,7 +79,7 @@ function PreviewPage() {
 									key={item.seed}
 									seed={item.seed}
 									index={index}
-									options={options}
+									options={deferredOptions}
 								/>
 							)}
 						</Gallery.Items>

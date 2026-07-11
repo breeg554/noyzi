@@ -40,9 +40,20 @@ function GalleryCount() {
 	);
 }
 
-function GalleryGrid({ children }: { children: ReactNode }) {
+function GalleryGrid({
+	className,
+	children,
+}: {
+	className?: string;
+	children: ReactNode;
+}) {
 	return (
-		<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5 2xl:grid-cols-6">
+		<div
+			className={cn(
+				"grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5 2xl:grid-cols-6",
+				className,
+			)}
+		>
 			{children}
 		</div>
 	);

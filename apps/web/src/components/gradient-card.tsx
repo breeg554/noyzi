@@ -8,7 +8,7 @@ import {
 import { MeshyGradient } from "@meshy/react";
 import { Check, Copy, Download } from "lucide-react";
 import { motion } from "motion/react";
-import { type CSSProperties, useState } from "react";
+import { type CSSProperties, memo, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "#/components/ui/button.tsx";
 import { Card, CardContent } from "#/components/ui/card.tsx";
@@ -62,7 +62,12 @@ export function useCopyGradient(seed: string, options?: GenerateOptions) {
 	return { copied, copy };
 }
 
-export function GradientCard({
+/**
+ * Memoized: with hundreds of cards in the grid, filter changes must only
+ * rerender cards whose `options` identity actually changed (paired with
+ * `useDeferredValue` on the route so those rerenders are interruptible).
+ */
+export const GradientCard = memo(function GradientCard({
 	seed,
 	index,
 	options = DEFAULT_GALLERY_OPTIONS,
@@ -117,7 +122,7 @@ export function GradientCard({
 			</Card>
 		</motion.div>
 	);
-}
+});
 
 export function CopyButton({
 	copied,
