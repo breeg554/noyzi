@@ -8,12 +8,12 @@ export interface RasterOptions extends SvgOptions {
 export interface EncodeOptions {
 	/** Image MIME type. Defaults to `"image/webp"` (PNG fallback where unsupported). */
 	type?: string;
-	/** Lossy quality in [0, 1]. Defaults to 1 for WebP. */
+	/** Lossy quality in [0, 1]. Defaults to 0.95 for WebP. */
 	quality?: number;
 }
 
 const DEFAULT_TYPE = "image/webp";
-const DEFAULT_QUALITY = 1;
+const DEFAULT_QUALITY = 0.95;
 
 function resolveEncoding(options: EncodeOptions): {
 	type: string;

@@ -21,14 +21,20 @@ import {
 } from "#/lib/gallery-options.ts";
 import { cn } from "#/lib/utils.ts";
 
-const EXPORT_SIZE = 1000;
+const EXPORT_SIZE = 2048;
+const EXPORT_QUALITY = 0.85;
 
-function gradientBlob(seed: string, options?: GenerateOptions): Promise<Blob> {
+function gradientBlob(
+	seed: string,
+	options?: GenerateOptions,
+	type: "image/webp" | "image/png" = "image/webp",
+): Promise<Blob> {
 	const spec = generate(seedHash(seed), options);
 	return toBlob(spec, {
 		width: EXPORT_SIZE,
 		height: EXPORT_SIZE,
-		type: "image/webp",
+		type,
+		quality: EXPORT_QUALITY,
 	});
 }
 
@@ -54,7 +60,9 @@ export function useCopyGradient(seed: string, options?: GenerateOptions) {
 		setCopied(true);
 		setTimeout(() => setCopied(false), 1500);
 		await navigator.clipboard.write([
-			new ClipboardItem({ "image/png": gradientBlob(seed, options) }),
+			new ClipboardItem({
+				"image/png": gradientBlob(seed, options, "image/png"),
+			}),
 		]);
 	};
 
@@ -149,11 +157,7 @@ export function DownloadButton({
 	options?: GenerateOptions;
 }) {
 	const download = async () => {
-		const spec = generate(seedHash(seed), options);
-		const blob = await toBlob(spec, {
-			width: EXPORT_SIZE,
-			height: EXPORT_SIZE,
-		});
+		const blob = await gradientBlob(seed, options);
 		const extension = blob.type === "image/webp" ? "webp" : "png";
 		const url = URL.createObjectURL(blob);
 		const anchor = document.createElement("a");

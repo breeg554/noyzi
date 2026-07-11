@@ -24,7 +24,7 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
       - name: Run tests
-        run: bun test
+        run: bun run --filter @noyzi/core build && bun test
       - uses: superfly/flyctl-actions/setup-flyctl@master
       - run: flyctl deploy --config fly.toml --remote-only --yes
         env:
