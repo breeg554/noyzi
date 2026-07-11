@@ -13,7 +13,7 @@ describe("isSequentialSeed", () => {
 		expect(isSequentialSeed(42)).toBe(true);
 		expect(isSequentialSeed("42")).toBe(true);
 		expect(isSequentialSeed(-7)).toBe(true);
-		expect(isSequentialSeed("meshy")).toBe(false);
+		expect(isSequentialSeed("noyzi")).toBe(false);
 		expect(isSequentialSeed("user-42")).toBe(false);
 		expect(isSequentialSeed(1.5)).toBe(false);
 	});

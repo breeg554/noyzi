@@ -1,5 +1,5 @@
 {
-	"name": "meshy",
+	"name": "noyzi",
 	"private": true,
 	"workspaces": [
 		"apps/*",
@@ -7,8 +7,8 @@
 	],
 	"scripts": {
 		"dev": "bun run --filter web dev",
-		"build": "bun run --filter @meshy/core build && bun run --filter @meshy/react build && bun run --filter web build",
-		"test": "bun run --filter '@meshy/*' test",
+		"build": "bun run --filter @noyzi/core build && bun run --filter @noyzi/react build && bun run --filter web build",
+		"test": "bun run --filter '@noyzi/*' test",
 		"check": "biome check .",
 		"format": "biome format --write .",
 		"lint": "biome lint ."

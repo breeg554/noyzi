@@ -4,8 +4,8 @@ import {
 	seedHash,
 	toBlob,
 	toCss,
-} from "@meshy/core";
-import { MeshyGradient } from "@meshy/react";
+} from "@noyzi/core";
+import { NoyziGradient } from "@noyzi/react";
 import { Check, Copy, Download } from "lucide-react";
 import { motion } from "motion/react";
 import { type CSSProperties, memo, useState } from "react";
@@ -19,7 +19,6 @@ import {
 	ROUNDED_CLASS,
 	toGenerateOptions,
 } from "#/lib/gallery-options.ts";
-import { PAGE_SIZE } from "#/lib/gradients.ts";
 import { cn } from "#/lib/utils.ts";
 
 const EXPORT_SIZE = 1000;
@@ -62,11 +61,6 @@ export function useCopyGradient(seed: string, options?: GenerateOptions) {
 	return { copied, copy };
 }
 
-/**
- * Memoized: with hundreds of cards in the grid, filter changes must only
- * rerender cards whose `options` identity actually changed (paired with
- * `useDeferredValue` on the route so those rerenders are interruptible).
- */
 export const GradientCard = memo(function GradientCard({
 	seed,
 	index,
@@ -85,7 +79,7 @@ export const GradientCard = memo(function GradientCard({
 			transition={{
 				duration: 0.5,
 				ease: [0.16, 1, 0.3, 1],
-				delay: (index % PAGE_SIZE) * 0.02,
+				delay: (index % 6) * 0.03,
 			}}
 		>
 			<Card
@@ -103,7 +97,7 @@ export const GradientCard = memo(function GradientCard({
 				</span>
 				<CardContent className="flex justify-center px-2">
 					<div className="relative">
-						<MeshyGradient
+						<NoyziGradient
 							seed={seed}
 							options={generateOptions}
 							artwork={{ width: 500, height: 500 }}
@@ -164,7 +158,7 @@ export function DownloadButton({
 		const url = URL.createObjectURL(blob);
 		const anchor = document.createElement("a");
 		anchor.href = url;
-		anchor.download = `meshy-${seed}.${extension}`;
+		anchor.download = `noyzi-${seed}.${extension}`;
 		anchor.click();
 		URL.revokeObjectURL(url);
 	};

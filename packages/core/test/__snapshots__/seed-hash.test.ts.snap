@@ -1,3 +1,3 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
-exports[`seedHash is stable across releases (frozen) 1`] = `"jn7rtfly"`;
+exports[`seedHash is stable across releases (frozen) 1`] = `"1s28i9t1"`;

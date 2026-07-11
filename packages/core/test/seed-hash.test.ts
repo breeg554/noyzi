@@ -47,6 +47,6 @@ describe("seedHash", () => {
 	});
 
 	test("is stable across releases (frozen)", () => {
-		expect(seedHash("meshy")).toMatchSnapshot();
+		expect(seedHash("noyzi")).toMatchSnapshot();
 	});
 });

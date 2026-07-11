@@ -1,5 +1,5 @@
-export type { ColorStop, GenerateOptions, Layout, Seed } from "@meshy/core";
-export { isSeedHash, paletteFromSeed, seedHash } from "@meshy/core";
-export type { MeshyGradientProps } from "./MeshyGradient.tsx";
-export { MeshyGradient } from "./MeshyGradient.tsx";
-export type { MeshyBaseProps } from "./shared.ts";
+export type { ColorStop, GenerateOptions, Layout, Seed } from "@noyzi/core";
+export { isSeedHash, paletteFromSeed, seedHash } from "@noyzi/core";
+export type { NoyziGradientProps } from "./NoyziGradient.tsx";
+export { NoyziGradient } from "./NoyziGradient.tsx";
+export type { NoyziBaseProps } from "./shared.ts";

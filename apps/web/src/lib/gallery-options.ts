@@ -1,4 +1,4 @@
-import type { GenerateOptions } from "@meshy/core";
+import type { GenerateOptions } from "@noyzi/core";
 
 export const MIN_COLORS = 2;
 export const MAX_COLORS = 8;

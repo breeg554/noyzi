@@ -1,7 +1,7 @@
 {
-	"name": "@meshy/react",
+	"name": "@noyzi/react",
 	"version": "0.1.0",
-	"description": "React component for seed-based deterministic gradients. SSR-friendly, powered by @meshy/core.",
+	"description": "React component for seed-based deterministic gradients. SSR-friendly, powered by @noyzi/core.",
 	"license": "MIT",
 	"type": "module",
 	"sideEffects": false,
@@ -33,7 +33,7 @@
 		"ssr"
 	],
 	"dependencies": {
-		"@meshy/core": "workspace:*",
+		"@noyzi/core": "workspace:*",
 		"clsx": "^2.1.1",
 		"tailwind-merge": "^3.6.0"
 	},

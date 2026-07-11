@@ -15,7 +15,7 @@ describe("generate", () => {
 	});
 
 	test("spec is stable across releases (frozen snapshot)", () => {
-		expect(generate("meshy")).toMatchSnapshot();
+		expect(generate("noyzi")).toMatchSnapshot();
 	});
 
 	test("options are deterministic", () => {

@@ -1,4 +1,4 @@
-import { seedHash } from "@meshy/core";
+import { seedHash } from "@noyzi/core";
 import { infiniteQueryOptions } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
 import { setResponseHeader } from "@tanstack/react-start/server";
@@ -26,7 +26,7 @@ const getGradientsPage = createServerFn({ method: "GET" })
 			return cached;
 		}
 		const items = Array.from({ length: PAGE_SIZE }, (_, i) => ({
-			seed: seedHash(page * PAGE_SIZE + i),
+			seed: seedHash(`noyzi:${page * PAGE_SIZE + i}`),
 		}));
 		pageCache.set(page, items);
 		return items;

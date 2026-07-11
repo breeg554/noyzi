@@ -1,10 +1,10 @@
-import { MeshyGradient } from "@meshy/react";
+import { NoyziGradient } from "@noyzi/react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { useCopyGradient } from "#/components/gradient-card.tsx";
 import { Button } from "#/components/ui/button.tsx";
 
-const INSTALL_COMMAND = "npm install @meshy/react";
+const INSTALL_COMMAND = "npm install @noyzi/react";
 const AVATAR_SEEDS = ["mesh", "gradient", "seed"];
 
 export function Hero() {
@@ -30,7 +30,7 @@ export function Hero() {
 				variant="outline"
 				className="group mt-2 h-auto gap-3 rounded-lg border-border/60 bg-card py-2 pr-2 pl-4 font-mono font-normal shadow-none hover:bg-neutral-100 dark:border-border/60 dark:bg-card dark:hover:bg-[oklch(0.21_0_0)]"
 			>
-				<Link to="/docs" aria-label="Install meshy — read the docs">
+				<Link to="/docs" aria-label="Install noyzi — read the docs">
 					<span>
 						<span className="select-none text-muted-foreground">$ </span>
 						{INSTALL_COMMAND}
@@ -54,7 +54,7 @@ function HeroAvatar({ seed }: { seed: string }) {
 			aria-label={`Copy gradient for seed "${seed}"`}
 			className="relative size-auto cursor-pointer rounded-full p-0 hover:z-10 hover:scale-110 hover:bg-transparent dark:hover:bg-transparent"
 		>
-			<MeshyGradient
+			<NoyziGradient
 				seed={seed}
 				title={seed}
 				className="size-10 shrink-0 rounded-full ring-2 ring-background"

@@ -21,8 +21,8 @@ function Header() {
 				className="pointer-events-none absolute inset-0 bg-linear-to-b from-background/70 via-background/30 to-transparent"
 			/>
 			<div className="relative flex h-14 items-center justify-between px-4">
-				<Link to="/" className="font-semibold text-lg tracking-tight">
-					meshy
+				<Link to="/" className="font-semibold text-base tracking-tight">
+					noyzi
 				</Link>
 
 				<nav

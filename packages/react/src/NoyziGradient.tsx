@@ -1,8 +1,8 @@
-import { generate, seedHash, toSvgDataUri } from "@meshy/core";
+import { generate, seedHash, toSvgDataUri } from "@noyzi/core";
 import type { CSSProperties, JSX } from "react";
-import { cn, type MeshyBaseProps, SHADOW_CLASS } from "./shared.ts";
+import { cn, type NoyziBaseProps, SHADOW_CLASS } from "./shared.ts";
 
-export interface MeshyGradientProps extends MeshyBaseProps {
+export interface NoyziGradientProps extends NoyziBaseProps {
 	/**
 	 * Intrinsic artwork size. The SVG is vector, so only the aspect ratio
 	 * affects the visual result — match it to your element for non-square
@@ -19,14 +19,14 @@ export interface MeshyGradientProps extends MeshyBaseProps {
  * rounded-full"`). The artwork `cover`-fills the element; use `artwork` to
  * match its aspect ratio for non-square elements.
  */
-export function MeshyGradient({
+export function NoyziGradient({
 	seed,
 	options,
 	artwork,
 	className,
 	style,
 	...rest
-}: MeshyGradientProps): JSX.Element {
+}: NoyziGradientProps): JSX.Element {
 	const spec = generate(seedHash(seed), options);
 	const uri = toSvgDataUri(spec, artwork);
 

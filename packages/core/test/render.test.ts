@@ -7,7 +7,7 @@ describe("toSvg", () => {
 	});
 
 	test("svg output is stable (frozen snapshot)", () => {
-		expect(toSvg(generate("meshy"))).toMatchSnapshot();
+		expect(toSvg(generate("noyzi"))).toMatchSnapshot();
 	});
 
 	test("respects width and height", () => {
@@ -67,7 +67,7 @@ describe("toCss", () => {
 	});
 
 	test("css output is stable (frozen snapshot)", () => {
-		expect(toCss(generate("meshy"))).toMatchSnapshot();
+		expect(toCss(generate("noyzi"))).toMatchSnapshot();
 	});
 
 	test("background color matches spec", () => {

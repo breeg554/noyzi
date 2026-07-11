@@ -24,11 +24,7 @@ export const Route = createFileRoute("/")({
 
 function PreviewPage() {
 	const search = Route.useSearch();
-	// Stable identity so memoized cards skip rerenders when nothing changed.
 	const options = useMemo(() => resolveGalleryOptions(search), [search]);
-	// The toolbar (URL state) updates urgently; the grid of hundreds of cards
-	// catches up in an interruptible background render instead of blocking
-	// every slider/toggle interaction.
 	const deferredOptions = useDeferredValue(options);
 	const isStale = options !== deferredOptions;
 
@@ -39,10 +35,6 @@ function PreviewPage() {
 					<Hero />
 				</FadeIn>
 
-				{/* Backdrop layers extend up behind the site header (-top-14) so
-				    header + toolbar share one continuous background that only
-				    fades out below the toolbar. Opacity-only animation (like the
-				    site header): a `filter` here would break the backdrop-blur. */}
 				<motion.div
 					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
@@ -69,20 +61,16 @@ function PreviewPage() {
 							"transition-opacity duration-200",
 							isStale && "opacity-60",
 						)}
+						leading={<CustomSeedCard options={options} />}
 					>
-						{/* The single custom card gets urgent options for instant
-						    feedback; the grid follows with the deferred value. */}
-						<CustomSeedCard options={options} />
-						<Gallery.Items>
-							{(item, index) => (
-								<GradientCard
-									key={item.seed}
-									seed={item.seed}
-									index={index}
-									options={deferredOptions}
-								/>
-							)}
-						</Gallery.Items>
+						{(item, index) => (
+							<GradientCard
+								key={item.seed}
+								seed={item.seed}
+								index={index}
+								options={deferredOptions}
+							/>
+						)}
 					</Gallery.Grid>
 				</FadeIn>
 

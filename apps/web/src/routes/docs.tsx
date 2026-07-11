@@ -14,10 +14,10 @@ export const Route = createFileRoute("/docs")({
 	component: DocsPage,
 });
 
-const GET_STARTED_EXAMPLE = `import { MeshyGradient } from "@meshy/react";
+const GET_STARTED_EXAMPLE = `import { NoyziGradient } from "@noyzi/react";
 
 export function Avatar({ email }: { email: string }) {
-	return <MeshyGradient seed={email} className="size-10 rounded-full" />;
+	return <NoyziGradient seed={email} className="size-10 rounded-full" />;
 }`;
 
 function DocsPage() {
@@ -52,7 +52,7 @@ function GetStarted() {
 		<section id="get-started" className="scroll-mt-20">
 			<h1 className="font-semibold text-4xl tracking-tighter">Get started</h1>
 			<p className="mt-4 max-w-xl text-muted-foreground text-sm leading-relaxed sm:text-base">
-				meshy turns any seed — email, username, id — into a mesh gradient.
+				noyzi turns any seed — email, username, id — into a mesh gradient.
 				Deterministic: same seed, same gradient, server and browser. No stored
 				assets.
 			</p>
@@ -61,7 +61,7 @@ function GetStarted() {
 				className="mt-6"
 				label="Terminal"
 				lang="bash"
-				code={"npm install @meshy/core @meshy/react"}
+				code={"npm install @noyzi/core @noyzi/react"}
 			/>
 
 			<h2 className="mt-10 font-semibold text-xl tracking-tight">
@@ -69,14 +69,14 @@ function GetStarted() {
 			</h2>
 			<ul className="mt-4 flex max-w-2xl flex-col gap-3 text-muted-foreground text-sm leading-relaxed">
 				<li>
-					<code className="font-mono text-foreground">@meshy/core</code> —
+					<code className="font-mono text-foreground">@noyzi/core</code> —
 					zero-dependency engine: seed →{" "}
 					<code className="font-mono">GradientSpec</code> → CSS / SVG / canvas /
 					image. Runs anywhere.
 				</li>
 				<li>
-					<code className="font-mono text-foreground">@meshy/react</code> —{" "}
-					<code className="font-mono">&lt;MeshyGradient /&gt;</code> on top:
+					<code className="font-mono text-foreground">@noyzi/react</code> —{" "}
+					<code className="font-mono">&lt;NoyziGradient /&gt;</code> on top:
 					SSR-safe, zero client JS.
 				</li>
 			</ul>

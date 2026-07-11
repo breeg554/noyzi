@@ -1,4 +1,4 @@
-import { MeshyGradient } from "@meshy/react";
+import { NoyziGradient } from "@noyzi/react";
 import { useRef, useState } from "react";
 import {
 	CopyButton,
@@ -14,7 +14,7 @@ import {
 } from "#/lib/gallery-options.ts";
 import { cn } from "#/lib/utils.ts";
 
-const DEFAULT_SEED = "meshy";
+const DEFAULT_SEED = "noyzi";
 
 export function CustomSeedCard({
 	options = DEFAULT_GALLERY_OPTIONS,
@@ -45,7 +45,7 @@ export function CustomSeedCard({
 				{activeSeed}
 			</span>
 			<CardContent className="flex flex-col items-center gap-3 px-2 lg:gap-6">
-				<MeshyGradient
+				<NoyziGradient
 					seed={activeSeed}
 					options={generateOptions}
 					className={cn(
