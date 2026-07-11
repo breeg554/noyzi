@@ -3,7 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Play } from "lucide-react";
 import type { CSSProperties, ReactNode } from "react";
 import { FadeIn } from "#/components/fade-in.tsx";
-import { useCopyGradient } from "#/components/gradient-card.tsx";
+import { useCopyGradientImage } from "#/components/gradient-card.tsx";
 import { Button } from "#/components/ui/button.tsx";
 import { createMeta } from "#/lib/meta.ts";
 import { cn } from "#/lib/utils.ts";
@@ -199,7 +199,7 @@ function CopyableGradient({
 	className?: string;
 	style?: CSSProperties;
 }) {
-	const { copy } = useCopyGradient(seed);
+	const { copy } = useCopyGradientImage(seed);
 
 	return (
 		<button

@@ -3,7 +3,7 @@ import { useRef, useState } from "react";
 import {
 	CopyButton,
 	DownloadButton,
-	useCopyGradient,
+	useCopyGradientComponent,
 } from "#/components/gradient-card.tsx";
 import { Card, CardContent } from "#/components/ui/card.tsx";
 import { Input } from "#/components/ui/input.tsx";
@@ -27,7 +27,7 @@ export function CustomSeedCard({
 	const inputRef = useRef<HTMLInputElement>(null);
 	const activeSeed = seed.trim() || DEFAULT_SEED;
 	const generateOptions = toGenerateOptions(options);
-	const { copied, copy } = useCopyGradient(activeSeed, generateOptions);
+	const { copied, copy } = useCopyGradientComponent(activeSeed, options);
 
 	return (
 		<Card
@@ -79,7 +79,7 @@ export function CustomSeedCard({
 						!keyboardFocus && "focus-visible:ring-0",
 					)}
 				/>
-				<div className="flex translate-y-2 items-center gap-1 opacity-0 transition-all duration-200 ease-out group-hover:translate-y-0 group-hover:opacity-100">
+				<div className="flex items-center gap-1 transition-all duration-200 ease-out md:translate-y-2 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100">
 					<CopyButton copied={copied} onCopy={copy} />
 					<DownloadButton seed={activeSeed} options={generateOptions} />
 				</div>

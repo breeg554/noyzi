@@ -1,7 +1,7 @@
 import { NoyziGradient } from "@noyzi/react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
-import { useCopyGradient } from "#/components/gradient-card.tsx";
+import { useCopyGradientImage } from "#/components/gradient-card.tsx";
 import { Button } from "#/components/ui/button.tsx";
 
 const INSTALL_COMMAND = "bun add @noyzi/core";
@@ -45,7 +45,7 @@ export function Hero() {
 }
 
 function HeroAvatar({ seed }: { seed: string }) {
-	const { copy } = useCopyGradient(seed);
+	const { copy } = useCopyGradientImage(seed);
 
 	return (
 		<Button

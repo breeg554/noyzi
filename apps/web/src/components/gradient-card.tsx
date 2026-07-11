@@ -38,7 +38,7 @@ function gradientBlob(
 	});
 }
 
-export function useCopyGradient(seed: string, options?: GenerateOptions) {
+export function useCopyGradientImage(seed: string, options?: GenerateOptions) {
 	const [copied, setCopied] = useState(false);
 
 	const copy = async () => {
@@ -69,6 +69,59 @@ export function useCopyGradient(seed: string, options?: GenerateOptions) {
 	return { copied, copy };
 }
 
+function componentSnippet(seed: string, options: GalleryOptions): string {
+	const optionParts: string[] = [];
+	if (options.colors !== DEFAULT_GALLERY_OPTIONS.colors) {
+		optionParts.push(`colors: ${options.colors}`);
+	}
+	if (options.layout !== DEFAULT_GALLERY_OPTIONS.layout) {
+		optionParts.push(`layout: ${JSON.stringify(options.layout)}`);
+	}
+	if (options.warp !== DEFAULT_GALLERY_OPTIONS.warp) {
+		optionParts.push(`warp: ${options.warp}`);
+	}
+
+	const lines = ["<NoyziGradient", `  seed=${JSON.stringify(seed)}`];
+	if (optionParts.length > 0) {
+		lines.push(`  options={{ ${optionParts.join(", ")} }}`);
+	}
+	lines.push(
+		`  className=${JSON.stringify(`size-32 ${ROUNDED_CLASS[options.rounded]}`)}`,
+		"/>",
+	);
+	return lines.join("\n");
+}
+
+export function useCopyGradientComponent(
+	seed: string,
+	options: GalleryOptions,
+) {
+	const [copied, setCopied] = useState(false);
+
+	const copy = async () => {
+		await navigator.clipboard.writeText(componentSnippet(seed, options));
+		const spec = generate(seedHash(seed), toGenerateOptions(options));
+		const { backgroundColor, backgroundImage } = toCss(spec);
+		toast(
+			<>
+				<span
+					aria-hidden
+					className="pointer-events-none absolute inset-0 rounded-full"
+					style={{ backgroundColor, backgroundImage }}
+				/>
+				<span className="relative rounded-full text-white backdrop-blur-[2px]">
+					Copied to clipboard
+				</span>
+			</>,
+			{ style: { "--toast-border": spec.background.hex } as CSSProperties },
+		);
+		setCopied(true);
+		setTimeout(() => setCopied(false), 1500);
+	};
+
+	return { copied, copy };
+}
+
 export const GradientCard = memo(function GradientCard({
 	seed,
 	index,
@@ -79,7 +132,7 @@ export const GradientCard = memo(function GradientCard({
 	options?: GalleryOptions;
 }) {
 	const generateOptions = toGenerateOptions(options);
-	const { copied, copy } = useCopyGradient(seed, generateOptions);
+	const { copied, copy } = useCopyGradientComponent(seed, options);
 	return (
 		<motion.div
 			initial={{ opacity: 0, y: 8, filter: "blur(4px)" }}
@@ -115,7 +168,7 @@ export const GradientCard = memo(function GradientCard({
 								ROUNDED_CLASS[options.rounded],
 							)}
 						/>
-						<div className="-translate-x-1/2 absolute top-[110%] left-1/2 mt-4 flex translate-y-2 items-center gap-1 opacity-0 transition-all duration-200 ease-out group-hover:translate-y-0 group-hover:opacity-100">
+						<div className="-translate-x-1/2 absolute top-[110%] left-1/2 mt-4 flex items-center gap-1 transition-all duration-200 ease-out md:translate-y-2 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100">
 							<CopyButton copied={copied} onCopy={copy} />
 							<DownloadButton seed={seed} options={generateOptions} />
 						</div>
@@ -137,7 +190,7 @@ export function CopyButton({
 		<Button
 			variant="ghost"
 			size="icon-xs"
-			aria-label="Copy image"
+			aria-label="Copy component"
 			onClick={(event) => {
 				event.stopPropagation();
 				onCopy();
