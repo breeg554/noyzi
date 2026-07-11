@@ -8,8 +8,9 @@
 	"scripts": {
 		"dev": "vite dev --port 3000",
 		"generate-routes": "tsr generate",
-		"build": "vite build",
-		"preview": "vite preview",
+		"build": "bun --bun vite build",
+		"serve": "bun --bun vite preview",
+		"start": "bun run server.ts",
 		"test": "vitest run"
 	},
 	"dependencies": {

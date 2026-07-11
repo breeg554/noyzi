@@ -17,20 +17,24 @@ const themeScript = `(function(){try{var t=localStorage.getItem("theme");var d=t
 export const Route = createRootRouteWithContext<{
 	queryClient: QueryClient;
 }>()({
-	head: () => ({
-		...createMeta(),
-		links: [
-			{
-				rel: "stylesheet",
-				href: appCss,
-			},
-		],
-		scripts: [
-			{
-				children: themeScript,
-			},
-		],
-	}),
+	head: () => {
+		const base = createMeta();
+		return {
+			...base,
+			links: [
+				...base.links,
+				{
+					rel: "stylesheet",
+					href: appCss,
+				},
+			],
+			scripts: [
+				{
+					children: themeScript,
+				},
+			],
+		};
+	},
 	shellComponent: RootDocument,
 });
 

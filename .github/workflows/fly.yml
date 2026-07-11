@@ -1,0 +1,27 @@
+name: Deploy Noyzi to Fly
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fly-noyzi-web
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy web app
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://noyzi-web.fly.dev
+    steps:
+      - uses: actions/checkout@v4
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: flyctl deploy --config fly.toml --remote-only --yes
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

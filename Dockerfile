@@ -30,4 +30,4 @@ COPY --from=build --chown=bun:bun /app/packages ./packages
 USER bun
 EXPOSE 3000
 
-CMD ["bun", "run", "--cwd", "apps/web", "preview", "--", "--host", "0.0.0.0", "--port", "3000"]
+CMD ["bun", "run", "--cwd", "apps/web", "start"]

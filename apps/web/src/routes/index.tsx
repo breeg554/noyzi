@@ -21,6 +21,7 @@ export const Route = createFileRoute("/")({
 	head: () =>
 		createMeta({
 			title: "Noyzi — Mesh gradients from any seed",
+			path: "/",
 		}),
 	loader: async ({ context }) => {
 		await context.queryClient.prefetchInfiniteQuery(gradientsQuery);
