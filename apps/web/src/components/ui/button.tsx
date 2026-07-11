@@ -1,7 +1,12 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { Slot } from "radix-ui";
 import type * as React from "react";
-import { playClick, playDeepClick, playToggle } from "#/lib/click-sound.ts";
+import {
+	playBoop,
+	playClick,
+	playDeepClick,
+	playToggle,
+} from "#/lib/click-sound.ts";
 import { cn } from "#/lib/utils.ts";
 
 const buttonVariants = cva(
@@ -49,7 +54,7 @@ function Button({
 }: React.ComponentProps<"button"> &
 	VariantProps<typeof buttonVariants> & {
 		asChild?: boolean;
-		sound?: "click" | "deep" | "toggle";
+		sound?: "click" | "deep" | "toggle" | "boop";
 	}) {
 	const Comp = asChild ? Slot.Root : "button";
 
@@ -64,6 +69,8 @@ function Button({
 					playDeepClick();
 				} else if (sound === "toggle") {
 					playToggle();
+				} else if (sound === "boop") {
+					playBoop();
 				} else {
 					playClick();
 				}

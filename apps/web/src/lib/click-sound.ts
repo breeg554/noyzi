@@ -184,9 +184,52 @@ export function playToggle() {
 	shimmer.stop(now + 0.08);
 }
 
+/**
+ * Playful, cartoonish two-note "boo-dup" for the filters toggle. Nothing
+ * like the other sounds: two round triangle-wave notes hopping up a fifth
+ * with a tiny pitch bounce — reads as a cheerful "open the toybox".
+ */
+export function playBoop() {
+	if (typeof window === "undefined") {
+		return;
+	}
+	ctx ??= new AudioContext();
+	if (ctx.state === "suspended") {
+		void ctx.resume();
+	}
+
+	const now = ctx.currentTime;
+
+	const note = (
+		frequency: number,
+		start: number,
+		duration: number,
+		gain: number,
+	) => {
+		if (!ctx) {
+			return;
+		}
+		const osc = ctx.createOscillator();
+		const env = ctx.createGain();
+		osc.type = "triangle";
+		// Small upward bend into each note for the "bouncy" feel.
+		osc.frequency.setValueAtTime(frequency * 0.82, start);
+		osc.frequency.exponentialRampToValueAtTime(frequency, start + 0.035);
+		env.gain.setValueAtTime(0.0001, start);
+		env.gain.exponentialRampToValueAtTime(gain, start + 0.015);
+		env.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+		osc.connect(env).connect(ctx.destination);
+		osc.start(start);
+		osc.stop(start + duration + 0.02);
+	};
+
+	// "boo" then "dup!" — up a fifth, second note slightly louder.
+	note(262, now, 0.09, 0.016);
+	note(392, now + 0.085, 0.13, 0.022);
+}
+
 interface SwooshOptions {
-	/** Bandpass start frequency in Hz. */
-	from: number;
+	/** Bandpass start frequency in Hz. */ from: number;
 	/** Bandpass end frequency in Hz. */
 	to: number;
 	/** Total length in seconds. */

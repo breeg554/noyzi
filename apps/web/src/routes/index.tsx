@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { motion } from "motion/react";
 import { CustomSeedCard } from "#/components/custom-seed-card.tsx";
 import { FadeIn } from "#/components/fade-in.tsx";
 import { Gallery } from "#/components/gallery/gallery.tsx";
@@ -32,8 +33,14 @@ function PreviewPage() {
 
 				{/* Backdrop layers extend up behind the site header (-top-14) so
 				    header + toolbar share one continuous background that only
-				    fades out below the toolbar. */}
-				<div className="sticky top-14 z-40 -mx-3">
+				    fades out below the toolbar. Opacity-only animation (like the
+				    site header): a `filter` here would break the backdrop-blur. */}
+				<motion.div
+					initial={{ opacity: 0 }}
+					animate={{ opacity: 1 }}
+					transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+					className="sticky top-14 z-40 -mx-3"
+				>
 					<div
 						aria-hidden
 						className="pointer-events-none absolute inset-x-0 -top-14 bottom-0 backdrop-blur-lg [mask-image:linear-gradient(to_bottom,black_60%,transparent)]"
@@ -46,7 +53,7 @@ function PreviewPage() {
 						<Gallery.Count />
 						<Gallery.Toolbar />
 					</Gallery.Header>
-				</div>
+				</motion.div>
 
 				<FadeIn delay={0.15}>
 					<Gallery.Grid>

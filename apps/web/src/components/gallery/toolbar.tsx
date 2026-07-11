@@ -9,7 +9,7 @@ import {
 } from "#/components/ui/collapsible.tsx";
 import { Slider } from "#/components/ui/slider.tsx";
 import { ToggleGroup, ToggleGroupItem } from "#/components/ui/toggle-group.tsx";
-import { playToggle } from "#/lib/click-sound.ts";
+import { playBoop } from "#/lib/click-sound.ts";
 import {
 	DEFAULT_GALLERY_OPTIONS,
 	type GalleryOptions,
@@ -73,7 +73,7 @@ export function GalleryToolbar() {
 					<Button
 						variant="ghost"
 						size="xs"
-						sound="toggle"
+						sound="boop"
 						className="text-muted-foreground data-[state=open]:text-foreground"
 					>
 						<SlidersHorizontal />
@@ -114,7 +114,7 @@ function ColorsControl({ options, update }: ControlProps) {
 				step={1}
 				onValueChange={([colors]) => {
 					if (colors !== undefined && colors !== options.colors) {
-						playToggle();
+						playBoop();
 						update({ colors });
 					}
 				}}
@@ -136,7 +136,7 @@ function LayoutControl({ options, update }: ControlProps) {
 			value={options.layout}
 			onValueChange={(layout) => {
 				if (layout) {
-					playToggle();
+					playBoop();
 					update({ layout: layout as GalleryOptions["layout"] });
 				}
 			}}
@@ -159,7 +159,7 @@ function RoundedControl({ options, update }: ControlProps) {
 			value={options.rounded}
 			onValueChange={(rounded) => {
 				if (rounded) {
-					playToggle();
+					playBoop();
 					update({ rounded: rounded as GalleryOptions["rounded"] });
 				}
 			}}
@@ -185,7 +185,7 @@ function ResetButton({
 		<Button
 			variant="ghost"
 			size="xs"
-			sound="toggle"
+			sound="boop"
 			aria-label="Reset options"
 			disabled={disabled}
 			className="text-muted-foreground disabled:opacity-30"
