@@ -49,11 +49,11 @@ export function generatePalette(
 	// without shifting the rest of the random sequence (layout, drift, ...).
 	const randomHue = rng.range(0, 360);
 	const base = baseHue ?? randomHue;
-	const drift = rng.range(100, 240) * (rng.next() < 0.5 ? -1 : 1);
-	const lightStart = rng.range(0.82, 0.9);
-	const lightEnd = rng.range(0.35, 0.5);
-	const chromaBase = rng.range(0.04, 0.075);
-	const chromaPeak = chromaBase + rng.range(0.03, 0.07);
+	const drift = rng.range(80, 170) * (rng.next() < 0.5 ? -1 : 1);
+	const lightStart = rng.range(0.72, 0.82);
+	const lightEnd = rng.range(0.32, 0.48);
+	const chromaBase = rng.range(0.07, 0.11);
+	const chromaPeak = chromaBase + rng.range(0.06, 0.12);
 
 	const stops: ColorStop[] = [];
 	for (let i = 0; i < count; i++) {

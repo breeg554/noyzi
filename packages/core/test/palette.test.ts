@@ -46,6 +46,15 @@ describe("paletteFromSeed", () => {
 			expect(stop.hex).toMatch(/^#[0-9a-f]{6}$/);
 		}
 	});
+
+	test("includes saturated accent colors", () => {
+		for (const seed of ["red", "blue", "violet", "orange", "cyan"]) {
+			const palette = paletteFromSeed(seed);
+			expect(
+				Math.max(...palette.map((color) => color.oklch.c)),
+			).toBeGreaterThan(0.12);
+		}
+	});
 });
 
 describe("raster renderers", () => {
