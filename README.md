@@ -17,11 +17,7 @@
   <a href="https://github.com/breeg554/noyzi">GitHub</a>
 </p>
 
-## The idea
-
-Noyzi turns emails, usernames, IDs, or any other stable value into a unique mesh gradient. The same seed always produces the same artwork—on the server and in the browser—so gradients can become visual identities without storing image assets.
-
-![Noyzi — deterministic mesh gradients from any seed](./apps/web/public/og.png)
+![Noyzi examples](./apps/web/public/screenshot.webp)
 
 ## Packages
 
