@@ -33,6 +33,10 @@ export const Route = createRootRouteWithContext<{
 				{
 					children: themeScript,
 				},
+				{
+					src: "https://assets.onedollarstats.com/stonks.js",
+					defer: true,
+				},
 			],
 		};
 	},
