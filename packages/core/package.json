@@ -3,6 +3,11 @@
 	"version": "0.1.0",
 	"description": "Seed-based deterministic gradient generator. Every seed maps to the same soft mesh gradient — forever.",
 	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/breeg554/noyzi.git",
+		"directory": "packages/core"
+	},
 	"type": "module",
 	"sideEffects": false,
 	"main": "./dist/index.js",

@@ -1,0 +1,115 @@
+name: Release npm packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Version increment for all packages
+        required: true
+        default: patch
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+permissions:
+  contents: write
+
+concurrency:
+  group: npm-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Bump and publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require the default branch
+        env:
+          CURRENT_BRANCH: ${{ github.ref_name }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: test "$CURRENT_BRANCH" = "$DEFAULT_BRANCH"
+
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.10
+
+      - name: Install current npm CLI
+        run: npm install --global npm@11
+
+      - name: Verify npm authentication
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm whoami
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Bump package versions
+        id: version
+        env:
+          BUMP: ${{ inputs.bump }}
+        run: |
+          (cd packages/core && bun pm version "$BUMP" --no-git-tag-version --force)
+          (cd packages/react && bun pm version "$BUMP" --no-git-tag-version --force)
+          CORE_VERSION="$(node -p "require('./packages/core/package.json').version")"
+          REACT_VERSION="$(node -p "require('./packages/react/package.json').version")"
+          test "$CORE_VERSION" = "$REACT_VERSION"
+          echo "version=$CORE_VERSION" >> "$GITHUB_OUTPUT"
+          bun install
+
+      - name: Run tests
+        run: bun run test
+
+      - name: Type-check packages
+        run: bun run --filter '@noyzi/*' typecheck
+
+      - name: Build project
+        run: bun run build
+
+      - name: Pack packages
+        run: |
+          mkdir release
+          (cd packages/core && bun pm pack --destination ../../release)
+          (cd packages/react && bun pm pack --destination ../../release)
+
+      - name: Commit and tag release
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add packages/core/package.json packages/react/package.json bun.lock
+          git commit -m "release: v$VERSION"
+          git tag "v$VERSION"
+          git push --atomic origin "HEAD:$DEFAULT_BRANCH" "v$VERSION"
+
+      - name: Publish core
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: npm publish "release/noyzi-core-$VERSION.tgz" --access public
+
+      - name: Publish React
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: npm publish "release/noyzi-react-$VERSION.tgz" --access public
+
+      - name: Write summary
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          echo "Published @noyzi/core@$VERSION and @noyzi/react@$VERSION." >> "$GITHUB_STEP_SUMMARY"
