@@ -28,6 +28,16 @@ export function CustomSeedCard({
 	const activeSeed = seed.trim() || DEFAULT_SEED;
 	const generateOptions = toGenerateOptions(options);
 	const { copied, copy } = useCopyGradientComponent(activeSeed, options);
+	const gradientClassName = cn(
+		"size-56 shrink-0",
+		{
+			none: "rounded-none",
+			sm: "rounded-2xl",
+			md: "rounded-[2rem]",
+			xl: "rounded-[5rem]",
+			full: "rounded-full",
+		}[options.rounded],
+	);
 
 	return (
 		<Card
@@ -48,16 +58,7 @@ export function CustomSeedCard({
 				<NoyziGradient
 					seed={activeSeed}
 					options={generateOptions}
-					className={cn(
-						"size-56 shrink-0",
-						{
-							none: "rounded-none",
-							sm: "rounded-2xl",
-							md: "rounded-[2rem]",
-							xl: "rounded-[5rem]",
-							full: "rounded-full",
-						}[options.rounded],
-					)}
+					className={gradientClassName}
 					title={activeSeed}
 				/>
 				<Input

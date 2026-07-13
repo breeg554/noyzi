@@ -7,7 +7,7 @@
 <h1 align="center">Noyzi</h1>
 
 <p align="center">
-  Beautiful, deterministic mesh gradients from any string or number. Same seed, same artwork—forever.
+  Beautiful, deterministic structured gradients from any string or number. Same seed, same artwork—forever.
 </p>
 
 <p align="center">

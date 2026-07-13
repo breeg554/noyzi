@@ -115,9 +115,8 @@ function OutputLabSection() {
 			<h2 className="font-semibold text-3xl tracking-tighter">Output lab</h2>
 			<p className="mt-4 max-w-2xl text-muted-foreground text-sm leading-relaxed">
 				Compare the same gradient across every renderer. CSS is the lightest but
-				does not include the noise warp; SVG, React, canvas, and raster outputs
-				share the reference artwork. Raster weight varies by seed, dimensions,
-				quality, and browser encoder.
+				SVG, React, canvas, and raster outputs share the reference artwork.
+				Raster weight varies by seed, dimensions, quality, and browser encoder.
 			</p>
 			<div className="mt-6">
 				<OutputLab />
@@ -131,7 +130,7 @@ function GetStarted() {
 		<section id="get-started" className="scroll-mt-28 lg:scroll-mt-20">
 			<h1 className="font-semibold text-4xl tracking-tighter">Get started</h1>
 			<p className="mt-4 max-w-xl text-muted-foreground text-sm leading-relaxed sm:text-base">
-				noyzi turns any seed — email, username, id — into a mesh gradient.
+				noyzi turns any seed — email, username, id — into a structured gradient.
 				Deterministic: same seed, same gradient, server and browser. No stored
 				assets.
 			</p>
@@ -160,7 +159,7 @@ function GetStarted() {
 			</h2>
 			<p className="mt-4 max-w-2xl text-muted-foreground text-sm leading-relaxed">
 				<code className="font-mono">seedHash</code> hashes the seed → a seeded
-				PRNG picks palette, layout and 1–7 blobs (
+				PRNG picks a palette and 1–4 organic color fields (
 				<code className="font-mono">generate</code>) → the spec renders through
 				any output. It's a plain object: generate once, render anywhere.
 			</p>
@@ -362,7 +361,9 @@ function MethodSection({ entry }: { entry: DocEntry }) {
 				/>
 			) : null}
 
-			{entry.preview ? <DocPreview className="mt-4" /> : null}
+			{entry.preview ? (
+				<DocPreview kind={entry.preview} className="mt-4" />
+			) : null}
 
 			{entry.note ? (
 				<p className="mt-4 max-w-2xl text-muted-foreground text-sm leading-relaxed">

@@ -2,11 +2,10 @@ export type { Oklch } from "./color.ts";
 export { oklchToHex } from "./color.ts";
 export type {
 	GenerateOptions,
-	GradientBlob,
+	GradientField,
+	GradientPoint,
 	GradientSpec,
-	Layout,
 	VignetteSpec,
-	WarpSpec,
 } from "./generate.ts";
 export { generate } from "./generate.ts";
 export type { ColorStop } from "./palette.ts";

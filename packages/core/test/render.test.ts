@@ -17,44 +17,42 @@ describe("toSvg", () => {
 		expect(svg).toContain('viewBox="0 0 400 300"');
 	});
 
-	test("contains one radial gradient per blob plus vignette", () => {
-		const spec = generate("count");
-		const svg = toSvg(spec);
-		expect(svg.match(/<radialGradient/g)).toHaveLength(spec.blobs.length + 1);
+	test("renders one continuous noise-warped color surface", () => {
+		const svg = toSvg(generate("count"));
+		expect(svg.match(/<linearGradient/g)).toHaveLength(1);
+		expect(svg.match(/<feTurbulence/g)).toHaveLength(1);
+		expect(svg.match(/<feDisplacementMap/g)).toHaveLength(1);
+		expect(svg.match(/<feGaussianBlur/g)).toHaveLength(2);
+		expect(svg).not.toContain("<path ");
 	});
 
-	test("includes displacement warp with spec seed", () => {
-		const spec = generate("wavy");
-		const svg = toSvg(spec);
-		expect(svg).toContain("feDisplacementMap");
-		expect(svg).toContain(`seed="${spec.warp?.seed}"`);
-	});
-
-	test("omits warp when disabled", () => {
-		expect(toSvg(generate("flat", { warp: false }))).not.toContain(
-			"feDisplacementMap",
-		);
-	});
-
-	test("no turbulence at all when warp is disabled", () => {
-		expect(toSvg(generate("bare", { warp: false }))).not.toContain(
-			"feTurbulence",
-		);
+	test("renders every requested palette color", () => {
+		for (const count of [2, 4, 6, 8]) {
+			const spec = generate("palette-count", {
+				colors: count,
+				vignette: false,
+			});
+			const svg = toSvg(spec);
+			expect(svg.match(/<stop /g)).toHaveLength(count + 1);
+			for (const color of spec.palette) {
+				expect(svg).toContain(color.hex);
+			}
+		}
 	});
 
 	test("gradient ids are namespaced per seed", () => {
 		const a = toSvg(generate("a"));
 		const b = toSvg(generate("b"));
-		const idOf = (svg: string) => svg.match(/id="(m[^-"]+)-b0"/)?.[1];
+		const idOf = (svg: string) => svg.match(/id="(m[^-"]+)-g"/)?.[1];
 		expect(idOf(a)).toBeDefined();
 		expect(idOf(a)).not.toBe(idOf(b));
 	});
 
 	test("vignette is on by default", () => {
 		const spec = generate("dirty");
-		expect(spec.vignette).toEqual({ strength: 0.18 });
+		expect(spec.vignette).toEqual({ strength: 0.08 });
 		const svg = toSvg(spec);
-		expect(svg).toContain('stop-color="#000" stop-opacity="0.18"');
+		expect(svg).toContain('stop-color="#000" stop-opacity="0.08"');
 	});
 
 	test("vignette can be disabled", () => {
@@ -67,11 +65,10 @@ describe("toSvg", () => {
 		expect(svg).toContain('stop-opacity="0.3"');
 	});
 
-	test("vignette does not change blob geometry", () => {
+	test("vignette does not change field geometry", () => {
 		const clean = generate("stable", { vignette: false });
 		const dirty = generate("stable");
-		expect(dirty.blobs).toEqual(clean.blobs);
-		expect(dirty.warp).toEqual(clean.warp);
+		expect(dirty.fields).toEqual(clean.fields);
 	});
 
 	test("dirty svg output is stable (frozen snapshot)", () => {
@@ -85,6 +82,15 @@ describe("toSvgDataUri", () => {
 		expect(uri.startsWith("data:image/svg+xml,")).toBe(true);
 		expect(decodeURIComponent(uri.slice("data:image/svg+xml,".length))).toBe(
 			toSvg(generate("uri")),
+		);
+	});
+
+	test("preserves SVG dimensions in the encoded output", () => {
+		const spec = generate("sized-uri");
+		const options = { width: 640, height: 360 };
+		const uri = toSvgDataUri(spec, options);
+		expect(decodeURIComponent(uri.slice("data:image/svg+xml,".length))).toBe(
+			toSvg(spec, options),
 		);
 	});
 });
@@ -103,25 +109,43 @@ describe("toCss", () => {
 		expect(toCss(spec).backgroundColor).toBe(spec.background.hex);
 	});
 
-	test("contains one layer per blob plus vignette, darkest blob first", () => {
+	test("embeds the exact organic svg renderer", () => {
 		const spec = generate("layers");
 		const css = toCss(spec);
-		expect(css.backgroundImage.match(/radial-gradient/g)).toHaveLength(
-			spec.blobs.length + 1,
+		expect(css.backgroundImage).toBe(`url("${toSvgDataUri(spec)}")`);
+		expect(decodeURIComponent(css.backgroundImage)).toContain(
+			"<feGaussianBlur",
 		);
-		const lastBlob = spec.blobs[spec.blobs.length - 1];
-		expect(css.backgroundImage.indexOf(lastBlob?.color.hex ?? "")).toBeLessThan(
-			css.backgroundImage.indexOf(spec.blobs[0]?.color.hex ?? ""),
+		expect(decodeURIComponent(css.backgroundImage)).toContain("<feTurbulence");
+		expect(decodeURIComponent(css.backgroundImage)).toContain(
+			spec.background.hex,
 		);
+	});
+
+	test("forwards artwork dimensions and includes complete background sizing", () => {
+		const spec = generate("sized-css");
+		const options = { width: 480, height: 320 };
+		const css = toCss(spec, options);
+		expect(css).toEqual({
+			backgroundColor: spec.background.hex,
+			backgroundImage: `url("${toSvgDataUri(spec, options)}")`,
+			backgroundPosition: "center",
+			backgroundRepeat: "no-repeat",
+			backgroundSize: "100% 100%",
+		});
 	});
 
 	test("includes vignette layer by default", () => {
 		const css = toCss(generate("dirty"));
-		expect(css.backgroundImage).toContain("rgba(0,0,0,0.18) 100%)");
+		expect(decodeURIComponent(css.backgroundImage)).toContain(
+			'stop-opacity="0.08"',
+		);
 	});
 
 	test("omits vignette layer when disabled", () => {
 		const css = toCss(generate("clean", { vignette: false }));
-		expect(css.backgroundImage).not.toContain("rgba(0,0,0");
+		expect(decodeURIComponent(css.backgroundImage)).not.toContain(
+			'stop-color="#000"',
+		);
 	});
 });

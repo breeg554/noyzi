@@ -8,14 +8,12 @@ import {
 	CollapsibleTrigger,
 } from "#/components/ui/collapsible.tsx";
 import { Slider } from "#/components/ui/slider.tsx";
-import { Switch } from "#/components/ui/switch.tsx";
 import { ToggleGroup, ToggleGroupItem } from "#/components/ui/toggle-group.tsx";
 import { playBoop } from "#/lib/click-sound.ts";
 import {
 	DEFAULT_GALLERY_OPTIONS,
 	type GalleryOptions,
 	isDefaultGalleryOptions,
-	LAYOUTS,
 	MAX_COLORS,
 	MIN_COLORS,
 	ROUNDED,
@@ -47,24 +45,14 @@ export function GalleryToolbar() {
 
 	return (
 		<>
-			{/* Desktop: inline row */}
 			<div className="hidden flex-wrap items-center gap-x-4 gap-y-2 md:flex">
 				<ControlLabel label="colors">
 					<ColorsControl options={options} update={update} />
 				</ControlLabel>
-
 				<Separator />
-
-				<ControlLabel label="layout">
-					<LayoutControl options={options} update={update} />
+				<ControlLabel label="vignette">
+					<VignetteControl options={options} update={update} />
 				</ControlLabel>
-
-				<Separator />
-
-				<ControlLabel label="warp">
-					<WarpControl options={options} update={update} />
-				</ControlLabel>
-
 				<Separator />
 
 				<ControlLabel label="rounded">
@@ -74,7 +62,6 @@ export function GalleryToolbar() {
 				<ResetButton disabled={isDefault} update={update} />
 			</div>
 
-			{/* Mobile: "filters" toggle + stacked panel */}
 			<Collapsible className="contents md:hidden">
 				<CollapsibleTrigger asChild>
 					<Button
@@ -95,11 +82,8 @@ export function GalleryToolbar() {
 						<MobileRow label="colors">
 							<ColorsControl options={options} update={update} />
 						</MobileRow>
-						<MobileRow label="layout">
-							<LayoutControl options={options} update={update} />
-						</MobileRow>
-						<MobileRow label="warp">
-							<WarpControl options={options} update={update} />
+						<MobileRow label="vignette">
+							<VignetteControl options={options} update={update} />
 						</MobileRow>
 						<MobileRow label="rounded">
 							<RoundedControl options={options} update={update} />
@@ -138,29 +122,6 @@ function ColorsControl({ options, update }: ControlProps) {
 	);
 }
 
-function LayoutControl({ options, update }: ControlProps) {
-	return (
-		<ToggleGroup
-			type="single"
-			size="xs"
-			value={options.layout}
-			onValueChange={(layout) => {
-				if (layout) {
-					playBoop();
-					update({ layout: layout as GalleryOptions["layout"] });
-				}
-			}}
-			aria-label="Blob layout"
-		>
-			{LAYOUTS.map((layout) => (
-				<ToggleGroupItem key={layout} value={layout}>
-					{layout}
-				</ToggleGroupItem>
-			))}
-		</ToggleGroup>
-	);
-}
-
 function RoundedControl({ options, update }: ControlProps) {
 	return (
 		<ToggleGroup
@@ -184,16 +145,54 @@ function RoundedControl({ options, update }: ControlProps) {
 	);
 }
 
-function WarpControl({ options, update }: ControlProps) {
+function VignetteControl({ options, update }: ControlProps) {
 	return (
-		<Switch
-			checked={options.warp}
-			onCheckedChange={(warp) => {
-				playBoop();
-				update({ warp });
-			}}
-			aria-label="Noise warp"
+		<ValueSlider
+			value={options.vignette}
+			min={0}
+			max={0.3}
+			step={0.02}
+			ariaLabel="Vignette strength"
+			onChange={(vignette) => update({ vignette })}
 		/>
+	);
+}
+
+function ValueSlider({
+	value,
+	min,
+	max,
+	step,
+	ariaLabel,
+	onChange,
+}: {
+	value: number;
+	min: number;
+	max: number;
+	step: number;
+	ariaLabel: string;
+	onChange: (value: number) => void;
+}) {
+	return (
+		<div className="flex items-center gap-2">
+			<Slider
+				value={[value]}
+				min={min}
+				max={max}
+				step={step}
+				onValueChange={([next]) => {
+					if (next !== undefined && next !== value) {
+						playBoop();
+						onChange(next);
+					}
+				}}
+				className="w-24 md:w-16"
+				aria-label={ariaLabel}
+			/>
+			<span className="w-6 text-right text-[11px] text-muted-foreground tabular-nums">
+				{value.toFixed(2).replace(/^0/, "").replace(/0$/, "")}
+			</span>
+		</div>
 	);
 }
 

@@ -7,7 +7,7 @@
 <h1 align="center">@noyzi/core</h1>
 
 <p align="center">
-  Deterministic mesh gradients from any string or number. Same seed, same artwork—forever. ✨
+  Deterministic structured gradients from any string or number. Same seed, same artwork—forever. ✨
 </p>
 
 <p align="center">
@@ -39,7 +39,6 @@ import { generate, seedHash, toSvgDataUri } from "@noyzi/core";
 const seed = seedHash("ada@example.com");
 const gradient = generate(seed, {
   colors: 6,
-  layout: "orbit",
 });
 
 const image = toSvgDataUri(gradient, { width: 800, height: 800 });
@@ -53,14 +52,14 @@ The same input and options always produce the same result—across sessions, dev
 
 | Function | Returns | Description |
 | --- | --- | --- |
-| `generate(seed, options?)` | `GradientSpec` | Creates a deterministic gradient specification. Configure its color count, layout, warp, and vignette. |
+| `generate(seed, options?)` | `GradientSpec` | Creates a deterministic gradient specification. Configure its color count and vignette. |
 | `seedHash(input)` | `string` | Converts a string or number into a short, reusable seed. Sequential numeric IDs remain sequential. |
 | `isSeedHash(value)` | `boolean` | Checks whether a value already has the eight-character `seedHash` format. |
 | `isSequentialSeed(seed)` | `boolean` | Checks whether a seed is a safe integer or an integer-like string. |
 | `paletteFromSeed(seed, count?)` | `ColorStop[]` | Returns the exact deterministic color palette for a seed. The count is clamped from 2 to 8. |
 | `oklchToHex(color)` | `string` | Converts an OKLCH color to a clamped sRGB `#rrggbb` value. |
-| `toCss(spec)` | `CssOutput` | Produces `backgroundColor` and `backgroundImage` CSS properties. Includes vignette, but not warp. |
-| `toSvg(spec, options?)` | `string` | Renders the full gradient, including warp, as an SVG string. |
+| `toCss(spec, options?)` | `CssOutput` | Produces complete CSS background properties for the rendered SVG. |
+| `toSvg(spec, options?)` | `string` | Renders the full gradient as an SVG string. |
 | `toSvgDataUri(spec, options?)` | `string` | Renders an SVG data URI ready for an image source or CSS background. |
 | `drawToCanvas(spec, canvas, options?)` | `Promise<void>` | Draws the SVG renderer's output onto an existing browser canvas. |
 | `toCanvas(spec, options?)` | `Promise<HTMLCanvasElement>` | Creates and renders a new browser canvas, with optional dimensions and scale. |
@@ -76,14 +75,14 @@ import { generate, toBlob, toCss, toSvg } from "@noyzi/core";
 
 const gradient = generate("team-rocket");
 
-const css = toCss(gradient);                 // lightweight CSS layers
-const svg = toSvg(gradient, { width: 512 }); // full warped mesh
-const webp = await toBlob(gradient);         // browser-only raster image
+const css = toCss(gradient, { width: 480, height: 320 });
+const svg = toSvg(gradient, { width: 512 });
+const webp = await toBlob(gradient);
 ```
 
 | Output | API | Best for |
 | --- | --- | --- |
-| CSS | `toCss()` | Placeholders and subtle accents |
+| CSS | `toCss()` | Inline styles and framework-free rendering |
 | SVG | `toSvg()`, `toSvgDataUri()` | Sharp, scalable artwork |
 | Canvas | `drawToCanvas()`, `toCanvas()` | Interactive browser rendering |
 | Raster | `toBlob()`, `toDataUrl()` | Downloads, uploads, and sharing |

@@ -22,31 +22,31 @@ describe("generate", () => {
 		expect(generate("x", { colors: 3 })).toEqual(generate("x", { colors: 3 }));
 	});
 
-	test("colors option controls blob count", () => {
-		expect(generate("x", { colors: 2 }).blobs).toHaveLength(1);
-		expect(generate("x", { colors: 6 }).blobs).toHaveLength(5);
+	test("defaults to four colors", () => {
+		expect(generate("x").palette).toHaveLength(4);
+	});
+
+	test("colors option controls field count", () => {
+		expect(generate("x", { colors: 2 }).fields).toHaveLength(1);
+		expect(generate("x", { colors: 3 }).fields).toHaveLength(2);
+		expect(generate("x", { colors: 6 }).fields.length).toBeGreaterThanOrEqual(
+			2,
+		);
+		expect(generate("x", { colors: 6 }).fields.length).toBeLessThanOrEqual(3);
+	});
+
+	test("colors option is retained as the complete render palette", () => {
+		expect(generate("x", { colors: 2 }).palette).toHaveLength(2);
+		expect(generate("x", { colors: 5 }).palette).toHaveLength(5);
+		expect(generate("x", { colors: 8 }).palette).toHaveLength(8);
 	});
 
 	test("colors option is clamped to 2..8", () => {
-		expect(generate("x", { colors: 0 }).blobs).toHaveLength(1);
-		expect(generate("x", { colors: 99 }).blobs).toHaveLength(7);
-	});
-
-	test("warp can be disabled", () => {
-		expect(generate("x", { warp: false }).warp).toBeNull();
-	});
-
-	test("warp overrides are applied", () => {
-		const spec = generate("x", { warp: { frequency: 0.01, scale: 0.3 } });
-		expect(spec.warp?.frequency).toBe(0.01);
-		expect(spec.warp?.scale).toBe(0.3);
-	});
-
-	test("disabling warp does not change other fields", () => {
-		const full = generate("x");
-		const bare = generate("x", { warp: false });
-		expect(bare.blobs).toEqual(full.blobs);
-		expect(bare.background).toEqual(full.background);
+		expect(generate("x", { colors: 0 }).fields).toHaveLength(1);
+		expect(generate("x", { colors: 99 }).fields.length).toBeGreaterThanOrEqual(
+			3,
+		);
+		expect(generate("x", { colors: 99 }).fields.length).toBeLessThanOrEqual(4);
 	});
 
 	test("spec is JSON round-trippable", () => {
@@ -58,44 +58,38 @@ describe("generate", () => {
 		const spec = generate("colors");
 		const hex = /^#[0-9a-f]{6}$/;
 		expect(spec.background.hex).toMatch(hex);
-		for (const blob of spec.blobs) {
-			expect(blob.color.hex).toMatch(hex);
+		for (const color of spec.palette) {
+			expect(color.hex).toMatch(hex);
+		}
+		for (const field of spec.fields) {
+			expect(field.color.hex).toMatch(hex);
 		}
 	});
 
-	test("blob geometry stays within bounds", () => {
+	test("field geometry stays structured and within bounds", () => {
 		for (const seed of ["a", "b", "c", "d", "e", "f", "g", "h"]) {
-			for (const blob of generate(seed).blobs) {
-				expect(blob.x).toBeGreaterThanOrEqual(-0.25);
-				expect(blob.x).toBeLessThanOrEqual(1.25);
-				expect(blob.y).toBeGreaterThanOrEqual(-0.25);
-				expect(blob.y).toBeLessThanOrEqual(1.25);
-				expect(blob.radius).toBeGreaterThan(0);
+			for (const field of generate(seed).fields) {
+				expect(field.x).toBeGreaterThanOrEqual(-0.3);
+				expect(field.x).toBeLessThanOrEqual(1.3);
+				expect(field.y).toBeGreaterThanOrEqual(-0.3);
+				expect(field.y).toBeLessThanOrEqual(1.3);
+				expect(field.points.length).toBeGreaterThanOrEqual(10);
+				expect(field.points.length).toBeLessThanOrEqual(14);
+				expect(
+					new Set(field.points.map((point) => point.x)).size,
+				).toBeGreaterThan(4);
+				expect(field.feather).toBeGreaterThan(0);
+				expect(field.opacity).toBeGreaterThanOrEqual(0.88);
+				expect(field.opacity).toBeLessThanOrEqual(0.98);
 			}
 		}
 	});
 
-	test("sequential integer seeds get spread base hues", () => {
-		const circularDistance = (a: number, b: number) => {
-			const d = Math.abs(a - b) % 360;
-			return Math.min(d, 360 - d);
-		};
-		// Background hue = base hue + jitter in [-16, 16]; golden-angle spread
-		// guarantees adjacent ids stay far apart even with jitter.
-		for (let n = 1; n < 20; n++) {
-			const a = generate(n).background.oklch.h;
-			const b = generate(n + 1).background.oklch.h;
-			expect(circularDistance(a, b)).toBeGreaterThan(60);
-		}
-	});
-
-	test("integer seeds follow the golden angle", () => {
-		const GOLDEN_ANGLE = 137.50776405003785;
-		for (const n of [1, 7, 42, 1000]) {
-			const expected = ((n * GOLDEN_ANGLE) % 360) + (n < 0 ? 360 : 0);
-			const actual = generate(n).background.oklch.h;
-			const d = Math.abs(actual - expected) % 360;
-			expect(Math.min(d, 360 - d)).toBeLessThanOrEqual(16);
-		}
+	test("sequential integer seeds rotate through distinct palette families", () => {
+		const backgrounds = Array.from(
+			{ length: 10 },
+			(_, index) => generate(index + 1).background.hex,
+		);
+		expect(new Set(backgrounds).size).toBeGreaterThanOrEqual(5);
 	});
 });

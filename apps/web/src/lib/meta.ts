@@ -1,7 +1,7 @@
 const defaults = {
 	title: "Noyzi",
 	description:
-		"Turn any email, username or id into a unique mesh gradient. Deterministic, SSR-safe, no stored assets.",
+		"Turn any email, username or id into a unique structured gradient. Deterministic, SSR-safe, no stored assets.",
 	url: "https://noyzi.dev",
 	image: "https://noyzi.dev/og.png",
 };
@@ -60,7 +60,7 @@ export function createMeta(options?: MetaOptions) {
 			{ property: "og:image", content: defaults.image },
 			{ property: "og:image:width", content: "1200" },
 			{ property: "og:image:height", content: "629" },
-			{ property: "og:image:alt", content: "Noyzi mesh gradient preview" },
+			{ property: "og:image:alt", content: "Noyzi gradient preview" },
 			{ name: "twitter:card", content: "summary_large_image" },
 			{ name: "twitter:title", content: title },
 			{ name: "twitter:description", content: description },

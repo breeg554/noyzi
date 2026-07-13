@@ -15,7 +15,7 @@ export const Route = createFileRoute("/examples")({
 		createMeta({
 			title: "Examples — Noyzi",
 			description:
-				"See Noyzi mesh gradients used as avatars, artwork, app icons, covers, and more.",
+				"See Noyzi gradients used as avatars, artwork, app icons, covers, and more.",
 			path: "/examples",
 		}),
 });

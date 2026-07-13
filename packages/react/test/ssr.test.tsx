@@ -59,7 +59,7 @@ describe("NoyziGradient (SSR)", () => {
 	test("options change the output", () => {
 		const a = renderToString(<NoyziGradient seed="dawn" />);
 		const b = renderToString(
-			<NoyziGradient seed="dawn" options={{ colors: 2, warp: false }} />,
+			<NoyziGradient seed="dawn" options={{ colors: 2, vignette: false }} />,
 		);
 		expect(a).not.toBe(b);
 	});

@@ -7,7 +7,7 @@
 <h1 align="center">@noyzi/react</h1>
 
 <p align="center">
-  Beautiful, deterministic mesh gradients for React—SSR-safe with zero client JavaScript. 🌈
+  Beautiful, deterministic structured gradients for React with zero client JavaScript. 🌈
 </p>
 
 <p align="center">
@@ -56,7 +56,7 @@ Different seed, different artwork. The same seed always renders identically—ev
 ```tsx
 <NoyziGradient
   seed="summer-mixtape"
-  options={{ colors: 7, layout: "scatter" }}
+  options={{ colors: 7 }}
   artwork={{ width: 1600, height: 400 }}
   className="h-40 w-full rounded-2xl shadow-none"
 />

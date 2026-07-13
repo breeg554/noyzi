@@ -20,7 +20,7 @@ export const Route = createFileRoute("/")({
 	validateSearch: parseGallerySearch,
 	head: () =>
 		createMeta({
-			title: "Noyzi — Mesh gradients from any seed",
+			title: "Noyzi — Gradients from any seed",
 			path: "/",
 		}),
 	loader: async ({ context }) => {

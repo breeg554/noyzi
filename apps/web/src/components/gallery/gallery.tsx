@@ -93,7 +93,7 @@ function GalleryGrid({
 
 	useEffect(() => {
 		virtualizer.measure();
-	}, [layout, virtualizer]);
+	}, [virtualizer]);
 
 	const renderItem = (itemIndex: number) => {
 		const item = state.items[itemIndex];

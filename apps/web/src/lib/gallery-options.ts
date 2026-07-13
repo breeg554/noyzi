@@ -3,32 +3,22 @@ import type { GenerateOptions } from "@noyzi/core";
 export const MIN_COLORS = 2;
 export const MAX_COLORS = 8;
 
-export const LAYOUTS = ["auto", "linear", "orbit", "scatter"] as const;
-export type LayoutOption = (typeof LAYOUTS)[number];
-
 export const ROUNDED = ["none", "sm", "md", "xl", "full"] as const;
 export type RoundedOption = (typeof ROUNDED)[number];
 
 export interface GalleryOptions {
 	colors: number;
-	layout: LayoutOption;
 	rounded: RoundedOption;
-	warp: boolean;
+	vignette: number;
 }
 
 export const DEFAULT_GALLERY_OPTIONS: GalleryOptions = {
-	colors: 6,
-	layout: "auto",
+	colors: 4,
 	rounded: "md",
-	warp: true,
+	vignette: 0.08,
 };
 
-/** Search params mirror `GalleryOptions`, with defaults omitted from the URL. */
 export type GallerySearch = Partial<GalleryOptions>;
-
-function isLayout(value: unknown): value is LayoutOption {
-	return LAYOUTS.includes(value as LayoutOption);
-}
 
 function isRounded(value: unknown): value is RoundedOption {
 	return ROUNDED.includes(value as RoundedOption);
@@ -38,7 +28,6 @@ export function parseGallerySearch(
 	search: Record<string, unknown>,
 ): GallerySearch {
 	const result: GallerySearch = {};
-
 	const colors = Number(search.colors);
 	if (
 		Number.isInteger(colors) &&
@@ -48,16 +37,21 @@ export function parseGallerySearch(
 	) {
 		result.colors = colors;
 	}
-	if (isLayout(search.layout) && search.layout !== "auto") {
-		result.layout = search.layout;
-	}
-	if (isRounded(search.rounded) && search.rounded !== "md") {
+	if (
+		isRounded(search.rounded) &&
+		search.rounded !== DEFAULT_GALLERY_OPTIONS.rounded
+	) {
 		result.rounded = search.rounded;
 	}
-	if (search.warp === false || search.warp === "false") {
-		result.warp = false;
+	const vignette = Number(search.vignette);
+	if (
+		Number.isFinite(vignette) &&
+		vignette >= 0 &&
+		vignette <= 0.3 &&
+		vignette !== DEFAULT_GALLERY_OPTIONS.vignette
+	) {
+		result.vignette = vignette;
 	}
-
 	return result;
 }
 
@@ -65,38 +59,29 @@ export function resolveGalleryOptions(search: GallerySearch): GalleryOptions {
 	return { ...DEFAULT_GALLERY_OPTIONS, ...search };
 }
 
-/** Strips defaults so the URL stays clean. */
 export function toGallerySearch(options: GalleryOptions): GallerySearch {
 	const search: GallerySearch = {};
-	if (options.colors !== DEFAULT_GALLERY_OPTIONS.colors) {
+	if (options.colors !== DEFAULT_GALLERY_OPTIONS.colors)
 		search.colors = options.colors;
-	}
-	if (options.layout !== DEFAULT_GALLERY_OPTIONS.layout) {
-		search.layout = options.layout;
-	}
-	if (options.rounded !== DEFAULT_GALLERY_OPTIONS.rounded) {
+	if (options.rounded !== DEFAULT_GALLERY_OPTIONS.rounded)
 		search.rounded = options.rounded;
-	}
-	if (options.warp !== DEFAULT_GALLERY_OPTIONS.warp) {
-		search.warp = options.warp;
-	}
+	if (options.vignette !== DEFAULT_GALLERY_OPTIONS.vignette)
+		search.vignette = options.vignette;
 	return search;
 }
 
 export function isDefaultGalleryOptions(options: GalleryOptions): boolean {
 	return (
 		options.colors === DEFAULT_GALLERY_OPTIONS.colors &&
-		options.layout === DEFAULT_GALLERY_OPTIONS.layout &&
 		options.rounded === DEFAULT_GALLERY_OPTIONS.rounded &&
-		options.warp === DEFAULT_GALLERY_OPTIONS.warp
+		options.vignette === DEFAULT_GALLERY_OPTIONS.vignette
 	);
 }
 
 export function toGenerateOptions(options: GalleryOptions): GenerateOptions {
 	return {
 		colors: options.colors,
-		layout: options.layout === "auto" ? undefined : options.layout,
-		warp: options.warp ? undefined : false,
+		vignette: options.vignette === 0 ? false : { strength: options.vignette },
 	};
 }
 

@@ -1,31 +1,36 @@
 import { NoyziGradient } from "@noyzi/react";
-import { Link } from "@tanstack/react-router";
+import { getRouteApi, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { useCopyGradientComponent } from "#/components/gradient-card.tsx";
 import { Button } from "#/components/ui/button.tsx";
-import { DEFAULT_GALLERY_OPTIONS } from "#/lib/gallery-options.ts";
+import {
+	type GalleryOptions,
+	resolveGalleryOptions,
+	toGenerateOptions,
+} from "#/lib/gallery-options.ts";
 
 const INSTALL_COMMAND = "bun add @noyzi/core";
-const AVATAR_SEEDS = ["mesh", "gradient", "seed"];
+const AVATAR_SEEDS = ["color", "gradient", "seed"];
+const route = getRouteApi("/");
 
 export function Hero() {
+	const search = route.useSearch();
+	const options = resolveGalleryOptions(search);
+
 	return (
 		<section className="flex flex-col items-center gap-5 px-4 pt-8 pb-20 text-center sm:pt-10 sm:pb-24">
 			<div className="-space-x-3 flex">
 				{AVATAR_SEEDS.map((seed) => (
-					<HeroAvatar key={seed} seed={seed} />
+					<HeroAvatar key={seed} seed={seed} options={options} />
 				))}
 			</div>
-
 			<h1 className="max-w-xl text-balance font-semibold text-4xl tracking-tighter sm:text-5xl">
-				Beautiful mesh gradients from any seed
+				Beautiful gradients from any seed
 			</h1>
-
 			<p className="max-w-xl text-balance text-muted-foreground text-sm leading-relaxed sm:text-base">
 				Turn any email, username or id into a unique gradient. Deterministic,
 				SSR-safe, no stored assets.
 			</p>
-
 			<Button
 				asChild
 				variant="outline"
@@ -45,12 +50,19 @@ export function Hero() {
 	);
 }
 
-function HeroAvatar({ seed }: { seed: string }) {
+function HeroAvatar({
+	seed,
+	options,
+}: {
+	seed: string;
+	options: GalleryOptions;
+}) {
 	const { copy } = useCopyGradientComponent(
 		seed,
-		DEFAULT_GALLERY_OPTIONS,
+		options,
 		"size-10 shrink-0 rounded-full ring-2 ring-background",
 	);
+	const className = "size-10 shrink-0 rounded-full ring-2 ring-background";
 
 	return (
 		<Button
@@ -61,8 +73,9 @@ function HeroAvatar({ seed }: { seed: string }) {
 		>
 			<NoyziGradient
 				seed={seed}
+				options={toGenerateOptions(options)}
 				title={seed}
-				className="size-10 shrink-0 rounded-full ring-2 ring-background"
+				className={className}
 			/>
 		</Button>
 	);

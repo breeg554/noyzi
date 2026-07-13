@@ -68,10 +68,16 @@ export function OutputLab() {
 	const [raster, setRaster] = useState<RasterResult | null>(null);
 	const outputs = useMemo(() => {
 		const spec = generate(seedHash(activeSeed));
-		const css = toCss(spec);
+		const css = toCss(spec, { width: WIDTH, height: HEIGHT });
 		const svg = toSvg(spec, { width: WIDTH, height: HEIGHT });
 		const uri = toSvgDataUri(spec, { width: WIDTH, height: HEIGHT });
-		const cssText = `background-color:${css.backgroundColor};background-image:${css.backgroundImage}`;
+		const cssText = [
+			`background-color:${css.backgroundColor}`,
+			`background-image:${css.backgroundImage}`,
+			`background-position:${css.backgroundPosition}`,
+			`background-repeat:${css.backgroundRepeat}`,
+			`background-size:${css.backgroundSize}`,
+		].join(";");
 		return { spec, css, cssText, svg, uri };
 	}, [activeSeed]);
 
@@ -118,10 +124,7 @@ export function OutputLab() {
 		};
 	}, [outputs]);
 
-	const cssStyle = {
-		backgroundColor: outputs.css.backgroundColor,
-		backgroundImage: outputs.css.backgroundImage,
-	} satisfies CSSProperties;
+	const cssStyle = outputs.css satisfies CSSProperties;
 	const canvasMemory = WIDTH * HEIGHT * 4;
 
 	return (

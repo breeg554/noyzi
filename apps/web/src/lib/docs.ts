@@ -1,22 +1,15 @@
 export type DocPackage = "@noyzi/core" | "@noyzi/react";
 
-export type DocPreviewKind = "palette";
+export type DocPreviewKind = "gradient" | "palette";
 
 export interface DocEntry {
-	/** Anchor id, e.g. "generate". */
 	id: string;
-	/** Display name, e.g. "generate()". */
 	name: string;
 	pkg: DocPackage;
-	/** Full type signature shown in the signature block. */
 	signature: string;
-	/** Short prose description. */
 	description: string;
-	/** Optional extra notes rendered after the example. */
 	note?: string;
-	/** Usage example. */
 	example?: string;
-	/** Optional interactive preview rendered after the example. */
 	preview?: DocPreviewKind;
 }
 
@@ -28,19 +21,18 @@ export const DOC_ENTRIES: DocEntry[] = [
 		signature:
 			"function generate(seed: Seed, options?: GenerateOptions): GradientSpec",
 		description:
-			"Seed in, GradientSpec out: palette, layout (linear | orbit | scatter), 1–7 blobs, optional noise warp and vignette. Plain serializable object — feed it to any renderer.",
-		note: "colors clamps to 2–8 (default 6). Warp is what makes it a mesh: seeded fractal noise displaces the blob pixels (SVG feTurbulence + feDisplacementMap), smearing perfect circles into organic, fluid shapes. warp: false keeps the clean radial circles instead. vignette darkens the edges — on by default, disable with false or tweak with { strength }.",
+			"Seed in, GradientSpec out: the complete requested palette, 1–4 organic structure fields, and an optional vignette. The SVG uses every palette color while the fields preserve deterministic geometry across output formats.",
+		note: "colors clamps to 2–8 (default 4). vignette darkens the edges — strength defaults to 0.08, or disable it with false.",
 		example: `import { generate, seedHash } from "@noyzi/core";
 
-// GradientSpec: { version, seed, background, blobs, warp, vignette }
+// GradientSpec: { seed, background, palette, fields, vignette }
 const spec = generate(seedHash("ada"));
 spec.background.hex; // "#1b2a4a"
-spec.blobs.length; // 1-7 positioned color blobs
+spec.fields[0].points; // deterministic organic contour
 
-// clean look: perfect circles, no vignette
+// clean look: no vignette
 const flat = generate("ada", {
   colors: 4,
-  warp: false,
   vignette: false,
 });
 
@@ -74,7 +66,7 @@ isSeedHash("ada@example.com"); // false`,
 		signature:
 			"function paletteFromSeed(seed: Seed, count?: number): ColorStop[]",
 		description:
-			"The exact color stops a seed's gradient uses: [background, ...blobColors]. Use it to derive matching UI accents. Count clamps to 2–8 (default 6).",
+			"The deterministic palette family available to a seed. The generator selects a restrained subset for its visible fields. Use it to derive matching UI accents. Count clamps to 2–8 (default 4).",
 		example: `const [background, ...accents] = paletteFromSeed("ada");
 background.hex; // "#1b2a4a"
 background.oklch; // { l, c, h }`,
@@ -93,12 +85,13 @@ background.oklch; // { l, c, h }`,
 		id: "tocss",
 		name: "toCss()",
 		pkg: "@noyzi/core",
-		signature: "function toCss(spec: GradientSpec): CssOutput",
+		signature:
+			"function toCss(spec: GradientSpec, options?: SvgOptions): CssOutput",
 		description:
-			"Spec → backgroundColor + stacked background layers: radial-gradient blobs plus the vignette overlay. Lightest output, no warp — good for placeholders and accents.",
-		example: `const { backgroundColor, backgroundImage } = toCss(generate("ada"));
+			"Spec → complete CSS background properties containing the exact organic SVG. Pass the artwork dimensions when matching another renderer.",
+		example: `const background = toCss(generate("ada"), { width: 480, height: 320 });
 
-<div style={{ backgroundColor, backgroundImage }} />`,
+<div style={background} />`,
 	},
 	{
 		id: "tosvg",
@@ -107,7 +100,7 @@ background.oklch; // { l, c, h }`,
 		signature:
 			"function toSvg(spec: GradientSpec, options?: SvgOptions): string",
 		description:
-			"The reference renderer: SVG string with per-blob radial gradients plus the warp filter chain. Every other output is derived from it. Default 1000×1000.",
+			"The reference renderer: an SVG string with one continuous palette surface, warped by deterministic low-frequency noise and softly diffused. Every other static output is derived from it. Default 1000×1000.",
 		example: `const svg = toSvg(generate("ada"), { width: 512, height: 512 });`,
 	},
 	{
@@ -129,7 +122,7 @@ background.oklch; // { l, c, h }`,
 		signature:
 			"function drawToCanvas(\n  spec: GradientSpec,\n  canvas: HTMLCanvasElement | OffscreenCanvas,\n  options?: SvgOptions,\n): Promise<void>",
 		description:
-			"Paints the exact SVG output onto a canvas you own — for custom resizing, DPR scaling or animation loops. Browser-only.",
+			"Paints the exact SVG output onto a canvas you own — for custom resizing and DPR scaling. Browser-only.",
 		example: `const canvas = document.querySelector("canvas");
 await drawToCanvas(generate("ada"), canvas, { width: 400, height: 400 });`,
 	},
@@ -199,6 +192,7 @@ interface NoyziBaseProps
   artwork={{ width: 1600, height: 400 }}
   className="h-40 w-full rounded-lg"
 />`,
+		preview: "gradient",
 	},
 ];
 

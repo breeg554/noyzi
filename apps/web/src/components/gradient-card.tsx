@@ -23,6 +23,7 @@ import { cn } from "#/lib/utils.ts";
 
 const EXPORT_SIZE = 2048;
 const EXPORT_QUALITY = 0.9;
+const TOAST_ARTWORK = { width: 320, height: 80 };
 
 function gradientBlob(
 	seed: string,
@@ -38,25 +39,29 @@ function gradientBlob(
 	});
 }
 
+export function showGradientCopyToast(seed: string, options?: GenerateOptions) {
+	const spec = generate(seedHash(seed), options);
+	const background = toCss(spec, TOAST_ARTWORK);
+	toast(
+		<>
+			<span
+				aria-hidden
+				className="pointer-events-none absolute inset-0 rounded-full"
+				style={background}
+			/>
+			<span className="relative rounded-full text-white backdrop-blur-[2px]">
+				Copied to clipboard
+			</span>
+		</>,
+		{ style: { "--toast-border": spec.background.hex } as CSSProperties },
+	);
+}
+
 export function useCopyGradientImage(seed: string, options?: GenerateOptions) {
 	const [copied, setCopied] = useState(false);
 
 	const copy = async () => {
-		const spec = generate(seedHash(seed), options);
-		const { backgroundColor, backgroundImage } = toCss(spec);
-		toast(
-			<>
-				<span
-					aria-hidden
-					className="pointer-events-none absolute inset-0 rounded-full"
-					style={{ backgroundColor, backgroundImage }}
-				/>
-				<span className="relative rounded-full text-white backdrop-blur-[2px]">
-					Copied to clipboard
-				</span>
-			</>,
-			{ style: { "--toast-border": spec.background.hex } as CSSProperties },
-		);
+		showGradientCopyToast(seed, options);
 		setCopied(true);
 		setTimeout(() => setCopied(false), 1500);
 		await navigator.clipboard.write([
@@ -78,11 +83,12 @@ function componentSnippet(
 	if (options.colors !== DEFAULT_GALLERY_OPTIONS.colors) {
 		optionParts.push(`colors: ${options.colors}`);
 	}
-	if (options.layout !== DEFAULT_GALLERY_OPTIONS.layout) {
-		optionParts.push(`layout: ${JSON.stringify(options.layout)}`);
-	}
-	if (options.warp !== DEFAULT_GALLERY_OPTIONS.warp) {
-		optionParts.push(`warp: ${options.warp}`);
+	if (options.vignette !== DEFAULT_GALLERY_OPTIONS.vignette) {
+		optionParts.push(
+			options.vignette === 0
+				? "vignette: false"
+				: `vignette: { strength: ${options.vignette} }`,
+		);
 	}
 
 	const lines = ["<NoyziGradient", `  seed=${JSON.stringify(seed)}`];
@@ -104,21 +110,7 @@ export function useCopyGradientComponent(
 		await navigator.clipboard.writeText(
 			componentSnippet(seed, options, className),
 		);
-		const spec = generate(seedHash(seed), toGenerateOptions(options));
-		const { backgroundColor, backgroundImage } = toCss(spec);
-		toast(
-			<>
-				<span
-					aria-hidden
-					className="pointer-events-none absolute inset-0 rounded-full"
-					style={{ backgroundColor, backgroundImage }}
-				/>
-				<span className="relative rounded-full text-white backdrop-blur-[2px]">
-					Copied to clipboard
-				</span>
-			</>,
-			{ style: { "--toast-border": spec.background.hex } as CSSProperties },
-		);
+		showGradientCopyToast(seed, toGenerateOptions(options));
 		setCopied(true);
 		setTimeout(() => setCopied(false), 1500);
 	};
@@ -137,6 +129,10 @@ export const GradientCard = memo(function GradientCard({
 }) {
 	const generateOptions = toGenerateOptions(options);
 	const { copied, copy } = useCopyGradientComponent(seed, options);
+	const gradientClassName = cn(
+		"size-28 shrink-0 transition-transform duration-200 ease-out group-hover:scale-110",
+		ROUNDED_CLASS[options.rounded],
+	);
 	return (
 		<motion.div
 			initial={{ opacity: 0, y: 8, filter: "blur(4px)" }}
@@ -167,10 +163,7 @@ export const GradientCard = memo(function GradientCard({
 							options={generateOptions}
 							artwork={{ width: 500, height: 500 }}
 							title={seed}
-							className={cn(
-								"size-28 shrink-0 transition-transform duration-200 ease-out group-hover:scale-110",
-								ROUNDED_CLASS[options.rounded],
-							)}
+							className={gradientClassName}
 						/>
 						<div className="-translate-x-1/2 absolute top-[110%] left-1/2 mt-4 flex items-center gap-1 transition-all duration-200 ease-out md:translate-y-2 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100">
 							<CopyButton copied={copied} onCopy={copy} />
