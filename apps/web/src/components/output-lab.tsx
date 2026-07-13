@@ -144,7 +144,7 @@ export function OutputLab() {
 
 			<div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
 				<PreviewCard
-					name="CSS layers"
+					name="CSS background"
 					method="toCss()"
 					weight={formatBytes(encoder.encode(outputs.cssText).byteLength)}
 				>

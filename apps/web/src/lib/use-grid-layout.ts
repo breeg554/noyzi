@@ -7,10 +7,30 @@ export interface GridLayout {
 }
 
 const LAYOUTS: ReadonlyArray<GridLayout & { query: string }> = [
-	{ query: "(min-width: 96rem)", columns: 6, leadingColSpan: 2, leadingRowSpan: 2 },
-	{ query: "(min-width: 64rem)", columns: 5, leadingColSpan: 2, leadingRowSpan: 2 },
-	{ query: "(min-width: 48rem)", columns: 2, leadingColSpan: 2, leadingRowSpan: 2 },
-	{ query: "(min-width: 40rem)", columns: 2, leadingColSpan: 2, leadingRowSpan: 1 },
+	{
+		query: "(min-width: 96rem)",
+		columns: 6,
+		leadingColSpan: 2,
+		leadingRowSpan: 2,
+	},
+	{
+		query: "(min-width: 64rem)",
+		columns: 5,
+		leadingColSpan: 2,
+		leadingRowSpan: 2,
+	},
+	{
+		query: "(min-width: 48rem)",
+		columns: 2,
+		leadingColSpan: 2,
+		leadingRowSpan: 2,
+	},
+	{
+		query: "(min-width: 40rem)",
+		columns: 2,
+		leadingColSpan: 2,
+		leadingRowSpan: 1,
+	},
 ];
 
 const DEFAULT_LAYOUT: GridLayout = {

@@ -52,7 +52,7 @@
 		"ssr",
 		"typescript",
 		"tailwindcss",
-		"mesh-gradient"
+		"structured-gradient"
 	],
 	"dependencies": {
 		"@noyzi/core": "workspace:^",

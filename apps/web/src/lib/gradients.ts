@@ -13,7 +13,7 @@ export interface GradientItem {
 const pageCache = new LRUCache<number, GradientItem[]>({ max: 100 });
 
 const getGradientsPage = createServerFn({ method: "GET" })
-	.inputValidator((page: number) => {
+	.validator((page: number) => {
 		if (!Number.isInteger(page) || page < 0) {
 			throw new Error(`Invalid page: ${page}`);
 		}

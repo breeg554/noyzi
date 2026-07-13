@@ -30,7 +30,7 @@ function canGzip(mimeType: string) {
 }
 
 function createStaticRoute(
-	bytes: Uint8Array,
+	bytes: Uint8Array<ArrayBuffer>,
 	mimeType: string,
 	immutable: boolean,
 ): StaticRoute {
@@ -116,9 +116,7 @@ async function start() {
 		},
 	});
 
-	console.log(
-		`Noyzi is listening on http://localhost:${server.port.toString()}`,
-	);
+	console.log(`Noyzi is listening on http://localhost:${server.port ?? port}`);
 }
 
 void start();

@@ -114,9 +114,9 @@ function OutputLabSection() {
 		>
 			<h2 className="font-semibold text-3xl tracking-tighter">Output lab</h2>
 			<p className="mt-4 max-w-2xl text-muted-foreground text-sm leading-relaxed">
-				Compare the same gradient across every renderer. CSS is the lightest but
-				SVG, React, canvas, and raster outputs share the reference artwork.
-				Raster weight varies by seed, dimensions, quality, and browser encoder.
+				Compare the same gradient across every renderer. CSS and React wrap the
+				reference SVG, while canvas and raster outputs draw from it. Raster
+				weight varies by seed, dimensions, quality, and browser encoder.
 			</p>
 			<div className="mt-6">
 				<OutputLab />

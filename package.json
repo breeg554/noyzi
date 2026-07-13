@@ -8,7 +8,8 @@
 	"scripts": {
 		"dev": "bun run --filter web dev",
 		"build": "bun run --filter @noyzi/core build && bun run --filter @noyzi/react build && bun run --filter web build",
-		"test": "bun run --filter @noyzi/core build && bun run --filter '@noyzi/*' test",
+		"test": "bun run --filter @noyzi/core build && bun run --filter '@noyzi/*' test && bun run --filter web test",
+		"typecheck": "bun run --filter '@noyzi/*' typecheck && bun run --filter web typecheck",
 		"check": "biome check .",
 		"format": "biome format --write .",
 		"lint": "biome lint ."
