@@ -126,7 +126,9 @@ describe("raster renderers", () => {
 			height: 0,
 			getContext: () => ({ drawImage: () => {} }),
 			toBlob: (callback: (blob: Blob | null) => void, type?: string) =>
-				callback(new Blob(["gradient"], { type })),
+				callback(
+					new Blob(["gradient"], type === undefined ? undefined : { type }),
+				),
 			toDataURL: (type?: string) => `data:${type};base64,Z3JhZGllbnQ=`,
 		};
 		const globals = globalThis as typeof globalThis & {
