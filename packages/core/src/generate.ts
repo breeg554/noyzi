@@ -1,6 +1,8 @@
+import type { HexColor } from "./color.ts";
 import {
 	type ColorStop,
 	generatePalette,
+	paletteFromHex,
 	sequentialBaseHue,
 } from "./palette.ts";
 import { createRng, normalizeSeed, type Rng, type Seed } from "./prng.ts";
@@ -33,6 +35,7 @@ export interface GradientSpec {
 
 export interface GenerateOptions {
 	colors?: number;
+	palette?: readonly HexColor[];
 	vignette?: false | Partial<VignetteSpec>;
 }
 
@@ -112,13 +115,22 @@ export function generate(
 	options: GenerateOptions = {},
 ): GradientSpec {
 	const rng = createRng(seed);
-	const colorCount = clamp(Math.floor(options.colors ?? 4), 2, 8);
+	const colorCount = options.palette
+		? options.palette.length
+		: clamp(Math.floor(options.colors ?? 4), 2, 8);
 	const maximumFieldCount = Math.min(
 		4,
 		colorCount - 1,
 		Math.max(1, Math.ceil((colorCount - 1) * 0.6)),
 	);
-	const palette = generatePalette(rng, colorCount, sequentialBaseHue(seed));
+	const generatedPalette = generatePalette(
+		rng,
+		colorCount,
+		sequentialBaseHue(seed),
+	);
+	const palette = options.palette
+		? paletteFromHex(options.palette)
+		: generatedPalette;
 	const fieldCount =
 		maximumFieldCount <= 2
 			? maximumFieldCount

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { generate } from "../src/index.ts";
+import { generate, type HexColor } from "../src/index.ts";
 
 describe("generate", () => {
 	test("same seed produces identical spec", () => {
@@ -47,6 +47,47 @@ describe("generate", () => {
 			3,
 		);
 		expect(generate("x", { colors: 99 }).fields.length).toBeLessThanOrEqual(4);
+	});
+
+	test("custom palette controls the rendered colors", () => {
+		const spec = generate("brand", {
+			palette: ["#123", "#ABCDEF", "#ff5500"],
+		});
+
+		expect(spec.palette.map((color) => color.hex)).toEqual([
+			"#112233",
+			"#abcdef",
+			"#ff5500",
+		]);
+		expect(spec.palette[0]).toEqual(spec.background);
+		expect(spec.fields.map((field) => field.color.hex)).toEqual([
+			"#abcdef",
+			"#ff5500",
+		]);
+	});
+
+	test("custom palette overrides colors without changing seeded geometry", () => {
+		const first = generate("brand", {
+			colors: 8,
+			palette: ["#112233", "#445566", "#778899"],
+		});
+		const second = generate("brand", {
+			palette: ["#ffeecc", "#ccbbaa", "#998877"],
+		});
+
+		expect(first.palette).toHaveLength(3);
+		expect(first.fields.map(({ color: _color, ...field }) => field)).toEqual(
+			second.fields.map(({ color: _color, ...field }) => field),
+		);
+	});
+
+	test("custom palette validates its size and colors", () => {
+		expect(() => generate("brand", { palette: ["#123456"] })).toThrow(
+			"between 2 and 8",
+		);
+		expect(() =>
+			generate("brand", { palette: ["red" as HexColor, "#123456"] }),
+		).toThrow("Invalid palette color");
 	});
 
 	test("spec is JSON round-trippable", () => {

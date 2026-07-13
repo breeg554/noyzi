@@ -2,13 +2,24 @@ import { describe, expect, test } from "bun:test";
 import {
 	drawToCanvas,
 	generate,
+	hexToOklch,
 	isSequentialSeed,
+	oklchToHex,
 	paletteFromSeed,
 	seedHash,
 	toBlob,
 	toCanvas,
 	toDataUrl,
 } from "../src/index.ts";
+
+describe("hexToOklch", () => {
+	test("round-trips supported hex colors", () => {
+		for (const color of ["#000000", "#ffffff", "#112233", "#abcdef"] as const) {
+			expect(oklchToHex(hexToOklch(color))).toBe(color);
+		}
+		expect(oklchToHex(hexToOklch("#0f0"))).toBe("#00ff00");
+	});
+});
 
 describe("isSequentialSeed", () => {
 	test("detects integer-like seeds", () => {

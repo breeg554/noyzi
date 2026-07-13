@@ -1,6 +1,6 @@
 export type DocPackage = "@noyzi/core" | "@noyzi/react";
 
-export type DocPreviewKind = "gradient" | "palette";
+export type DocPreviewKind = "generate" | "gradient" | "palette";
 
 export interface DocEntry {
 	id: string;
@@ -22,7 +22,7 @@ export const DOC_ENTRIES: DocEntry[] = [
 			"function generate(seed: Seed, options?: GenerateOptions): GradientSpec",
 		description:
 			"Seed in, GradientSpec out: the complete requested palette, 1–4 organic structure fields, and an optional vignette. The SVG uses every palette color while the fields preserve deterministic geometry across output formats.",
-		note: "colors clamps to 2–8 (default 4). vignette darkens the edges — strength defaults to 0.08, or disable it with false.",
+		note: "palette accepts 2–8 hex colors, with the background first, and overrides colors. Without it, colors clamps to 2–8 (default 4). vignette darkens the edges — strength defaults to 0.08, or disable it with false.",
 		example: `import { generate, seedHash } from "@noyzi/core";
 
 // GradientSpec: { seed, background, palette, fields, vignette }
@@ -32,12 +32,23 @@ spec.fields[0].points; // deterministic organic contour
 
 // clean look: no vignette
 const flat = generate("ada", {
-  colors: 4,
+  palette: ["#f5eee0", "#8fb9be", "#ebdac3"],
   vignette: false,
 });
 
 // or a heavier vignette
 const moody = generate("ada", { vignette: { strength: 0.3 } });`,
+		preview: "generate",
+	},
+	{
+		id: "hextooklch",
+		name: "hexToOklch()",
+		pkg: "@noyzi/core",
+		signature: `type HexColor = \`#\${string}\`
+function hexToOklch(color: HexColor): Oklch`,
+		description:
+			"Hex → OKLCH for #rgb and #rrggbb colors. Custom palette colors are converted this way inside generate().",
+		example: `hexToOklch("#5da2e8"); // { l, c, h }`,
 	},
 	{
 		id: "seedhash",

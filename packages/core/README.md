@@ -38,7 +38,7 @@ import { generate, seedHash, toSvgDataUri } from "@noyzi/core";
 
 const seed = seedHash("ada@example.com");
 const gradient = generate(seed, {
-  colors: 6,
+  palette: ["#f5eee0", "#8fb9be", "#ebdac3"],
 });
 
 const image = toSvgDataUri(gradient, { width: 800, height: 800 });
@@ -46,18 +46,19 @@ const image = toSvgDataUri(gradient, { width: 800, height: 800 });
 document.body.style.backgroundImage = `url("${image}")`;
 ```
 
-The same input and options always produce the same result—across sessions, devices, and servers.
+The same input and options always produce the same result—across sessions, devices, and servers. Pass 2–8 hex colors with `palette`; the first becomes the background and the rest become accents. Without a palette, Noyzi derives one from the seed as before.
 
 ## API
 
 | Function | Returns | Description |
 | --- | --- | --- |
-| `generate(seed, options?)` | `GradientSpec` | Creates a deterministic gradient specification. Configure its color count and vignette. |
+| `generate(seed, options?)` | `GradientSpec` | Creates a deterministic gradient specification. Configure its palette, generated color count, and vignette. |
 | `seedHash(input)` | `string` | Converts a string or number into a short, reusable seed. Sequential numeric IDs remain sequential. |
 | `isSeedHash(value)` | `boolean` | Checks whether a value already has the eight-character `seedHash` format. |
 | `isSequentialSeed(seed)` | `boolean` | Checks whether a seed is a safe integer or an integer-like string. |
 | `paletteFromSeed(seed, count?)` | `ColorStop[]` | Returns the exact deterministic color palette for a seed. The count is clamped from 2 to 8. |
 | `oklchToHex(color)` | `string` | Converts an OKLCH color to a clamped sRGB `#rrggbb` value. |
+| `hexToOklch(color)` | `Oklch` | Converts a `#rgb` or `#rrggbb` color to OKLCH. |
 | `toCss(spec, options?)` | `CssOutput` | Produces complete CSS background properties for the rendered SVG. |
 | `toSvg(spec, options?)` | `string` | Renders the full gradient as an SVG string. |
 | `toSvgDataUri(spec, options?)` | `string` | Renders an SVG data URI ready for an image source or CSS background. |

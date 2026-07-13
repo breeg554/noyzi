@@ -1,12 +1,33 @@
-import { type GenerateOptions, paletteFromSeed } from "@noyzi/core";
+import {
+	type GenerateOptions,
+	type HexColor,
+	paletteFromSeed,
+} from "@noyzi/core";
 import { NoyziGradient } from "@noyzi/react";
+import { Minus, Plus } from "lucide-react";
 import { useDeferredValue, useMemo, useState } from "react";
 import { showGradientCopyToast } from "#/components/gradient-card.tsx";
+import { Button } from "#/components/ui/button.tsx";
 import { Input } from "#/components/ui/input.tsx";
 import { playClick } from "#/lib/click-sound.ts";
 import type { DocPreviewKind } from "#/lib/docs.ts";
 
 const DEFAULT_SEED = "ada";
+const GENERATE_PALETTE = [
+	"#f5eee0",
+	"#8fb9be",
+	"#ebdac3",
+	"#b9a7c7",
+	"#d6a88f",
+	"#9eb8a5",
+	"#d8c99b",
+	"#aebed2",
+] as const satisfies readonly HexColor[];
+
+interface PaletteEntry {
+	color: HexColor;
+	id: string;
+}
 
 function compactNumber(value: number): string {
 	return String(value).replace(/^0\./, ".");
@@ -47,6 +68,10 @@ export function DocPreview({
 	const [seed, setSeed] = useState("");
 	const activeSeed = useDeferredValue(seed.trim() || DEFAULT_SEED);
 
+	if (kind === "generate") {
+		return <GeneratePalettePreview className={className} />;
+	}
+
 	if (kind === "gradient") {
 		return (
 			<div className={`space-y-2 ${className ?? ""}`}>
@@ -83,6 +108,123 @@ export function DocPreview({
 			setSeed={setSeed}
 			className={className}
 		/>
+	);
+}
+
+function GeneratePalettePreview({ className }: { className?: string }) {
+	const [seed, setSeed] = useState("");
+	const [palette, setPalette] = useState<PaletteEntry[]>(() =>
+		GENERATE_PALETTE.slice(0, 3).map((color, index) => ({
+			color,
+			id: `color-${index}`,
+		})),
+	);
+	const activeSeed = useDeferredValue(seed.trim() || DEFAULT_SEED);
+	const previewPalette = useDeferredValue(palette.map((entry) => entry.color));
+
+	const updateColor = (id: string, color: HexColor) => {
+		setPalette((current) =>
+			current.map((entry) => (entry.id === id ? { ...entry, color } : entry)),
+		);
+	};
+
+	const addColor = () => {
+		setPalette((current) => {
+			const color = GENERATE_PALETTE[current.length];
+			return color
+				? [...current, { color, id: `color-${current.length}` }]
+				: current;
+		});
+	};
+
+	const removeColor = () => {
+		setPalette((current) =>
+			current.length > 2 ? current.slice(0, -1) : current,
+		);
+	};
+
+	return (
+		<div
+			className={`grid gap-4 rounded-xl border border-border/60 bg-muted/15 p-4 sm:grid-cols-[minmax(0,1fr)_11rem] ${className ?? ""}`}
+		>
+			<div className="min-w-0">
+				<div className="flex flex-wrap items-start justify-between gap-3">
+					<div>
+						<p className="font-medium text-sm">Try a palette</p>
+						<p className="mt-1 text-[11px] text-muted-foreground leading-relaxed">
+							The first color becomes the background.
+						</p>
+					</div>
+					<div className="flex shrink-0 gap-1">
+						<Input
+							value={seed}
+							onChange={(event) => setSeed(event.target.value)}
+							placeholder="seed: ada"
+							aria-label="Custom palette preview seed"
+							className="h-6 w-24 border-border/60 bg-background/60 px-2 font-mono text-[10px] text-muted-foreground shadow-none placeholder:text-muted-foreground/60 md:text-[10px] dark:bg-background/60"
+						/>
+						<Button
+							type="button"
+							variant="ghost"
+							size="icon-xs"
+							onClick={removeColor}
+							disabled={palette.length <= 2}
+							aria-label="Remove last palette color"
+							className="text-muted-foreground"
+						>
+							<Minus />
+						</Button>
+						<Button
+							type="button"
+							variant="ghost"
+							size="icon-xs"
+							onClick={addColor}
+							disabled={palette.length >= 8}
+							aria-label="Add palette color"
+							className="text-muted-foreground"
+						>
+							<Plus />
+						</Button>
+					</div>
+				</div>
+
+				<div className="mt-4 flex flex-wrap gap-2">
+					{palette.map((entry, index) => (
+						<label key={entry.id} className="min-w-28 flex-1 sm:max-w-36">
+							<span className="mb-1 block font-mono text-[9px] text-muted-foreground uppercase tracking-wider">
+								{index === 0 ? "background" : `accent ${index}`}
+							</span>
+							<span className="flex h-9 cursor-pointer items-center gap-2 rounded-md border border-border/60 bg-background/60 px-1.5 transition-colors hover:border-foreground/20">
+								<input
+									type="color"
+									value={entry.color}
+									onChange={(event) =>
+										updateColor(entry.id, event.target.value as HexColor)
+									}
+									aria-label={`${index === 0 ? "Background" : `Accent ${index}`} color`}
+									className="size-6 shrink-0 cursor-pointer overflow-hidden rounded-sm border-0 bg-transparent p-0 [&::-moz-color-swatch]:border-0 [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded-sm [&::-webkit-color-swatch]:border-0"
+								/>
+								<span className="truncate font-mono text-[10px] text-muted-foreground">
+									{entry.color}
+								</span>
+							</span>
+						</label>
+					))}
+				</div>
+			</div>
+
+			<div className="relative min-h-32 overflow-hidden rounded-lg bg-muted">
+				<NoyziGradient
+					seed={activeSeed}
+					options={{ palette: previewPalette }}
+					aria-label="Custom palette gradient preview"
+					className="absolute inset-0 shadow-none ring-1 ring-black/10 dark:ring-white/10"
+				/>
+				<span className="absolute right-2 bottom-2 rounded-sm bg-black/35 px-1.5 py-0.5 font-mono text-[9px] text-white/80 backdrop-blur-sm">
+					{activeSeed} · {palette.length} colors
+				</span>
+			</div>
+		</div>
 	);
 }
 

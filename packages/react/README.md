@@ -56,11 +56,13 @@ Different seed, different artwork. The same seed always renders identically—ev
 ```tsx
 <NoyziGradient
   seed="summer-mixtape"
-  options={{ colors: 7 }}
+  options={{ palette: ["#f5eee0", "#8fb9be", "#ebdac3"] }}
   artwork={{ width: 1600, height: 400 }}
   className="h-40 w-full rounded-2xl shadow-none"
 />
 ```
+
+The first palette color is the background and the remaining colors are accents. Pass 2–8 `#rgb` or `#rrggbb` colors. The seed still determines the composition, so a palette swap keeps its geometry.
 
 Use `className` or `style` for size and shape. For wide or tall elements, match `artwork` to the element’s aspect ratio so the gradient composition fills it beautifully.
 

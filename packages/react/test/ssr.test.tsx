@@ -64,6 +64,19 @@ describe("NoyziGradient (SSR)", () => {
 		expect(a).not.toBe(b);
 	});
 
+	test("renders a custom palette", () => {
+		const html = renderToString(
+			<NoyziGradient
+				seed="dawn"
+				options={{ palette: ["#112233", "#abcdef", "#ff5500"] }}
+			/>,
+		);
+
+		expect(html).toContain("%23112233");
+		expect(html).toContain("%23abcdef");
+		expect(html).toContain("%23ff5500");
+	});
+
 	test("raw input and its hash render identically", () => {
 		const raw = renderToString(<NoyziGradient seed="dawid@example.com" />);
 		const hashed = renderToString(

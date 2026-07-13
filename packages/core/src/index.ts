@@ -1,5 +1,5 @@
-export type { Oklch } from "./color.ts";
-export { oklchToHex } from "./color.ts";
+export type { HexColor, Oklch } from "./color.ts";
+export { hexToOklch, oklchToHex } from "./color.ts";
 export type {
 	GenerateOptions,
 	GradientField,

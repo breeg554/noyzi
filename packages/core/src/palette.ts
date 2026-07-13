@@ -1,4 +1,4 @@
-import { type Oklch, oklchToHex } from "./color.ts";
+import { type HexColor, hexToOklch, type Oklch, oklchToHex } from "./color.ts";
 import {
 	createRng,
 	isSequentialSeed,
@@ -8,8 +8,28 @@ import {
 } from "./prng.ts";
 
 export interface ColorStop {
-	hex: string;
+	hex: HexColor;
 	oklch: Oklch;
+}
+
+function normalizeHex(color: HexColor): HexColor {
+	const hex = color.toLowerCase();
+	if (hex.length === 4) {
+		return `#${hex[1]}${hex[1]}${hex[2]}${hex[2]}${hex[3]}${hex[3]}`;
+	}
+	return hex as HexColor;
+}
+
+/** Creates color stops from 2–8 hex colors. */
+export function paletteFromHex(colors: readonly HexColor[]): ColorStop[] {
+	if (colors.length < 2 || colors.length > 8) {
+		throw new RangeError("palette must contain between 2 and 8 colors");
+	}
+
+	return colors.map((color) => ({
+		hex: normalizeHex(color),
+		oklch: hexToOklch(color),
+	}));
 }
 
 interface PaletteFamily {
