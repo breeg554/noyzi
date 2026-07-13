@@ -1,6 +1,6 @@
 {
 	"name": "@noyzi/react",
-	"version": "0.1.4",
+	"version": "0.1.5",
 	"description": "React component for seed-based deterministic gradients. SSR-friendly, powered by @noyzi/core.",
 	"author": {
 		"name": "breeg554",
