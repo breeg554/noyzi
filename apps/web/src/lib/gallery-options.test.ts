@@ -38,3 +38,40 @@ describe("gallery vignette options", () => {
 		expect(isDefaultGalleryOptions(options)).toBe(false);
 	});
 });
+
+describe("gallery palette options", () => {
+	test("parses and serializes a custom palette", () => {
+		const palette = "#f5eee0,#8fb9be,#ebdac3";
+		expect(parseGallerySearch({ palette })).toEqual({ palette });
+		expect(
+			toGallerySearch({
+				...DEFAULT_GALLERY_OPTIONS,
+				palette: ["#f5eee0", "#8fb9be", "#ebdac3"],
+			}),
+		).toEqual({ palette });
+	});
+
+	test("rejects malformed palettes", () => {
+		expect(parseGallerySearch({ palette: "#fff" })).toEqual({});
+		expect(parseGallerySearch({ palette: "#f5eee0,red" })).toEqual({});
+		expect(
+			parseGallerySearch({
+				palette:
+					"#000000,#111111,#222222,#333333,#444444,#555555,#666666,#777777,#888888",
+			}),
+		).toEqual({});
+	});
+
+	test("custom palette overrides generated color count", () => {
+		const options = {
+			...DEFAULT_GALLERY_OPTIONS,
+			colors: 8,
+			palette: ["#f5eee0", "#8fb9be", "#ebdac3"],
+		} as const;
+		expect(toGenerateOptions(options)).toEqual({
+			palette: options.palette,
+			vignette: { strength: 0.08 },
+		});
+		expect(isDefaultGalleryOptions(options)).toBe(false);
+	});
+});

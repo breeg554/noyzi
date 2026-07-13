@@ -80,7 +80,9 @@ function componentSnippet(
 	className = `size-32 ${ROUNDED_CLASS[options.rounded]}`,
 ): string {
 	const optionParts: string[] = [];
-	if (options.colors !== DEFAULT_GALLERY_OPTIONS.colors) {
+	if (options.palette) {
+		optionParts.push(`palette: ${JSON.stringify(options.palette)}`);
+	} else if (options.colors !== DEFAULT_GALLERY_OPTIONS.colors) {
 		optionParts.push(`colors: ${options.colors}`);
 	}
 	if (options.vignette !== DEFAULT_GALLERY_OPTIONS.vignette) {

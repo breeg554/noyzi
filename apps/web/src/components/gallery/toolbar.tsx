@@ -1,6 +1,7 @@
 import { getRouteApi } from "@tanstack/react-router";
 import { RotateCcw, SlidersHorizontal } from "lucide-react";
 import type { ReactNode } from "react";
+import { PaletteControl } from "#/components/gallery/palette-control.tsx";
 import { Button } from "#/components/ui/button.tsx";
 import {
 	Collapsible,
@@ -50,6 +51,10 @@ export function GalleryToolbar() {
 					<ColorsControl options={options} update={update} />
 				</ControlLabel>
 				<Separator />
+				<ControlLabel label="palette">
+					<PaletteControl options={options} update={update} />
+				</ControlLabel>
+				<Separator />
 				<ControlLabel label="vignette">
 					<VignetteControl options={options} update={update} />
 				</ControlLabel>
@@ -82,6 +87,9 @@ export function GalleryToolbar() {
 						<MobileRow label="colors">
 							<ColorsControl options={options} update={update} />
 						</MobileRow>
+						<MobileRow label="palette">
+							<PaletteControl options={options} update={update} />
+						</MobileRow>
 						<MobileRow label="vignette">
 							<VignetteControl options={options} update={update} />
 						</MobileRow>
@@ -99,13 +107,16 @@ export function GalleryToolbar() {
 }
 
 function ColorsControl({ options, update }: ControlProps) {
+	const colorCount = options.palette?.length ?? options.colors;
+
 	return (
 		<div className="flex items-center gap-2">
 			<Slider
-				value={[options.colors]}
+				value={[colorCount]}
 				min={MIN_COLORS}
 				max={MAX_COLORS}
 				step={1}
+				disabled={options.palette !== null}
 				onValueChange={([colors]) => {
 					if (colors !== undefined && colors !== options.colors) {
 						playBoop();
@@ -116,7 +127,7 @@ function ColorsControl({ options, update }: ControlProps) {
 				aria-label="Number of colors"
 			/>
 			<span className="w-3 text-right text-[11px] text-muted-foreground tabular-nums">
-				{options.colors}
+				{colorCount}
 			</span>
 		</div>
 	);
