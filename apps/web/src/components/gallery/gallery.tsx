@@ -120,8 +120,9 @@ function GalleryGrid({
 						key={row.key}
 						data-index={row.index}
 						ref={virtualizer.measureElement}
-						className="absolute inset-x-0 top-0 grid grid-cols-1 gap-3 pb-3 sm:grid-cols-2 lg:grid-cols-5 2xl:grid-cols-6"
+						className="absolute inset-x-0 top-0 grid gap-3 pb-3"
 						style={{
+							gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
 							transform: `translateY(${row.start - virtualizer.options.scrollMargin}px)`,
 						}}
 					>

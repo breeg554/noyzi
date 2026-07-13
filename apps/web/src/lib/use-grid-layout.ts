@@ -8,7 +8,13 @@ export interface GridLayout {
 
 const LAYOUTS: ReadonlyArray<GridLayout & { query: string }> = [
 	{
-		query: "(min-width: 120rem)",
+		query: "(min-width: 212rem)",
+		columns: 10,
+		leadingColSpan: 2,
+		leadingRowSpan: 2,
+	},
+	{
+		query: "(min-width: 170rem)",
 		columns: 8,
 		leadingColSpan: 2,
 		leadingRowSpan: 2,
