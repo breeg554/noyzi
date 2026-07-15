@@ -8,6 +8,32 @@ import {
 	toGenerateOptions,
 } from "./gallery-options.ts";
 
+describe("gallery animation option", () => {
+	test("defaults to static gradients", () => {
+		expect(resolveGalleryOptions({}).animated).toBe(false);
+		expect(toGallerySearch(DEFAULT_GALLERY_OPTIONS)).toEqual({});
+	});
+
+	test("parses and serializes the animated filter", () => {
+		expect(parseGallerySearch({ animated: true })).toEqual({ animated: true });
+		expect(parseGallerySearch({ animated: "true" })).toEqual({
+			animated: true,
+		});
+		expect(
+			toGallerySearch({ ...DEFAULT_GALLERY_OPTIONS, animated: true }),
+		).toEqual({ animated: true });
+	});
+
+	test("treats animation as a non-default option", () => {
+		expect(
+			isDefaultGalleryOptions({
+				...DEFAULT_GALLERY_OPTIONS,
+				animated: true,
+			}),
+		).toBe(false);
+	});
+});
+
 describe("gallery vignette options", () => {
 	test("defaults to a subtle vignette", () => {
 		expect(resolveGalleryOptions({}).vignette).toBe(0.08);

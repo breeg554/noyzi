@@ -1,6 +1,7 @@
 import { getRouteApi } from "@tanstack/react-router";
 import { RotateCcw, SlidersHorizontal } from "lucide-react";
 import type { ReactNode } from "react";
+import { GalleryAnimationToggle } from "#/components/gallery/animation-toggle.tsx";
 import { PaletteControl } from "#/components/gallery/palette-control.tsx";
 import { Button } from "#/components/ui/button.tsx";
 import {
@@ -34,7 +35,10 @@ export function GalleryToolbar() {
 	const search = route.useSearch();
 	const navigate = route.useNavigate();
 	const options = resolveGalleryOptions(search);
-	const isDefault = isDefaultGalleryOptions(options);
+	const isDefault = isDefaultGalleryOptions({
+		...options,
+		animated: DEFAULT_GALLERY_OPTIONS.animated,
+	});
 
 	const update = (patch: Partial<GalleryOptions>) => {
 		navigate({
@@ -43,10 +47,15 @@ export function GalleryToolbar() {
 			resetScroll: false,
 		});
 	};
+	const resetFilters = (patch: Partial<GalleryOptions>) => {
+		update({ ...patch, animated: options.animated });
+	};
 
 	return (
 		<>
 			<div className="hidden flex-wrap items-center gap-x-4 gap-y-2 md:flex">
+				<GalleryAnimationToggle />
+				<Separator />
 				<ControlLabel label="colors">
 					<ColorsControl options={options} update={update} />
 				</ControlLabel>
@@ -64,24 +73,31 @@ export function GalleryToolbar() {
 					<RoundedControl options={options} update={update} />
 				</ControlLabel>
 
-				<ResetButton disabled={isDefault} update={update} />
+				<ResetButton disabled={isDefault} update={resetFilters} />
 			</div>
 
-			<Collapsible className="contents md:hidden">
-				<CollapsibleTrigger asChild>
-					<Button
-						variant="ghost"
-						size="xs"
-						sound="boop"
-						className="text-muted-foreground data-[state=open]:text-foreground"
-					>
-						<SlidersHorizontal />
-						filters
-						{!isDefault && (
-							<span aria-hidden className="size-1.5 rounded-full bg-primary" />
-						)}
-					</Button>
-				</CollapsibleTrigger>
+			<Collapsible className="flex flex-col items-end md:hidden">
+				<div className="flex items-center gap-1">
+					<GalleryAnimationToggle />
+					<Separator />
+					<CollapsibleTrigger asChild>
+						<Button
+							variant="ghost"
+							size="xs"
+							sound="boop"
+							className="text-muted-foreground data-[state=open]:text-foreground"
+						>
+							<SlidersHorizontal />
+							filters
+							{!isDefault && (
+								<span
+									aria-hidden
+									className="size-1.5 rounded-full bg-primary"
+								/>
+							)}
+						</Button>
+					</CollapsibleTrigger>
+				</div>
 				<CollapsibleContent className="basis-full">
 					<div className="flex flex-col gap-3 px-0.5 pt-3 pb-1">
 						<MobileRow label="colors">
@@ -97,7 +113,7 @@ export function GalleryToolbar() {
 							<RoundedControl options={options} update={update} />
 						</MobileRow>
 						<div className="flex justify-end">
-							<ResetButton disabled={isDefault} update={update} />
+							<ResetButton disabled={isDefault} update={resetFilters} />
 						</div>
 					</div>
 				</CollapsibleContent>

@@ -125,3 +125,19 @@ body {
 .dark .shiki span {
   color: var(--shiki-dark);
 }
+
+.motion-mode-letter {
+  animation: motion-mode-letter 1.8s ease-in-out infinite;
+}
+
+@keyframes motion-mode-letter {
+	0%,
+	100% {
+		filter: saturate(0.85) brightness(0.98);
+		opacity: 0.72;
+	}
+	50% {
+		filter: saturate(1.25) brightness(1.08);
+		opacity: 1;
+	}
+}

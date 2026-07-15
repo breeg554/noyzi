@@ -149,8 +149,9 @@ function GetStarted() {
 				</li>
 				<li>
 					<PackageLink pkg="@noyzi/react" /> —{" "}
-					<code className="font-mono">&lt;NoyziGradient /&gt;</code> on top:
-					SSR-safe, zero client JS.
+					<code className="font-mono">&lt;NoyziGradient /&gt;</code> and{" "}
+					<code className="font-mono">&lt;NoyziAnimated /&gt;</code> on top:
+					SVG-first rendering with optional WebGL motion.
 				</li>
 			</ul>
 
@@ -246,7 +247,6 @@ function MobileDocsNav({
 					>
 						Get started
 					</AnchorLink>
-
 					<div className="grid gap-5 sm:grid-cols-2">
 						{DOC_PACKAGES.map((pkg) => (
 							<div key={pkg}>
@@ -352,6 +352,19 @@ function MethodSection({ entry }: { entry: DocEntry }) {
 				{entry.description}
 			</p>
 
+			{entry.details ? (
+				<ul className="mt-3 max-w-2xl list-disc space-y-2 pl-5 text-muted-foreground text-sm leading-relaxed marker:text-foreground/50">
+					{entry.details.map((detail) => (
+						<li key={detail.label} className="pl-1">
+							<span className="font-medium text-foreground">
+								{detail.label}:
+							</span>{" "}
+							{detail.description}
+						</li>
+					))}
+				</ul>
+			) : null}
+
 			{entry.example ? (
 				<CodeBlock
 					className="mt-4"
@@ -366,8 +379,8 @@ function MethodSection({ entry }: { entry: DocEntry }) {
 			) : null}
 
 			{entry.note ? (
-				<p className="mt-4 max-w-2xl text-muted-foreground text-sm leading-relaxed">
-					<span className="font-medium text-foreground">Note: </span>
+				<p className="mt-4 max-w-2xl border-foreground/15 border-l-2 py-1 pl-3 text-muted-foreground text-sm leading-relaxed">
+					<span className="font-medium text-foreground">Note.</span>{" "}
 					{entry.note}
 				</p>
 			) : null}

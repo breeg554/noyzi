@@ -3,7 +3,7 @@ import {
 	type HexColor,
 	paletteFromSeed,
 } from "@noyzi/core";
-import { NoyziGradient } from "@noyzi/react";
+import { NoyziAnimated, NoyziAnimatedGroup, NoyziGradient } from "@noyzi/react";
 import { Minus, Plus } from "lucide-react";
 import { useDeferredValue, useMemo, useState } from "react";
 import { showGradientCopyToast } from "#/components/gradient-card.tsx";
@@ -34,26 +34,54 @@ function compactNumber(value: number): string {
 }
 
 const GRADIENT_AVATARS = [
-	{ id: "clean", options: { colors: 3, vignette: false } },
-	{ id: "soft", options: { colors: 5, vignette: { strength: 0.12 } } },
+	{
+		id: "clean",
+		motion: { speed: 2.2, strength: 1.6 },
+		options: { colors: 3, vignette: false },
+	},
+	{
+		id: "soft",
+		motion: { speed: 2.7, strength: 2 },
+		options: { colors: 5, vignette: { strength: 0.12 } },
+	},
 	{
 		id: "balanced",
+		motion: { speed: 3.2, strength: 2.5 },
 		options: { colors: 6, vignette: { strength: 0.18 } },
 	},
-	{ id: "bright", options: { colors: 4, vignette: false } },
-	{ id: "moody", options: { colors: 7, vignette: { strength: 0.32 } } },
-] as const satisfies readonly { id: string; options: GenerateOptions }[];
+	{
+		id: "bright",
+		motion: { speed: 3.8, strength: 2.2 },
+		options: { colors: 4, vignette: false },
+	},
+	{
+		id: "moody",
+		motion: { speed: 2.5, strength: 3 },
+		options: { colors: 7, vignette: { strength: 0.32 } },
+	},
+] as const satisfies readonly {
+	id: string;
+	motion: { speed: number; strength: number };
+	options: GenerateOptions;
+}[];
 
 function gradientSnippet(
 	seed: string,
 	variant: (typeof GRADIENT_AVATARS)[number],
+	animated: boolean,
 ) {
 	const { colors, vignette } = variant.options;
 	const vignetteValue =
 		vignette === false ? "false" : `{ strength: ${vignette?.strength ?? 0} }`;
-	return `<NoyziGradient
+	const component = animated ? "NoyziAnimated" : "NoyziGradient";
+	const motion = animated
+		? `
+  speed={${variant.motion.speed}}
+  strength={${variant.motion.strength}}`
+		: "";
+	return `<${component}
   seed=${JSON.stringify(seed)}
-  options={{ colors: ${colors}, vignette: ${vignetteValue} }}
+  options={{ colors: ${colors}, vignette: ${vignetteValue} }}${motion}
   className="size-20 rounded-full"
 />`;
 }
@@ -72,12 +100,14 @@ export function DocPreview({
 		return <GeneratePalettePreview className={className} />;
 	}
 
-	if (kind === "gradient") {
-		return (
+	if (kind === "gradient" || kind === "animated") {
+		const animated = kind === "animated";
+		const preview = (
 			<div className={`space-y-2 ${className ?? ""}`}>
 				<div className="space-y-4 rounded-xl border border-border/60 bg-muted/15 px-4 py-5">
 					<p className="text-center text-[11px] text-muted-foreground">
-						Select an avatar to copy its exact component.
+						Select {animated ? "an animated" : "a"} avatar to copy its exact
+						component.
 					</p>
 					<div className="grid grid-cols-2 gap-x-3 gap-y-5 sm:grid-cols-5 sm:gap-x-4">
 						{GRADIENT_AVATARS.map((variant) => (
@@ -85,19 +115,25 @@ export function DocPreview({
 								key={variant.id}
 								variant={variant}
 								seed={activeSeed}
+								animated={animated}
 							/>
 						))}
 					</div>
-					<GradientOptionsGuide />
+					<GradientOptionsGuide animated={animated} />
 				</div>
 				<Input
 					value={seed}
 					onChange={(event) => setSeed(event.target.value)}
 					placeholder={DEFAULT_SEED}
-					aria-label="Gradient preview seed"
+					aria-label={`${animated ? "Animated gradient" : "Gradient"} preview seed`}
 					className="ml-auto h-8 w-32 border-border/60 bg-transparent text-center font-mono text-[11px] text-muted-foreground shadow-none placeholder:text-muted-foreground/60 md:text-[11px] dark:bg-transparent"
 				/>
 			</div>
+		);
+		return animated ? (
+			<NoyziAnimatedGroup>{preview}</NoyziAnimatedGroup>
+		) : (
+			preview
 		);
 	}
 
@@ -231,14 +267,18 @@ function GeneratePalettePreview({ className }: { className?: string }) {
 function GradientAvatarPreview({
 	variant,
 	seed,
+	animated,
 }: {
 	variant: (typeof GRADIENT_AVATARS)[number];
 	seed: string;
+	animated: boolean;
 }) {
 	const copy = async () => {
 		playClick();
-		showGradientCopyToast(seed, variant.options);
-		await navigator.clipboard.writeText(gradientSnippet(seed, variant));
+		showGradientCopyToast(seed, variant.options, animated);
+		await navigator.clipboard.writeText(
+			gradientSnippet(seed, variant, animated),
+		);
 	};
 	const vignette = variant.options.vignette;
 
@@ -247,15 +287,26 @@ function GradientAvatarPreview({
 			<button
 				type="button"
 				onClick={copy}
-				aria-label={`Copy ${variant.id} gradient component`}
+				aria-label={`Copy ${variant.id}${animated ? " animated" : ""} gradient component`}
 				className="cursor-copy rounded-full transition-transform duration-300 ease-out hover:scale-110 focus-visible:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
 			>
-				<NoyziGradient
-					seed={seed}
-					options={variant.options}
-					aria-hidden="true"
-					className="size-16 rounded-full shadow-none ring-1 ring-black/10 sm:size-20 dark:ring-white/10"
-				/>
+				{animated ? (
+					<NoyziAnimated
+						seed={seed}
+						options={variant.options}
+						speed={variant.motion.speed}
+						strength={variant.motion.strength}
+						aria-hidden="true"
+						className="size-16 rounded-full shadow-none ring-1 ring-black/10 sm:size-20 dark:ring-white/10"
+					/>
+				) : (
+					<NoyziGradient
+						seed={seed}
+						options={variant.options}
+						aria-hidden="true"
+						className="size-16 rounded-full shadow-none ring-1 ring-black/10 sm:size-20 dark:ring-white/10"
+					/>
+				)}
 			</button>
 			<div className="text-center font-mono text-[9px] text-muted-foreground leading-4 tabular-nums">
 				<p>c {variant.options.colors}</p>
@@ -263,12 +314,18 @@ function GradientAvatarPreview({
 					v{" "}
 					{vignette === false ? "off" : compactNumber(vignette?.strength ?? 0)}
 				</p>
+				{animated ? (
+					<p>
+						spd {compactNumber(variant.motion.speed)} · str{" "}
+						{compactNumber(variant.motion.strength)}
+					</p>
+				) : null}
 			</div>
 		</div>
 	);
 }
 
-function GradientOptionsGuide() {
+function GradientOptionsGuide({ animated }: { animated: boolean }) {
 	return (
 		<dl className="grid gap-x-6 gap-y-3 border-border/60 border-t pt-4 text-[10px] leading-relaxed sm:grid-cols-2">
 			<div>
@@ -284,6 +341,22 @@ function GradientOptionsGuide() {
 					Darkens the outer edge. Higher strength creates a moodier frame.
 				</dd>
 			</div>
+			{animated ? (
+				<>
+					<div>
+						<dt className="font-mono text-foreground">Speed (spd)</dt>
+						<dd className="text-muted-foreground">
+							Scales the seeded liquid current and local field motion.
+						</dd>
+					</div>
+					<div>
+						<dt className="font-mono text-foreground">Strength (str)</dt>
+						<dd className="text-muted-foreground">
+							Controls how far the liquid ribbons travel and curl.
+						</dd>
+					</div>
+				</>
+			) : null}
 		</dl>
 	);
 }

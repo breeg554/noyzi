@@ -1,5 +1,100 @@
 import { describe, expect, test } from "bun:test";
-import { generate, toCss, toSvg, toSvgDataUri } from "../src/index.ts";
+import {
+	createAnimatedCanvasGroup,
+	drawToAnimatedCanvas,
+	generate,
+	toAnimatedCanvas,
+	toCss,
+	toSvg,
+	toSvgDataUri,
+} from "../src/index.ts";
+
+describe("animated canvas renderers", () => {
+	test("rejects motion values outside the supported ranges", async () => {
+		const canvas = {} as HTMLCanvasElement;
+		await expect(
+			drawToAnimatedCanvas(generate("invalid-strength"), canvas, {
+				strength: 15,
+			}),
+		).rejects.toThrow("strength must be a finite number between 0 and 3");
+		await expect(
+			drawToAnimatedCanvas(generate("invalid-speed"), canvas, {
+				speed: Number.NaN,
+			}),
+		).rejects.toThrow("speed must be a finite number between 0 and 10");
+	});
+
+	test("shared canvas groups reject outside a browser environment", () => {
+		expect(() => createAnimatedCanvasGroup()).toThrow(
+			"createAnimatedCanvasGroup requires a browser environment",
+		);
+	});
+
+	test("returns null when WebGL 2 is unavailable", async () => {
+		let imageSource = "";
+		const textureCanvas = {
+			height: 0,
+			getContext: () => ({ drawImage: () => {} }),
+			width: 0,
+		} as unknown as HTMLCanvasElement;
+		class TestImage {
+			onload: (() => void) | null = null;
+			onerror: (() => void) | null = null;
+
+			set src(value: string) {
+				imageSource = value;
+				queueMicrotask(() => this.onload?.());
+			}
+		}
+		const globals = globalThis as typeof globalThis & {
+			document?: Document;
+			Image?: typeof Image;
+		};
+		const previousImage = globals.Image;
+		const previousDocument = globals.document;
+		globals.Image = TestImage as unknown as typeof Image;
+		globals.document = {
+			createElement: () => textureCanvas,
+		} as unknown as Document;
+		const canvas = {
+			width: 1000,
+			height: 1000,
+			getBoundingClientRect: () => ({ height: 40, width: 80 }),
+			getContext: () => null,
+		} as unknown as HTMLCanvasElement;
+
+		try {
+			expect(
+				await drawToAnimatedCanvas(generate("fallback"), canvas, {
+					maxPixelRatio: 1,
+				}),
+			).toBeNull();
+			expect(canvas.width).toBe(80);
+			expect(canvas.height).toBe(40);
+			expect(textureCanvas.width).toBe(80);
+			expect(textureCanvas.height).toBe(80);
+			expect(decodeURIComponent(imageSource)).toContain('width="1000"');
+			expect(decodeURIComponent(imageSource)).toContain('height="1000"');
+		} finally {
+			if (previousImage) {
+				globals.Image = previousImage;
+			} else {
+				delete globals.Image;
+			}
+			if (previousDocument) {
+				globals.document = previousDocument;
+			} else {
+				delete globals.document;
+			}
+		}
+	});
+
+	test("toAnimatedCanvas rejects outside a browser environment", async () => {
+		await expect(toAnimatedCanvas(generate("server"))).rejects.toThrow(
+			"toAnimatedCanvas requires a browser environment",
+		);
+	});
+});
 
 describe("toSvg", () => {
 	test("same seed produces identical svg", () => {

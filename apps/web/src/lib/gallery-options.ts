@@ -7,6 +7,7 @@ export const ROUNDED = ["none", "sm", "md", "xl", "full"] as const;
 export type RoundedOption = (typeof ROUNDED)[number];
 
 export interface GalleryOptions {
+	animated: boolean;
 	colors: number;
 	palette: readonly HexColor[] | null;
 	rounded: RoundedOption;
@@ -14,6 +15,7 @@ export interface GalleryOptions {
 }
 
 export const DEFAULT_GALLERY_OPTIONS: GalleryOptions = {
+	animated: false,
 	colors: 4,
 	palette: null,
 	rounded: "md",
@@ -21,6 +23,7 @@ export const DEFAULT_GALLERY_OPTIONS: GalleryOptions = {
 };
 
 export interface GallerySearch {
+	animated?: boolean;
 	colors?: number;
 	palette?: string;
 	rounded?: RoundedOption;
@@ -43,6 +46,14 @@ export function parseGallerySearch(
 	search: Record<string, unknown>,
 ): GallerySearch {
 	const result: GallerySearch = {};
+	if (
+		search.animated === true ||
+		search.animated === "true" ||
+		search.animated === 1 ||
+		search.animated === "1"
+	) {
+		result.animated = true;
+	}
 	const colors = Number(search.colors);
 	if (
 		Number.isInteger(colors) &&
@@ -82,6 +93,7 @@ export function resolveGalleryOptions(search: GallerySearch): GalleryOptions {
 
 export function toGallerySearch(options: GalleryOptions): GallerySearch {
 	const search: GallerySearch = {};
+	if (options.animated) search.animated = true;
 	if (options.colors !== DEFAULT_GALLERY_OPTIONS.colors)
 		search.colors = options.colors;
 	if (options.palette) search.palette = options.palette.join(",");
@@ -94,6 +106,7 @@ export function toGallerySearch(options: GalleryOptions): GallerySearch {
 
 export function isDefaultGalleryOptions(options: GalleryOptions): boolean {
 	return (
+		options.animated === DEFAULT_GALLERY_OPTIONS.animated &&
 		options.colors === DEFAULT_GALLERY_OPTIONS.colors &&
 		options.palette === DEFAULT_GALLERY_OPTIONS.palette &&
 		options.rounded === DEFAULT_GALLERY_OPTIONS.rounded &&

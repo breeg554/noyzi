@@ -1,4 +1,4 @@
-import { NoyziGradient } from "@noyzi/react";
+import { NoyziAnimated, NoyziGradient } from "@noyzi/react";
 import { getRouteApi, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { useCopyGradientComponent } from "#/components/gradient-card.tsx";
@@ -11,6 +11,7 @@ import {
 
 const INSTALL_COMMAND = "bun add @noyzi/core";
 const AVATAR_SEEDS = ["color", "gradient", "seed"];
+const AVATAR_ARTWORK = { width: 240, height: 240 };
 const route = getRouteApi("/");
 
 export function Hero() {
@@ -61,6 +62,7 @@ function HeroAvatar({
 		seed,
 		options,
 		"size-10 shrink-0 rounded-full ring-2 ring-background",
+		options.animated,
 	);
 	const className = "size-10 shrink-0 rounded-full ring-2 ring-background";
 
@@ -71,12 +73,25 @@ function HeroAvatar({
 			aria-label={`Copy component for seed "${seed}"`}
 			className="relative size-auto cursor-pointer rounded-full p-0 hover:z-10 hover:scale-110 hover:bg-transparent dark:hover:bg-transparent"
 		>
-			<NoyziGradient
-				seed={seed}
-				options={toGenerateOptions(options)}
-				title={seed}
-				className={className}
-			/>
+			{options.animated ? (
+				<NoyziAnimated
+					seed={seed}
+					options={toGenerateOptions(options)}
+					artwork={AVATAR_ARTWORK}
+					title={seed}
+					className={className}
+					speed={3}
+					strength={3}
+				/>
+			) : (
+				<NoyziGradient
+					seed={seed}
+					options={toGenerateOptions(options)}
+					artwork={AVATAR_ARTWORK}
+					title={seed}
+					className={className}
+				/>
+			)}
 		</Button>
 	);
 }

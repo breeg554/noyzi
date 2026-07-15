@@ -1,4 +1,4 @@
-import { NoyziGradient } from "@noyzi/react";
+import { NoyziAnimated, NoyziGradient } from "@noyzi/react";
 import { useRef, useState } from "react";
 import {
 	CopyButton,
@@ -55,12 +55,23 @@ export function CustomSeedCard({
 				{activeSeed}
 			</span>
 			<CardContent className="flex flex-col items-center gap-3 px-2 lg:gap-6">
-				<NoyziGradient
-					seed={activeSeed}
-					options={generateOptions}
-					className={gradientClassName}
-					title={activeSeed}
-				/>
+				{options.animated ? (
+					<NoyziAnimated
+						seed={activeSeed}
+						options={generateOptions}
+						className={gradientClassName}
+						title={activeSeed}
+						speed={3}
+						strength={3}
+					/>
+				) : (
+					<NoyziGradient
+						seed={activeSeed}
+						options={generateOptions}
+						className={gradientClassName}
+						title={activeSeed}
+					/>
+				)}
 				<Input
 					ref={inputRef}
 					value={seed}

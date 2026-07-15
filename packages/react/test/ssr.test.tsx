@@ -1,6 +1,11 @@
 import { describe, expect, test } from "bun:test";
 import { renderToString } from "react-dom/server";
-import { NoyziGradient, seedHash } from "../src/index.ts";
+import {
+	NoyziAnimated,
+	NoyziAnimatedGroup,
+	NoyziGradient,
+	seedHash,
+} from "../src/index.ts";
 
 describe("NoyziGradient (SSR)", () => {
 	test("renders to a string on the server without DOM access", () => {
@@ -102,5 +107,76 @@ describe("NoyziGradient (SSR)", () => {
 			<NoyziGradient seed="dawn" artwork={{ width: 1600, height: 400 }} />,
 		);
 		expect(html).toContain(encodeURIComponent('viewBox="0 0 1600 400"'));
+	});
+});
+
+describe("NoyziAnimated (SSR)", () => {
+	test("renders the SVG fallback before WebGL initializes", () => {
+		const html = renderToString(
+			<NoyziAnimated
+				seed="dawn"
+				className="size-24 rounded-full"
+				aria-label="dawn"
+			/>,
+		);
+
+		expect(html).toContain("<div");
+		expect(html).toContain("<canvas");
+		expect(html).toContain('role="img"');
+		expect(html).toContain('aria-label="dawn"');
+		expect(html).toContain("data:image/svg+xml");
+		expect(html).toContain("opacity:0");
+	});
+
+	test("uses the same initial SVG as NoyziGradient", () => {
+		const still = renderToString(
+			<NoyziGradient seed="dawn" artwork={{ width: 1600, height: 900 }} />,
+		);
+		const animated = renderToString(
+			<NoyziAnimated seed="dawn" artwork={{ width: 1600, height: 900 }} />,
+		);
+		const stillUri = still.match(
+			/background-image:url\(&quot;(.+?)&quot;\)/,
+		)?.[1];
+		const animatedUri = animated.match(
+			/background-image:url\(&quot;(.+?)&quot;\)/,
+		)?.[1];
+
+		expect(animated).toContain(encodeURIComponent('viewBox="0 0 1600 900"'));
+		expect(animatedUri).toBe(stillUri);
+	});
+
+	test("consumes speed and strength without forwarding them to the DOM", () => {
+		const html = renderToString(
+			<NoyziAnimated seed="dawn" speed={1.25} strength={1.75} />,
+		);
+
+		expect(html).not.toContain("speed=");
+		expect(html).not.toContain("strength=");
+	});
+
+	test("throws for motion values outside the supported ranges", () => {
+		expect(() =>
+			renderToString(<NoyziAnimated seed="dawn" strength={15} />),
+		).toThrow("strength must be a finite number between 0 and 3");
+		expect(() =>
+			renderToString(
+				<NoyziAnimated seed="dawn" speed={Number.POSITIVE_INFINITY} />,
+			),
+		).toThrow("speed must be a finite number between 0 and 10");
+	});
+
+	test("renders its SVG fallback inside an animated group", () => {
+		const html = renderToString(
+			<NoyziAnimatedGroup frameRate={30} maxPixelRatio={1}>
+				<NoyziAnimated seed="dawn" />
+			</NoyziAnimatedGroup>,
+		);
+
+		expect(html).toContain("data:image/svg+xml");
+		expect(html).toContain("<canvas");
+		expect(html).toContain("opacity:0");
+		expect(html).not.toContain("frameRate");
+		expect(html).not.toContain("maxPixelRatio");
 	});
 });
