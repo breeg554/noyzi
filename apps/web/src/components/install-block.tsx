@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { CodeBlock } from "#/components/code-block.tsx";
 import { ToggleGroup, ToggleGroupItem } from "#/components/ui/toggle-group.tsx";
+import { analytics } from "#/lib/analytics.ts";
 
 const PACKAGE_MANAGERS = ["npm", "pnpm", "bun"] as const;
 
@@ -24,6 +25,7 @@ export function InstallBlock({
 	return (
 		<CodeBlock
 			className={className}
+			onCopy={() => analytics.installCommandCopied(pm, packages)}
 			lang="bash"
 			code={`${COMMANDS[pm]} ${packages}`}
 			label={
@@ -32,8 +34,9 @@ export function InstallBlock({
 					size="xs"
 					value={pm}
 					onValueChange={(value) => {
-						if (value) {
+						if (value && value !== pm) {
 							setPm(value as PackageManager);
+							analytics.packageManagerSelected(value);
 						}
 					}}
 					aria-label="Package manager"

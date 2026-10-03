@@ -17,6 +17,7 @@ import {
 	useState,
 } from "react";
 import { Input } from "#/components/ui/input.tsx";
+import { analytics } from "#/lib/analytics.ts";
 
 const DEFAULT_SEED = "output-lab";
 const WIDTH = 480;
@@ -136,6 +137,10 @@ export function OutputLab() {
 				<Input
 					value={seed}
 					onChange={(event) => setSeed(event.target.value)}
+					onBlur={(event) => {
+						if (seed.trim())
+							analytics.customSeedChanged("output_lab", event.target.value);
+					}}
 					placeholder={DEFAULT_SEED}
 					aria-label="Output comparison seed"
 					className="h-8 w-32 shrink-0 border-border/60 bg-transparent text-center font-mono text-[11px] shadow-none md:text-[11px] dark:bg-transparent"

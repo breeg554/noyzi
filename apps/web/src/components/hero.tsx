@@ -3,6 +3,7 @@ import { getRouteApi, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { useCopyGradientComponent } from "#/components/gradient-card.tsx";
 import { Button } from "#/components/ui/button.tsx";
+import { analytics } from "#/lib/analytics.ts";
 import {
 	type GalleryOptions,
 	resolveGalleryOptions,
@@ -37,7 +38,11 @@ export function Hero() {
 				variant="outline"
 				className="group mt-2 h-auto gap-3 rounded-lg border-border/60 bg-card py-2 pr-2 pl-4 font-mono font-normal shadow-none hover:bg-neutral-100 dark:border-border/60 dark:bg-card dark:hover:bg-[oklch(0.21_0_0)]"
 			>
-				<Link to="/docs" aria-label="Install noyzi — read the docs">
+				<Link
+					to="/docs"
+					onClick={() => analytics.navigationClicked("/docs", "hero_install")}
+					aria-label="Install noyzi — read the docs"
+				>
 					<span>
 						<span className="select-none text-muted-foreground">$ </span>
 						{INSTALL_COMMAND}

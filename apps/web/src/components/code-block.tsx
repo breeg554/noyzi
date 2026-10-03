@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { type ReactNode, useEffect, useState } from "react";
 import { codeToHtml } from "shiki";
 import { Button } from "#/components/ui/button.tsx";
+import { analytics } from "#/lib/analytics.ts";
 
 export type CodeLang = "bash" | "typescript" | "tsx";
 
@@ -11,11 +12,13 @@ function CodeBlock({
 	label,
 	lang = "tsx",
 	className,
+	onCopy,
 }: {
 	code: string;
 	label: ReactNode;
 	lang?: CodeLang;
 	className?: string;
+	onCopy?: () => void;
 }) {
 	const [copied, setCopied] = useState(false);
 	const [rendered, setRendered] = useState<{
@@ -43,6 +46,8 @@ function CodeBlock({
 
 	const copy = async () => {
 		await navigator.clipboard.writeText(code);
+		if (onCopy) onCopy();
+		else analytics.documentationCodeCopied(lang);
 		setCopied(true);
 		setTimeout(() => setCopied(false), 1500);
 	};

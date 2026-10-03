@@ -17,6 +17,7 @@ import {
 	CollapsibleContent,
 	CollapsibleTrigger,
 } from "#/components/ui/collapsible.tsx";
+import { analytics } from "#/lib/analytics.ts";
 import { playExternalLink } from "#/lib/click-sound.ts";
 import {
 	DOC_PACKAGES,
@@ -182,7 +183,10 @@ function PackageLink({ pkg }: { pkg: DocPackage }) {
 			target="_blank"
 			rel="noreferrer"
 			aria-label={`${pkg} on npm`}
-			onClick={playExternalLink}
+			onClick={() => {
+				playExternalLink();
+				analytics.externalLinkClicked(PACKAGE_URLS[pkg], "docs");
+			}}
 			className="inline-flex items-center gap-1 font-mono text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
 		>
 			{pkg}
@@ -209,7 +213,10 @@ function AnchorLink({
 			hashScrollIntoView={{ behavior: "smooth", block: "start" }}
 			resetScroll={false}
 			className={className}
-			onClick={onClick}
+			onClick={() => {
+				analytics.navigationClicked(`/docs#${id}`, "docs_sidebar");
+				onClick?.();
+			}}
 		>
 			{children}
 		</Link>

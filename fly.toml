@@ -9,6 +9,9 @@ primary_region = 'ams'
 [build]
   dockerfile = 'Dockerfile'
 
+[env]
+  POSTHOG_HOST = 'https://us.i.posthog.com'
+
 [http_service]
   internal_port = 3000
   force_https = true

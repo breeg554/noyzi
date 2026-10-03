@@ -7,6 +7,7 @@ import {
 } from "#/components/gradient-card.tsx";
 import { Card, CardContent } from "#/components/ui/card.tsx";
 import { Input } from "#/components/ui/input.tsx";
+import { analytics } from "#/lib/analytics.ts";
 import {
 	DEFAULT_GALLERY_OPTIONS,
 	type GalleryOptions,
@@ -84,7 +85,11 @@ export function CustomSeedCard({
 						setKeyboardFocus(!pointerRef.current);
 						pointerRef.current = false;
 					}}
-					onBlur={() => setKeyboardFocus(false)}
+					onBlur={(event) => {
+						setKeyboardFocus(false);
+						if (seed.trim())
+							analytics.customSeedChanged("gallery", event.target.value);
+					}}
 					placeholder="type a seed..."
 					className={cn(
 						"max-w-56 border-none bg-transparent text-center shadow-none dark:bg-transparent",

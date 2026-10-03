@@ -9,6 +9,7 @@ import { useDeferredValue, useMemo, useState } from "react";
 import { showGradientCopyToast } from "#/components/gradient-card.tsx";
 import { Button } from "#/components/ui/button.tsx";
 import { Input } from "#/components/ui/input.tsx";
+import { analytics } from "#/lib/analytics.ts";
 import { playClick } from "#/lib/click-sound.ts";
 import type { DocPreviewKind } from "#/lib/docs.ts";
 
@@ -124,6 +125,10 @@ export function DocPreview({
 				<Input
 					value={seed}
 					onChange={(event) => setSeed(event.target.value)}
+					onBlur={(event) => {
+						if (event.target.value.trim())
+							analytics.customSeedChanged("docs", event.target.value);
+					}}
 					placeholder={DEFAULT_SEED}
 					aria-label={`${animated ? "Animated gradient" : "Gradient"} preview seed`}
 					className="ml-auto h-8 w-32 border-border/60 bg-transparent text-center font-mono text-[11px] text-muted-foreground shadow-none placeholder:text-muted-foreground/60 md:text-[11px] dark:bg-transparent"
@@ -195,6 +200,10 @@ function GeneratePalettePreview({ className }: { className?: string }) {
 						<Input
 							value={seed}
 							onChange={(event) => setSeed(event.target.value)}
+							onBlur={(event) => {
+								if (event.target.value.trim())
+									analytics.customSeedChanged("docs", event.target.value);
+							}}
 							placeholder="seed: ada"
 							aria-label="Custom palette preview seed"
 							className="h-6 w-24 border-border/60 bg-background/60 px-2 font-mono text-[10px] text-muted-foreground shadow-none placeholder:text-muted-foreground/60 md:text-[10px] dark:bg-background/60"
@@ -275,10 +284,11 @@ function GradientAvatarPreview({
 }) {
 	const copy = async () => {
 		playClick();
-		showGradientCopyToast(seed, variant.options, animated);
 		await navigator.clipboard.writeText(
 			gradientSnippet(seed, variant, animated),
 		);
+		analytics.gradientComponentCopied(animated, "docs");
+		showGradientCopyToast(seed, variant.options, animated);
 	};
 	const vignette = variant.options.vignette;
 
@@ -387,6 +397,10 @@ function PalettePreview({
 			<Input
 				value={seed}
 				onChange={(event) => setSeed(event.target.value)}
+				onBlur={(event) => {
+					if (event.target.value.trim())
+						analytics.customSeedChanged("docs", event.target.value);
+				}}
 				placeholder={DEFAULT_SEED}
 				aria-label="Preview seed"
 				className="h-8 w-28 shrink-0 border-border/60 bg-transparent text-center font-mono text-[11px] text-muted-foreground shadow-none placeholder:text-muted-foreground/60 md:text-[11px] dark:bg-transparent"

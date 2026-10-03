@@ -1,6 +1,8 @@
 import type { GenerateOptions, HexColor } from "@noyzi/core";
+import { getServerAnalytics } from "../analytics/server.ts";
+import type { Analytics } from "../analytics.ts";
 import { MAX_COLORS, MIN_COLORS } from "../gallery-options.ts";
-import { IMAGE_PREFIX, publicImagePath } from "./host.ts";
+import { IMAGE_HOST, IMAGE_PREFIX, publicImagePath } from "./host.ts";
 import { encodeRaster, RasterBusyError } from "./raster.ts";
 import {
 	IMAGE_VERSIONS,
@@ -53,7 +55,9 @@ function parseSize(value: string, name: string): number {
 function parseColors(value: string): number {
 	const colors = Number(value);
 	if (!/^\d$/.test(value) || colors < MIN_COLORS || colors > MAX_COLORS) {
-		invalid(`colors must be a whole number from ${MIN_COLORS} to ${MAX_COLORS}`);
+		invalid(
+			`colors must be a whole number from ${MIN_COLORS} to ${MAX_COLORS}`,
+		);
 	}
 	return colors;
 }
@@ -80,27 +84,28 @@ function parseVignette(value: string): GenerateOptions["vignette"] {
 	return strength === 0 ? false : { strength };
 }
 
-const PARAMS: Record<string, (value: string, request: ImageRequest) => void> =
-	{
-		w: (value, request) => {
-			request.width = parseSize(value, "w");
-		},
-		h: (value, request) => {
-			request.height = parseSize(value, "h");
-		},
-		colors: (value, request) => {
-			request.options.colors = parseColors(value);
-		},
-		palette: (value, request) => {
-			request.options.palette = parsePalette(value);
-		},
-		vignette: (value, request) => {
-			request.options.vignette = parseVignette(value);
-		},
-	};
+const PARAMS: Record<string, (value: string, request: ImageRequest) => void> = {
+	w: (value, request) => {
+		request.width = parseSize(value, "w");
+	},
+	h: (value, request) => {
+		request.height = parseSize(value, "h");
+	},
+	colors: (value, request) => {
+		request.options.colors = parseColors(value);
+	},
+	palette: (value, request) => {
+		request.options.palette = parsePalette(value);
+	},
+	vignette: (value, request) => {
+		request.options.vignette = parseVignette(value);
+	},
+};
 
 export function parseImageRequest(path: string, search: string): ImageRequest {
-	const extension = path.match(/\.(svg|png|jpg)$/)?.[1] as ImageFormat | undefined;
+	const extension = path.match(/\.(svg|png|jpg)$/)?.[1] as
+		| ImageFormat
+		| undefined;
 	if (!extension) throw new ImageError(404, "Not found");
 
 	let seed = "";
@@ -140,7 +145,9 @@ export function parseImageRequest(path: string, search: string): ImageRequest {
 		extension !== "svg" &&
 		Math.max(request.width, request.height) > MAX_RASTER_SIZE
 	) {
-		invalid(`${extension} images are limited to ${MAX_RASTER_SIZE} pixels per side`);
+		invalid(
+			`${extension} images are limited to ${MAX_RASTER_SIZE} pixels per side`,
+		);
 	}
 	return request;
 }
@@ -198,15 +205,32 @@ function errorResponse(status: number, message: string): Response {
 async function respond(
 	url: URL,
 	version: ImageVersion,
+	analytics: Analytics,
+	distinctId: string,
+	start: number,
 ): Promise<Response> {
 	const prefix = `${IMAGE_PREFIX}/${version}/`;
 	try {
-		if (!url.pathname.startsWith(prefix)) throw new ImageError(404, "Not found");
+		if (!url.pathname.startsWith(prefix))
+			throw new ImageError(404, "Not found");
 		const image = parseImageRequest(
 			url.pathname.slice(prefix.length),
 			url.search,
 		);
-		return new Response(await renderBody(version, image), {
+		const body = await renderBody(version, image);
+		analytics.imageServed(
+			{
+				hostname: url.hostname,
+				version,
+				image_format: image.format,
+				width: image.width,
+				height: image.height,
+				status: 200,
+				duration_ms: Math.round(performance.now() - start),
+			},
+			{ distinctId },
+		);
+		return new Response(body, {
 			headers: {
 				"Access-Control-Allow-Origin": "*",
 				"Cache-Control": "public, max-age=31536000, immutable",
@@ -240,10 +264,49 @@ async function respond(
 export async function imageResponse(
 	request: Request,
 	version: ImageVersion,
+	analytics = getServerAnalytics(),
 ): Promise<Response> {
 	const url = new URL(request.url);
 	const start = performance.now();
-	const response = await respond(url, version);
+	const distinctId = crypto.randomUUID();
+	let response: Response;
+	try {
+		response = await respond(url, version, analytics, distinctId, start);
+	} catch (error) {
+		analytics.imageRequestFailed(
+			{
+				hostname: url.hostname,
+				version,
+				status: 500,
+				duration_ms: Math.round(performance.now() - start),
+			},
+			{ distinctId },
+		);
+		throw error;
+	}
+	const duration = Math.round(performance.now() - start);
+	if (!response.ok) {
+		analytics.imageRequestFailed(
+			{
+				hostname: url.hostname,
+				version,
+				status: response.status,
+				duration_ms: duration,
+			},
+			{ distinctId },
+		);
+	}
+	if (url.hostname === IMAGE_HOST) {
+		analytics.imageSubdomainRequested(
+			{
+				hostname: url.hostname,
+				method: request.method,
+				status: response.status,
+				duration_ms: duration,
+			},
+			{ distinctId },
+		);
+	}
 	if (process.env.NODE_ENV !== "test") {
 		const path = url.pathname.slice(IMAGE_PREFIX.length);
 		const ms = Math.round(performance.now() - start);
@@ -252,12 +315,31 @@ export async function imageResponse(
 	return response;
 }
 
-export function latestImageRedirect(request: Request): Response {
+export function latestImageRedirect(
+	request: Request,
+	analytics = getServerAnalytics(),
+): Response {
 	const url = new URL(request.url);
 	const prefix = `${IMAGE_PREFIX}/latest/`;
 	if (!url.pathname.startsWith(prefix)) return errorResponse(404, "Not found");
 	const rest = url.pathname.slice(prefix.length);
 	const path = publicImagePath(url, `/${LATEST_IMAGE_VERSION}/${rest}`);
+	const context = { distinctId: crypto.randomUUID() };
+	analytics.imageRedirected(
+		{ hostname: url.hostname, version: LATEST_IMAGE_VERSION, status: 302 },
+		context,
+	);
+	if (url.hostname === IMAGE_HOST) {
+		analytics.imageSubdomainRequested(
+			{
+				hostname: url.hostname,
+				method: request.method,
+				status: 302,
+				duration_ms: 0,
+			},
+			context,
+		);
+	}
 	return new Response(null, {
 		status: 302,
 		headers: {

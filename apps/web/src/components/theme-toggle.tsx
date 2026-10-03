@@ -1,6 +1,6 @@
 import { Moon, Sun } from "lucide-react";
-
 import { Button } from "#/components/ui/button.tsx";
+import { analytics } from "#/lib/analytics.ts";
 
 function ThemeToggle() {
 	function toggleTheme() {
@@ -8,6 +8,7 @@ function ThemeToggle() {
 		root.classList.add("disable-transitions");
 		const isDark = root.classList.toggle("dark");
 		localStorage.setItem("theme", isDark ? "dark" : "light");
+		analytics.themeChanged(isDark ? "dark" : "light");
 		requestAnimationFrame(() => {
 			requestAnimationFrame(() => {
 				root.classList.remove("disable-transitions");

@@ -1,9 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { Github } from "lucide-react";
 import { motion } from "motion/react";
-
 import { ThemeToggle } from "#/components/theme-toggle.tsx";
 import { Button } from "#/components/ui/button.tsx";
+import { analytics } from "#/lib/analytics.ts";
 import { playNavDocs, playNavHome } from "#/lib/click-sound.ts";
 
 function Header() {
@@ -23,7 +23,11 @@ function Header() {
 				className="pointer-events-none absolute inset-0 bg-linear-to-b from-background/70 via-background/30 to-transparent"
 			/>
 			<div className="relative flex h-14 items-center justify-between px-4">
-				<Link to="/" className="font-semibold text-base tracking-tight">
+				<Link
+					to="/"
+					onClick={() => analytics.navigationClicked("/", "header_logo")}
+					className="font-semibold text-base tracking-tight"
+				>
 					noyzi
 				</Link>
 
@@ -33,21 +37,30 @@ function Header() {
 				>
 					<Link
 						to="/"
-						onClick={playNavHome}
+						onClick={() => {
+							playNavHome();
+							analytics.navigationClicked("/", "header");
+						}}
 						className="text-muted-foreground transition-colors hover:text-foreground data-[status=active]:text-foreground"
 					>
 						Home
 					</Link>
 					<Link
 						to="/docs"
-						onClick={playNavDocs}
+						onClick={() => {
+							playNavDocs();
+							analytics.navigationClicked("/docs", "header");
+						}}
 						className="text-muted-foreground transition-colors hover:text-foreground data-[status=active]:text-foreground"
 					>
 						Docs
 					</Link>
 					<Link
 						to="/examples"
-						onClick={playNavHome}
+						onClick={() => {
+							playNavHome();
+							analytics.navigationClicked("/examples", "header");
+						}}
 						className="text-muted-foreground transition-colors hover:text-foreground data-[status=active]:text-foreground"
 					>
 						Examples
@@ -58,6 +71,12 @@ function Header() {
 					<Button asChild variant="ghost" size="icon" sound="external">
 						<a
 							href="https://github.com/breeg554/noyzi"
+							onClick={() =>
+								analytics.externalLinkClicked(
+									"https://github.com/breeg554/noyzi",
+									"header",
+								)
+							}
 							target="_blank"
 							rel="noreferrer"
 							aria-label="Noyzi on GitHub"

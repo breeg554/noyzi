@@ -1,4 +1,5 @@
 import { getRouteApi } from "@tanstack/react-router";
+import { analytics } from "#/lib/analytics.ts";
 import { playToggle } from "#/lib/click-sound.ts";
 import {
 	resolveGalleryOptions,
@@ -21,6 +22,7 @@ export function GalleryAnimationToggle({ className }: { className?: string }) {
 
 	const toggle = () => {
 		playToggle();
+		analytics.galleryOptionsChanged({ animated: !options.animated });
 		navigate({
 			search: toGallerySearch({ ...options, animated: !options.animated }),
 			replace: true,

@@ -11,6 +11,7 @@ import {
 } from "#/components/ui/collapsible.tsx";
 import { Slider } from "#/components/ui/slider.tsx";
 import { ToggleGroup, ToggleGroupItem } from "#/components/ui/toggle-group.tsx";
+import { analytics } from "#/lib/analytics.ts";
 import { playBoop } from "#/lib/click-sound.ts";
 import {
 	DEFAULT_GALLERY_OPTIONS,
@@ -41,6 +42,7 @@ export function GalleryToolbar() {
 	});
 
 	const update = (patch: Partial<GalleryOptions>) => {
+		analytics.galleryOptionsChanged(patch);
 		navigate({
 			search: toGallerySearch({ ...options, ...patch }),
 			replace: true,
@@ -48,6 +50,7 @@ export function GalleryToolbar() {
 		});
 	};
 	const resetFilters = (patch: Partial<GalleryOptions>) => {
+		analytics.galleryFiltersReset();
 		update({ ...patch, animated: options.animated });
 	};
 

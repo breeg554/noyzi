@@ -6,6 +6,7 @@ import { memo, useState } from "react";
 import { Button } from "#/components/ui/button.tsx";
 import { Card, CardContent } from "#/components/ui/card.tsx";
 import { gradientToast } from "#/components/ui/sonner.tsx";
+import { analytics } from "#/lib/analytics.ts";
 import { playClick } from "#/lib/click-sound.ts";
 import {
 	DEFAULT_GALLERY_OPTIONS,
@@ -43,14 +44,15 @@ export function useCopyGradientImage(seed: string, options?: GenerateOptions) {
 	const [copied, setCopied] = useState(false);
 
 	const copy = async () => {
-		showGradientCopyToast(seed, options);
-		setCopied(true);
-		setTimeout(() => setCopied(false), 1500);
 		await navigator.clipboard.write([
 			new ClipboardItem({
 				"image/png": gradientBlob(seed, options, "image/png"),
 			}),
 		]);
+		analytics.gradientImageCopied();
+		showGradientCopyToast(seed, options);
+		setCopied(true);
+		setTimeout(() => setCopied(false), 1500);
 	};
 
 	return { copied, copy };
@@ -97,6 +99,7 @@ export function useCopyGradientComponent(
 		await navigator.clipboard.writeText(
 			componentSnippet(seed, options, className, animated),
 		);
+		analytics.gradientComponentCopied(Boolean(animated));
 		showGradientCopyToast(seed, toGenerateOptions(options), animated);
 		setCopied(true);
 		setTimeout(() => setCopied(false), 1500);
@@ -213,6 +216,7 @@ export function DownloadButton({
 		anchor.href = url;
 		anchor.download = `noyzi-${seed}.${extension}`;
 		anchor.click();
+		analytics.gradientDownloaded(extension);
 		URL.revokeObjectURL(url);
 	};
 

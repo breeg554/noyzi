@@ -1,3 +1,4 @@
+import { analytics } from "#/lib/analytics.ts";
 import { playExternalLink } from "#/lib/click-sound.ts";
 
 function Footer() {
@@ -9,7 +10,13 @@ function Footer() {
 				href="https://twitter.com/breeg554"
 				target="_blank"
 				rel="noreferrer"
-				onClick={playExternalLink}
+				onClick={() => {
+					playExternalLink();
+					analytics.externalLinkClicked(
+						"https://twitter.com/breeg554",
+						"footer",
+					);
+				}}
 				className="transition-colors hover:text-foreground"
 			>
 				@breeg554
