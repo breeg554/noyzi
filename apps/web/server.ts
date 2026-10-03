@@ -1,4 +1,5 @@
 import path from "node:path";
+import { routeImageHost } from "./src/lib/image/host.ts";
 
 const port = Number(process.env.PORT ?? 3000);
 const clientDirectory = "./dist/client";
@@ -108,7 +109,12 @@ async function start() {
 		port,
 		routes: {
 			...routes,
-			"/*": (request) => module.default.fetch(request),
+			"/*": (request) => {
+				const routed = routeImageHost(request);
+				return routed instanceof Response
+					? routed
+					: module.default.fetch(routed);
+			},
 		},
 		error(error) {
 			console.error(error);

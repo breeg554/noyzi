@@ -16,6 +16,7 @@
 	},
 	"dependencies": {
 		"@noyzi/core": "workspace:*",
+		"@noyzi/core-v1": "npm:@noyzi/core@1.0.0",
 		"@noyzi/react": "workspace:*",
 		"@tailwindcss/vite": "^4.1.18",
 		"@tanstack/react-devtools": "latest",

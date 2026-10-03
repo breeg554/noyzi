@@ -13,6 +13,8 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ExamplesRouteImport } from './routes/examples'
 import { Route as DocsRouteImport } from './routes/docs'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ImgV1SplatRouteImport } from './routes/img.v1.$'
+import { Route as ImgLatestSplatRouteImport } from './routes/img.latest.$'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -34,18 +36,32 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ImgV1SplatRoute = ImgV1SplatRouteImport.update({
+  id: '/img/v1/$',
+  path: '/img/v1/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImgLatestSplatRoute = ImgLatestSplatRouteImport.update({
+  id: '/img/latest/$',
+  path: '/img/latest/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/docs': typeof DocsRoute
   '/examples': typeof ExamplesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/img/latest/$': typeof ImgLatestSplatRoute
+  '/img/v1/$': typeof ImgV1SplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/docs': typeof DocsRoute
   '/examples': typeof ExamplesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/img/latest/$': typeof ImgLatestSplatRoute
+  '/img/v1/$': typeof ImgV1SplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +69,24 @@ export interface FileRoutesById {
   '/docs': typeof DocsRoute
   '/examples': typeof ExamplesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/img/latest/$': typeof ImgLatestSplatRoute
+  '/img/v1/$': typeof ImgV1SplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/docs' | '/examples' | '/sitemap.xml'
+  fullPaths:
+    '/' | '/docs' | '/examples' | '/sitemap.xml' | '/img/latest/$' | '/img/v1/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/docs' | '/examples' | '/sitemap.xml'
-  id: '__root__' | '/' | '/docs' | '/examples' | '/sitemap.xml'
+  to:
+    '/' | '/docs' | '/examples' | '/sitemap.xml' | '/img/latest/$' | '/img/v1/$'
+  id:
+    | '__root__'
+    | '/'
+    | '/docs'
+    | '/examples'
+    | '/sitemap.xml'
+    | '/img/latest/$'
+    | '/img/v1/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,6 +94,8 @@ export interface RootRouteChildren {
   DocsRoute: typeof DocsRoute
   ExamplesRoute: typeof ExamplesRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  ImgLatestSplatRoute: typeof ImgLatestSplatRoute
+  ImgV1SplatRoute: typeof ImgV1SplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,6 +128,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/img/v1/$': {
+      id: '/img/v1/$'
+      path: '/img/v1/$'
+      fullPath: '/img/v1/$'
+      preLoaderRoute: typeof ImgV1SplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/img/latest/$': {
+      id: '/img/latest/$'
+      path: '/img/latest/$'
+      fullPath: '/img/latest/$'
+      preLoaderRoute: typeof ImgLatestSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -107,16 +150,9 @@ const rootRouteChildren: RootRouteChildren = {
   DocsRoute: DocsRoute,
   ExamplesRoute: ExamplesRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  ImgLatestSplatRoute: ImgLatestSplatRoute,
+  ImgV1SplatRoute: ImgV1SplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
