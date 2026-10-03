@@ -23,6 +23,7 @@
 
 - [`@noyzi/core`](./packages/core) — framework-independent generator with CSS, SVG, canvas, WebP, and PNG output
 - [`@noyzi/react`](./packages/react) — SSR-safe `<NoyziGradient />` component with zero client JavaScript
+- [shadcn components](https://noyzi.dev/docs#shadcn) — `npx shadcn@latest add https://noyzi.dev/r/noyzi-avatar.json`
 
 Use Noyzi for avatars, placeholders, covers, app icons, branded surfaces, and full-page backgrounds. Browse the [examples](https://noyzi.dev/examples) or read the [documentation](https://noyzi.dev/docs).
 

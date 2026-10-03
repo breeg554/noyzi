@@ -1,8 +1,18 @@
 import type { CodeLang } from "#/components/code-block.tsx";
 
-export type DocPackage = "@noyzi/core" | "@noyzi/react" | "img.noyzi.dev";
+export type DocPackage =
+	| "@noyzi/core"
+	| "@noyzi/react"
+	| "shadcn"
+	| "img.noyzi.dev";
 
-export type DocPreviewKind = "animated" | "generate" | "gradient" | "palette";
+export type DocPreviewKind =
+	| "animated"
+	| "avatar"
+	| "generate"
+	| "gradient"
+	| "image"
+	| "palette";
 
 export interface DocEntry {
 	id: string;
@@ -441,6 +451,69 @@ interface NoyziBaseProps
 </NoyziAnimatedGroup>`,
 	},
 	{
+		id: "shadcn",
+		name: "<NoyziAvatar />",
+		pkg: "shadcn",
+		signature: "npx shadcn@latest add https://noyzi.dev/r/noyzi-avatar.json",
+		signatureLabel: "Install",
+		signatureLang: "bash",
+		description:
+			"An avatar for shadcn/ui projects. It shows the user's photo, and their own gradient while it loads, when there's no photo, or when the link is broken. The code lands in your components folder, so you can change anything.",
+		details: [
+			{
+				label: "seed",
+				description: "Something stable per user: id or email.",
+			},
+			{
+				label: "src",
+				description: "The photo. Optional; null and undefined are fine.",
+			},
+			{
+				label: "fallback",
+				description: "Shown on the gradient when there's no photo, like initials.",
+			},
+		],
+		example: `import { NoyziAvatar } from "@/components/noyzi-avatar";
+
+<NoyziAvatar
+  seed={user.email}
+  src={user.image}
+  alt={user.name}
+  fallback={user.initials}
+  className="size-10"
+/>`,
+		preview: "avatar",
+	},
+	{
+		id: "shadcn-image",
+		name: "<NoyziImage />",
+		pkg: "shadcn",
+		signature: "npx shadcn@latest add https://noyzi.dev/r/noyzi-image.json",
+		signatureLabel: "Install",
+		signatureLang: "bash",
+		description:
+			"An image with a gradient placeholder. The gradient shows while the image loads and stays if it fails, so covers and thumbnails never look broken. The seed defaults to src.",
+		details: [
+			{
+				label: "className",
+				description: "Sizes the wrapper, e.g. aspect-video rounded-lg.",
+			},
+			{
+				label: "imageClassName",
+				description: "Goes on the <img>, e.g. object-top.",
+			},
+		],
+		example: `import { NoyziImage } from "@/components/noyzi-image";
+
+<NoyziImage
+  src={post.cover}
+  seed={post.slug}
+  alt={post.title}
+  className="aspect-video rounded-lg"
+/>`,
+		preview: "image",
+	},
+	{
 		id: "image-urls",
 		name: "Image URLs",
 		pkg: "img.noyzi.dev",
@@ -535,6 +608,7 @@ https://img.noyzi.dev/latest/{seed}.svg  redirects to the newest version`,
 export const DOC_PACKAGES: DocPackage[] = [
 	"@noyzi/core",
 	"@noyzi/react",
+	"shadcn",
 	"img.noyzi.dev",
 ];
 

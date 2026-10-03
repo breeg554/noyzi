@@ -7,6 +7,7 @@ import { NoyziAnimated, NoyziAnimatedGroup, NoyziGradient } from "@noyzi/react";
 import { Minus, Plus } from "lucide-react";
 import { useDeferredValue, useMemo, useState } from "react";
 import { showGradientCopyToast } from "#/components/gradient-card.tsx";
+import { AvatarPreview, ImagePreview } from "#/components/registry-preview.tsx";
 import { Button } from "#/components/ui/button.tsx";
 import { Input } from "#/components/ui/input.tsx";
 import { analytics } from "#/lib/analytics.ts";
@@ -100,6 +101,10 @@ export function DocPreview({
 	if (kind === "generate") {
 		return <GeneratePalettePreview className={className} />;
 	}
+
+	if (kind === "avatar") return <AvatarPreview className={className} />;
+
+	if (kind === "image") return <ImagePreview className={className} />;
 
 	if (kind === "gradient" || kind === "animated") {
 		const animated = kind === "animated";

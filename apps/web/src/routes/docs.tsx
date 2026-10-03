@@ -48,6 +48,7 @@ export function Avatar({ email }: { email: string }) {
 const PACKAGE_URLS: Record<DocPackage, string> = {
 	"@noyzi/core": "https://www.npmjs.com/package/@noyzi/core",
 	"@noyzi/react": "https://www.npmjs.com/package/@noyzi/react",
+	shadcn: "https://noyzi.dev/r/noyzi-avatar.json",
 	"img.noyzi.dev": "https://img.noyzi.dev/v1/noyzi.svg",
 };
 
@@ -154,6 +155,12 @@ function GetStarted() {
 					<code className="font-mono">&lt;NoyziGradient /&gt;</code> and{" "}
 					<code className="font-mono">&lt;NoyziAnimated /&gt;</code> on top:
 					SVG-first rendering with optional WebGL motion.
+				</li>
+				<li>
+					<PackageLink pkg="shadcn" /> — <code className="font-mono">&lt;NoyziAvatar /&gt;</code>{" "}
+					and <code className="font-mono">&lt;NoyziImage /&gt;</code> as
+					copy-in components: photo when there is one, gradient when there
+					isn't.
 				</li>
 				<li>
 					<PackageLink pkg="img.noyzi.dev" /> — no install: every seed is an

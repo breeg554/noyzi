@@ -93,7 +93,7 @@ async function loadStaticRoutes(): Promise<Record<string, StaticRoute>> {
 		routes[route] = createStaticRoute(
 			new Uint8Array(await file.arrayBuffer()),
 			mimeType,
-			true,
+			!route.startsWith("/r/"),
 		);
 	}
 

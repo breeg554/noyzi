@@ -1,0 +1,35 @@
+{
+	"$schema": "https://ui.shadcn.com/schema/registry.json",
+	"name": "noyzi",
+	"homepage": "https://noyzi.dev",
+	"items": [
+		{
+			"name": "noyzi-avatar",
+			"type": "registry:component",
+			"title": "Noyzi Avatar",
+			"description": "Avatar that shows a seed-based gradient while the photo loads, or when there is none.",
+			"dependencies": ["@noyzi/react"],
+			"files": [
+				{
+					"path": "src/registry/noyzi-avatar.tsx",
+					"type": "registry:component"
+				}
+			],
+			"docs": "Use the user's id or email as the seed: <NoyziAvatar seed={user.email} src={user.image} alt={user.name} />"
+		},
+		{
+			"name": "noyzi-image",
+			"type": "registry:component",
+			"title": "Noyzi Image",
+			"description": "Image with a seed-based gradient placeholder that stays if the image fails to load.",
+			"dependencies": ["@noyzi/react"],
+			"files": [
+				{
+					"path": "src/registry/noyzi-image.tsx",
+					"type": "registry:component"
+				}
+			],
+			"docs": "The seed defaults to src. Size the wrapper with className: <NoyziImage src={post.cover} className=\"aspect-video rounded-lg\" />"
+		}
+	]
+}

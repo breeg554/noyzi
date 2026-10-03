@@ -8,7 +8,8 @@
 	"scripts": {
 		"dev": "vite dev --port 3000",
 		"generate-routes": "tsr generate",
-		"build": "bun --bun vite build",
+		"build": "shadcn build && bun --bun vite build",
+		"registry:build": "shadcn build",
 		"serve": "bun --bun vite preview",
 		"start": "bun run server.ts",
 		"test": "bun test",
@@ -54,6 +55,7 @@
 		"@types/react": "^19.2.0",
 		"@types/react-dom": "^19.2.0",
 		"@vitejs/plugin-react": "^6.0.1",
+		"shadcn": "latest",
 		"typescript": "^6.0.2",
 		"vite": "^8.0.0"
 	}
