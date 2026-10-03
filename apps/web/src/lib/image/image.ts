@@ -1,6 +1,7 @@
 import type { GenerateOptions, HexColor } from "@noyzi/core";
 import { MAX_COLORS, MIN_COLORS } from "../gallery-options.ts";
 import { IMAGE_PREFIX, publicImagePath } from "./host.ts";
+import { encodeRaster, RasterBusyError } from "./raster.ts";
 import {
 	IMAGE_VERSIONS,
 	type ImageVersion,
@@ -9,10 +10,20 @@ import {
 
 export const DEFAULT_IMAGE_SIZE = 1000;
 export const MAX_IMAGE_SIZE = 4096;
+export const MAX_RASTER_SIZE = 2400;
 export const MAX_SEED_LENGTH = 256;
+
+export const IMAGE_FORMATS = {
+	svg: "image/svg+xml; charset=utf-8",
+	png: "image/png",
+	jpg: "image/jpeg",
+} as const;
+
+export type ImageFormat = keyof typeof IMAGE_FORMATS;
 
 export interface ImageRequest {
 	seed: string;
+	format: ImageFormat;
 	width: number;
 	height: number;
 	options: GenerateOptions;
@@ -89,11 +100,12 @@ const PARAMS: Record<string, (value: string, request: ImageRequest) => void> =
 	};
 
 export function parseImageRequest(path: string, search: string): ImageRequest {
-	if (!path.endsWith(".svg")) throw new ImageError(404, "Not found");
+	const extension = path.match(/\.(svg|png|jpg)$/)?.[1] as ImageFormat | undefined;
+	if (!extension) throw new ImageError(404, "Not found");
 
 	let seed = "";
 	try {
-		seed = decodeURIComponent(path.slice(0, -".svg".length));
+		seed = decodeURIComponent(path.slice(0, -(extension.length + 1)));
 	} catch {
 		invalid("seed is not valid URL encoding");
 	}
@@ -104,6 +116,7 @@ export function parseImageRequest(path: string, search: string): ImageRequest {
 
 	const request: ImageRequest = {
 		seed,
+		format: extension,
 		width: DEFAULT_IMAGE_SIZE,
 		height: DEFAULT_IMAGE_SIZE,
 		options: {},
@@ -123,22 +136,52 @@ export function parseImageRequest(path: string, search: string): ImageRequest {
 	if (seen.has("colors") && seen.has("palette")) {
 		invalid("use either colors or palette, not both");
 	}
+	if (
+		extension !== "svg" &&
+		Math.max(request.width, request.height) > MAX_RASTER_SIZE
+	) {
+		invalid(`${extension} images are limited to ${MAX_RASTER_SIZE} pixels per side`);
+	}
 	return request;
+}
+
+function specOf(version: ImageVersion, request: ImageRequest) {
+	const renderer = IMAGE_VERSIONS[version];
+	return renderer.generate(renderer.seedHash(request.seed), request.options);
 }
 
 export function renderImage(
 	version: ImageVersion,
 	request: ImageRequest,
 ): string {
-	const renderer = IMAGE_VERSIONS[version];
-	const spec = renderer.generate(
-		renderer.seedHash(request.seed),
-		request.options,
-	);
-	return renderer.toSvg(spec, {
+	return IMAGE_VERSIONS[version].toSvg(specOf(version, request), {
 		width: request.width,
 		height: request.height,
 	});
+}
+
+export function renderPixels(version: ImageVersion, request: ImageRequest) {
+	return IMAGE_VERSIONS[version].toPixels(specOf(version, request), {
+		width: request.width,
+		height: request.height,
+	});
+}
+
+function fileName(request: ImageRequest): string {
+	const slug = request.seed
+		.toLowerCase()
+		.replace(/[^a-z0-9]+/g, "-")
+		.replace(/^-|-$/g, "")
+		.slice(0, 64);
+	return `noyzi-${slug || "image"}.${request.format}`;
+}
+
+async function renderBody(
+	version: ImageVersion,
+	request: ImageRequest,
+): Promise<string | Uint8Array<ArrayBuffer>> {
+	if (request.format === "svg") return renderImage(version, request);
+	return encodeRaster(() => renderPixels(version, request), request.format);
 }
 
 function errorResponse(status: number, message: string): Response {
@@ -152,10 +195,10 @@ function errorResponse(status: number, message: string): Response {
 	});
 }
 
-export function imageResponse(
+export async function imageResponse(
 	request: Request,
 	version: ImageVersion,
-): Response {
+): Promise<Response> {
 	const url = new URL(request.url);
 	const prefix = `${IMAGE_PREFIX}/${version}/`;
 	try {
@@ -164,13 +207,14 @@ export function imageResponse(
 			url.pathname.slice(prefix.length),
 			url.search,
 		);
-		return new Response(renderImage(version, image), {
+		return new Response(await renderBody(version, image), {
 			headers: {
 				"Access-Control-Allow-Origin": "*",
 				"Cache-Control": "public, max-age=31536000, immutable",
+				"Content-Disposition": `inline; filename="${fileName(image)}"`,
 				"Content-Security-Policy":
 					"default-src 'none'; style-src 'unsafe-inline'",
-				"Content-Type": "image/svg+xml; charset=utf-8",
+				"Content-Type": IMAGE_FORMATS[image.format],
 				"X-Content-Type-Options": "nosniff",
 				"X-Noyzi-Version": version,
 			},
@@ -178,6 +222,17 @@ export function imageResponse(
 	} catch (error) {
 		if (error instanceof ImageError) {
 			return errorResponse(error.status, error.message);
+		}
+		if (error instanceof RasterBusyError) {
+			return new Response("Busy rendering images, try again in a moment\n", {
+				status: 503,
+				headers: {
+					"Access-Control-Allow-Origin": "*",
+					"Cache-Control": "no-store",
+					"Content-Type": "text/plain; charset=utf-8",
+					"Retry-After": "5",
+				},
+			});
 		}
 		throw error;
 	}

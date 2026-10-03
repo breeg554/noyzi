@@ -25,6 +25,8 @@ export {
 } from "./render/animated.ts";
 export type { CssOutput } from "./render/css.ts";
 export { toCss } from "./render/css.ts";
+export type { Pixels } from "./render/pixels.ts";
+export { toPixels } from "./render/pixels.ts";
 export type { EncodeOptions, RasterOptions } from "./render/raster.ts";
 export { drawToCanvas, toBlob, toCanvas, toDataUrl } from "./render/raster.ts";
 export type { SvgOptions } from "./render/svg.ts";

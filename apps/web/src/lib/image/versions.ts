@@ -4,6 +4,7 @@ export interface ImageRenderer {
 	generate: typeof v1.generate;
 	seedHash: typeof v1.seedHash;
 	toSvg: typeof v1.toSvg;
+	toPixels: typeof v1.toPixels;
 }
 
 export const IMAGE_VERSIONS = {

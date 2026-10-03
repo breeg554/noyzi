@@ -1,5 +1,5 @@
 import path from "node:path";
-import { routeImageHost } from "./src/lib/image/host.ts";
+import { IMAGE_HOST, routeImageHost } from "./src/lib/image/host.ts";
 
 const port = Number(process.env.PORT ?? 3000);
 const clientDirectory = "./dist/client";
@@ -103,18 +103,25 @@ async function loadStaticRoutes(): Promise<Record<string, StaticRoute>> {
 async function start() {
 	const module = (await import(serverEntryPoint)) as { default: StartHandler };
 	const routes = await loadStaticRoutes();
+	const handle = (request: Request) => {
+		const routed = routeImageHost(request);
+		return routed instanceof Response ? routed : module.default.fetch(routed);
+	};
 
 	const server = Bun.serve({
 		hostname: "0.0.0.0",
 		port,
 		routes: {
-			...routes,
-			"/*": (request) => {
-				const routed = routeImageHost(request);
-				return routed instanceof Response
-					? routed
-					: module.default.fetch(routed);
-			},
+			...Object.fromEntries(
+				Object.entries(routes).map(([route, serve]) => [
+					route,
+					(request: Request) =>
+						new URL(request.url).hostname === IMAGE_HOST
+							? handle(request)
+							: serve(request),
+				]),
+			),
+			"/*": handle,
 		},
 		error(error) {
 			console.error(error);
