@@ -27,6 +27,10 @@
 
 Use Noyzi for avatars, placeholders, covers, app icons, branded surfaces, and full-page backgrounds. Browse the [examples](https://noyzi.dev/examples) or read the [documentation](https://noyzi.dev/docs).
 
+## MCP
+
+Connect any MCP client that supports Streamable HTTP to `https://noyzi.dev/mcp`, with no authentication. The `generate_gradient` tool accepts a seed, optional palette, dimensions, and format, and returns a versioned public image URL. See the [MCP docs](https://noyzi.dev/docs#mcp) for connection settings and an example tool call.
+
 ## License
 
 [MIT](https://opensource.org/license/mit) © Noyzi

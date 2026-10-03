@@ -4,7 +4,8 @@ export type DocPackage =
 	| "@noyzi/core"
 	| "@noyzi/react"
 	| "shadcn"
-	| "img.noyzi.dev";
+	| "img.noyzi.dev"
+	| "MCP";
 
 export type DocPreviewKind =
 	| "animated"
@@ -470,7 +471,8 @@ interface NoyziBaseProps
 			},
 			{
 				label: "fallback",
-				description: "Shown on the gradient when there's no photo, like initials.",
+				description:
+					"Shown on the gradient when there's no photo, like initials.",
 			},
 		],
 		example: `import { NoyziAvatar } from "@/components/noyzi-avatar";
@@ -524,7 +526,7 @@ https://img.noyzi.dev/v1/{seed}.webp`,
 		signatureLabel: "URL",
 		signatureLang: "text",
 		description:
-			"Every seed has a public image URL — no install, no key. Use it anywhere an image goes: link previews, README banners, avatars, emails. The seed is the path, so slashes are fine (user/repo), and it gives the same gradient as <NoyziGradient seed=\"...\" />.",
+			'Every seed has a public image URL — no install, no key. Use it anywhere an image goes: link previews, README banners, avatars, emails. The seed is the path, so slashes are fine (user/repo), and it gives the same gradient as <NoyziGradient seed="..." />.',
 		details: [
 			{
 				label: "Forever",
@@ -538,7 +540,8 @@ https://img.noyzi.dev/v1/{seed}.webp`,
 			},
 			{
 				label: "Anywhere",
-				description: "CORS is open, so you can also fetch the images from your own code.",
+				description:
+					"CORS is open, so you can also fetch the images from your own code.",
 			},
 		],
 		example: `<img src="https://img.noyzi.dev/v1/ada.svg" width="40" height="40" alt="" />
@@ -603,6 +606,72 @@ https://img.noyzi.dev/latest/{seed}.svg  redirects to the newest version`,
 		description:
 			"If the renderer ever changes how gradients look, it ships as /v2 and /v1 stays the same. Link to /v1 when the image must never change; use /latest to always get the newest look.",
 	},
+	{
+		id: "mcp",
+		name: "Connect via MCP",
+		pkg: "MCP",
+		signature: "https://noyzi.dev/mcp",
+		signatureLabel: "Server URL",
+		signatureLang: "text",
+		description:
+			"Let an AI assistant create Noyzi gradients using generate_gradient. Add a remote MCP server in any client that supports Streamable HTTP, paste this URL, and select no authentication. No API key or package install is needed.",
+		details: [
+			{
+				label: "Transport",
+				description:
+					"Stateless Streamable HTTP. MCP requests use POST; browser clients can connect from any origin.",
+			},
+			{
+				label: "Try it",
+				description:
+					'Ask your assistant: "Use Noyzi to create a 1600×900 PNG background with seed summer-launch and palette #fff4df, #ff9166, #eaa0c5."',
+			},
+			{
+				label: "Local development",
+				description:
+					"Run bun run dev and connect to http://localhost:3000/mcp.",
+			},
+		],
+		note: "The endpoint is a protocol URL, not a web page. Opening it in a browser returns 405; connect through an MCP client instead.",
+	},
+	{
+		id: "generate-gradient",
+		name: "generate_gradient",
+		pkg: "MCP",
+		signature: `seed      required string, 1–256 characters
+palette   optional 2–8 #rrggbb colors, background first
+width     positive integer in px. Default 1000
+height    positive integer in px. Default 1000
+format    png | webp | jpg | svg. Default png`,
+		signatureLabel: "Tool parameters",
+		signatureLang: "text",
+		description:
+			"Creates a deterministic textured gradient for backgrounds, covers, placeholders, or avatars. Returns a versioned public image URL and its seed, resolved palette, width, height, format, and renderer version. Fetch the URL to get the image; the tool returns its settings rather than image bytes. Artwork contains no text, logos, or illustrations.",
+		details: [
+			{
+				label: "Palette",
+				description:
+					"Omit it for colors derived from the seed. Reuse the seed and palette size to preserve composition; change the colors to recolor or the seed for a new variation.",
+			},
+			{
+				label: "Dimensions",
+				description:
+					"PNG, WebP, and JPG support up to 2400 px per side. SVG supports up to 4096 px per side.",
+			},
+		],
+		example: `{
+  "name": "generate_gradient",
+  "arguments": {
+    "seed": "summer-launch",
+    "palette": ["#fff4df", "#ff9166", "#eaa0c5"],
+    "width": 1600,
+    "height": 900,
+    "format": "png"
+  }
+}`,
+		exampleLang: "json",
+		note: "Seeds appear in public image URLs. Use non-sensitive labels.",
+	},
 ];
 
 export const DOC_PACKAGES: DocPackage[] = [
@@ -610,6 +679,7 @@ export const DOC_PACKAGES: DocPackage[] = [
 	"@noyzi/react",
 	"shadcn",
 	"img.noyzi.dev",
+	"MCP",
 ];
 
 export function entriesForPackage(pkg: DocPackage): DocEntry[] {

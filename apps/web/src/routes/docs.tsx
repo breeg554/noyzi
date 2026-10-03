@@ -34,7 +34,7 @@ export const Route = createFileRoute("/docs")({
 		createMeta({
 			title: "Docs",
 			description:
-				"Get started with Noyzi. Installation, usage, API reference, and image URLs.",
+				"Get started with Noyzi. Installation, usage, API reference, image URLs, and MCP for AI assistants.",
 			path: "/docs",
 		}),
 });
@@ -45,7 +45,7 @@ export function Avatar({ email }: { email: string }) {
 	return <NoyziGradient seed={email} className="size-10 rounded-full" />;
 }`;
 
-const PACKAGE_URLS: Record<DocPackage, string> = {
+const PACKAGE_URLS: Record<Exclude<DocPackage, "MCP">, string> = {
 	"@noyzi/core": "https://www.npmjs.com/package/@noyzi/core",
 	"@noyzi/react": "https://www.npmjs.com/package/@noyzi/react",
 	shadcn: "https://noyzi.dev/r/noyzi-avatar.json",
@@ -157,15 +157,20 @@ function GetStarted() {
 					SVG-first rendering with optional WebGL motion.
 				</li>
 				<li>
-					<PackageLink pkg="shadcn" /> — <code className="font-mono">&lt;NoyziAvatar /&gt;</code>{" "}
-					and <code className="font-mono">&lt;NoyziImage /&gt;</code> as
-					copy-in components: photo when there is one, gradient when there
-					isn't.
+					<PackageLink pkg="shadcn" /> —{" "}
+					<code className="font-mono">&lt;NoyziAvatar /&gt;</code> and{" "}
+					<code className="font-mono">&lt;NoyziImage /&gt;</code> as copy-in
+					components: photo when there is one, gradient when there isn't.
 				</li>
 				<li>
 					<PackageLink pkg="img.noyzi.dev" /> — no install: every seed is an
-					image URL in SVG, PNG, JPG, or WebP, for link previews, README banners, and
-					avatars.
+					image URL in SVG, PNG, JPG, or WebP, for link previews, README
+					banners, and avatars.
+				</li>
+				<li>
+					<PackageLink pkg="MCP" /> — connect your AI assistant to generate
+					gradients and get public image URLs. Works with any client supporting
+					Streamable HTTP.
 				</li>
 			</ul>
 
@@ -190,6 +195,17 @@ function GetStarted() {
 }
 
 function PackageLink({ pkg }: { pkg: DocPackage }) {
+	if (pkg === "MCP") {
+		return (
+			<AnchorLink
+				id="mcp"
+				className="font-mono text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
+			>
+				MCP
+			</AnchorLink>
+		);
+	}
+
 	return (
 		<a
 			href={PACKAGE_URLS[pkg]}
