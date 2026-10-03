@@ -9,21 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as ExamplesRouteImport } from './routes/examples'
-import { Route as DocsRouteImport } from './routes/docs'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ImgV1SplatRouteImport } from './routes/img.v1.$'
+import { Route as DocsRouteImport } from './routes/docs'
+import { Route as ExamplesRouteImport } from './routes/examples'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ImgLatestSplatRouteImport } from './routes/img.latest.$'
+import { Route as ImgV1SplatRouteImport } from './routes/img.v1.$'
 
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ExamplesRoute = ExamplesRouteImport.update({
-  id: '/examples',
-  path: '/examples',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DocsRoute = DocsRouteImport.update({
@@ -31,19 +26,24 @@ const DocsRoute = DocsRouteImport.update({
   path: '/docs',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const ExamplesRoute = ExamplesRouteImport.update({
+  id: '/examples',
+  path: '/examples',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ImgV1SplatRoute = ImgV1SplatRouteImport.update({
-  id: '/img/v1/$',
-  path: '/img/v1/$',
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ImgLatestSplatRoute = ImgLatestSplatRouteImport.update({
   id: '/img/latest/$',
   path: '/img/latest/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImgV1SplatRoute = ImgV1SplatRouteImport.update({
+  id: '/img/v1/$',
+  path: '/img/v1/$',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -100,18 +100,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/examples': {
-      id: '/examples'
-      path: '/examples'
-      fullPath: '/examples'
-      preLoaderRoute: typeof ExamplesRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/docs': {
@@ -121,18 +114,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DocsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/examples': {
+      id: '/examples'
+      path: '/examples'
+      fullPath: '/examples'
+      preLoaderRoute: typeof ExamplesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/img/v1/$': {
-      id: '/img/v1/$'
-      path: '/img/v1/$'
-      fullPath: '/img/v1/$'
-      preLoaderRoute: typeof ImgV1SplatRouteImport
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/img/latest/$': {
@@ -140,6 +133,13 @@ declare module '@tanstack/react-router' {
       path: '/img/latest/$'
       fullPath: '/img/latest/$'
       preLoaderRoute: typeof ImgLatestSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/img/v1/$': {
+      id: '/img/v1/$'
+      path: '/img/v1/$'
+      fullPath: '/img/v1/$'
+      preLoaderRoute: typeof ImgV1SplatRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -156,3 +156,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}

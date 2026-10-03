@@ -20,7 +20,7 @@
 		"@noyzi/react": "workspace:*",
 		"@tailwindcss/vite": "^4.1.18",
 		"@tanstack/react-devtools": "latest",
-		"@tanstack/react-query": "^5.101.2",
+		"@tanstack/react-query": "^5.102.0",
 		"@tanstack/react-router": "latest",
 		"@tanstack/react-router-devtools": "latest",
 		"@tanstack/react-router-ssr-query": "latest",
