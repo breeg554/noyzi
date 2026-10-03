@@ -195,11 +195,10 @@ function errorResponse(status: number, message: string): Response {
 	});
 }
 
-export async function imageResponse(
-	request: Request,
+async function respond(
+	url: URL,
 	version: ImageVersion,
 ): Promise<Response> {
-	const url = new URL(request.url);
 	const prefix = `${IMAGE_PREFIX}/${version}/`;
 	try {
 		if (!url.pathname.startsWith(prefix)) throw new ImageError(404, "Not found");
@@ -236,6 +235,21 @@ export async function imageResponse(
 		}
 		throw error;
 	}
+}
+
+export async function imageResponse(
+	request: Request,
+	version: ImageVersion,
+): Promise<Response> {
+	const url = new URL(request.url);
+	const start = performance.now();
+	const response = await respond(url, version);
+	if (process.env.NODE_ENV !== "test") {
+		const path = url.pathname.slice(IMAGE_PREFIX.length);
+		const ms = Math.round(performance.now() - start);
+		console.log(`image ${response.status} ${path}${url.search} ${ms}ms`);
+	}
+	return response;
 }
 
 export function latestImageRedirect(request: Request): Response {
