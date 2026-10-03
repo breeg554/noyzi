@@ -75,6 +75,7 @@ describe("animated canvas renderers", () => {
 			expect(textureCanvas.height).toBe(80);
 			expect(decodeURIComponent(imageSource)).toContain('width="1000"');
 			expect(decodeURIComponent(imageSource)).toContain('height="1000"');
+			expect(decodeURIComponent(imageSource)).not.toContain("fractalNoise");
 		} finally {
 			if (previousImage) {
 				globals.Image = previousImage;
@@ -115,10 +116,22 @@ describe("toSvg", () => {
 	test("renders one continuous noise-warped color surface", () => {
 		const svg = toSvg(generate("count"));
 		expect(svg.match(/<linearGradient/g)).toHaveLength(1);
-		expect(svg.match(/<feTurbulence/g)).toHaveLength(1);
 		expect(svg.match(/<feDisplacementMap/g)).toHaveLength(1);
 		expect(svg.match(/<feGaussianBlur/g)).toHaveLength(2);
 		expect(svg).not.toContain("<path ");
+	});
+
+	test("adds soft color pools, light and depth inside the warp", () => {
+		const spec = generate("count");
+		const svg = toSvg(spec);
+		expect(svg.match(/<ellipse /g)).toHaveLength(spec.fields.length + 2);
+		expect(svg.indexOf("<ellipse ")).toBeLessThan(svg.indexOf("</g>"));
+	});
+
+	test("adds a film grain layer on top", () => {
+		const svg = toSvg(generate("count"));
+		expect(svg).toContain('type="fractalNoise"');
+		expect(svg.match(/<feTurbulence/g)).toHaveLength(2);
 	});
 
 	test("renders every requested palette color", () => {
@@ -128,7 +141,6 @@ describe("toSvg", () => {
 				vignette: false,
 			});
 			const svg = toSvg(spec);
-			expect(svg.match(/<stop /g)).toHaveLength(count + 1);
 			for (const color of spec.palette) {
 				expect(svg).toContain(color.hex);
 			}

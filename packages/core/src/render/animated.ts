@@ -1,6 +1,6 @@
 import type { GradientField, GradientSpec } from "../generate.ts";
 import type { RasterOptions } from "./raster.ts";
-import { toSvgDataUri } from "./svg.ts";
+import { renderSvg } from "./svg.ts";
 
 const VERTEX_SHADER = `#version 300 es
 in vec2 aPosition;
@@ -235,7 +235,13 @@ void main() {
 		);
 	}
 
-	outColor = vec4(texture(uArtwork, mirroredUv(warpedUv)).rgb, 1.0);
+	vec3 color = texture(uArtwork, mirroredUv(warpedUv)).rgb;
+	vec2 grainCell = floor(gl_FragCoord.xy);
+	float grain = fract(sin(dot(grainCell, vec2(12.9898, 78.233))) * 43758.5453)
+		+ fract(sin(dot(grainCell, vec2(39.3468, 11.1351))) * 24634.6345)
+		- 1.0;
+	color += grain * 0.022;
+	outColor = vec4(clamp(color, 0.0, 1.0), 1.0);
 }`;
 
 interface FieldUniforms {
@@ -259,6 +265,15 @@ interface AnimatedField {
 type MotionSeed = [number, number, number, number];
 
 const INTRODUCTION_DURATION = 1.4;
+
+function textureDataUri(
+	spec: GradientSpec,
+	width: number,
+	height: number,
+): string {
+	const svg = renderSvg(spec, { width, height }, { grain: false });
+	return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+}
 
 function introductionProgress(value: number): number {
 	const progress = Math.min(1, Math.max(0, value / INTRODUCTION_DURATION));
@@ -911,7 +926,7 @@ export async function drawToAnimatedCanvas(
 		canvas.width,
 		canvas.height,
 	);
-	const image = await loadImage(toSvgDataUri(spec, { width, height }));
+	const image = await loadImage(textureDataUri(spec, width, height));
 	const textureSource = downsampleTextureSource(
 		image,
 		textureWidth,
@@ -1027,7 +1042,7 @@ export function createAnimatedCanvasGroup(): AnimatedCanvasGroup | null {
 				canvas.width,
 				canvas.height,
 			);
-			const image = await loadImage(toSvgDataUri(spec, { width, height }));
+			const image = await loadImage(textureDataUri(spec, width, height));
 			if (destroyed) {
 				return null;
 			}
