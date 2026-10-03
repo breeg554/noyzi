@@ -18,23 +18,11 @@ describe("image host routing", () => {
 	});
 
 	test("keeps the image subdomain free of site pages", () => {
-		for (const path of ["/docs", "/img/v1/x.svg", "/v1", "/og.png"]) {
+		for (const path of ["/", "/docs", "/img/v1/x.svg", "/v1"]) {
 			const routed = route(`https://img.noyzi.dev${path}`);
 			expect(routed instanceof Response).toBe(true);
 			expect((routed as Response).status).toBe(404);
 		}
-	});
-
-	test("gives the image subdomain a home, robots.txt and a generated favicon", async () => {
-		const home = route("https://img.noyzi.dev/") as Response;
-		expect(home.status).toBe(302);
-		expect(home.headers.get("location")).toBe("https://noyzi.dev/docs");
-		const robots = route("https://img.noyzi.dev/robots.txt") as Response;
-		expect(robots.status).toBe(200);
-		expect(await robots.text()).toContain("Allow: /");
-		expect((route("https://img.noyzi.dev/favicon.ico") as Request).url).toBe(
-			"https://img.noyzi.dev/img/v1/noyzi.png?w=64&h=64",
-		);
 	});
 
 	test("redirects /img on the site to the subdomain", () => {

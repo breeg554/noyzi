@@ -1,15 +1,12 @@
 import { describe, expect, test } from "bun:test";
-import { generate, seedHash, toPixels, toSvg } from "@noyzi/core";
-import sharp from "sharp";
+import { generate, seedHash, toSvg } from "@noyzi/core";
 import {
 	ImageError,
 	imageResponse,
 	latestImageRedirect,
 	parseImageRequest,
 	renderImage,
-	renderPixels,
 } from "./image.ts";
-import { encodePixels } from "./raster.ts";
 import { IMAGE_VERSIONS, type ImageVersion } from "./versions.ts";
 
 const FROZEN: Record<ImageVersion, Record<string, string>> = {
@@ -35,46 +32,6 @@ async function sha(text: string): Promise<string> {
 		.join("");
 }
 
-function lookDiff(a: ArrayLike<number>, b: ArrayLike<number>, width: number, height: number): number {
-	let sum = 0;
-	let count = 0;
-	for (let y = 0; y + 8 <= height; y += 8) {
-		for (let x = 0; x + 8 <= width; x += 8) {
-			for (let c = 0; c < 3; c++) {
-				let total = 0;
-				for (let dy = 0; dy < 8; dy++) {
-					for (let dx = 0; dx < 8; dx++) {
-						const o = ((y + dy) * width + x + dx) * 4 + c;
-						total += (a[o] as number) - (b[o] as number);
-					}
-				}
-				sum += Math.abs(total / 64);
-				count++;
-			}
-		}
-	}
-	return sum / count;
-}
-
-function grainOf(data: ArrayLike<number>, width: number, height: number): number {
-	const luma = (x: number, y: number) => {
-		const o = (y * width + x) * 4;
-		return 0.2126 * (data[o] as number) + 0.7152 * (data[o + 1] as number) + 0.0722 * (data[o + 2] as number);
-	};
-	let sum = 0;
-	let count = 0;
-	for (let y = height / 2 - 128; y < height / 2 + 128; y++) {
-		for (let x = width / 2 - 128; x < width / 2 + 128; x++) {
-			let mean = 0;
-			for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) mean += luma(x + dx, y + dy);
-			const high = luma(x, y) - mean / 25;
-			sum += high * high;
-			count++;
-		}
-	}
-	return Math.sqrt(sum / count);
-}
-
 function get(path: string): Request {
 	return new Request(`https://noyzi.dev${path}`);
 }
@@ -97,7 +54,6 @@ describe("image url parsing", () => {
 	test("uses defaults", () => {
 		expect(parse("noyzi.svg")).toEqual({
 			seed: "noyzi",
-			format: "svg",
 			width: 1000,
 			height: 1000,
 			options: {},
@@ -119,7 +75,6 @@ describe("image url parsing", () => {
 			),
 		).toEqual({
 			seed: "x",
-			format: "svg",
 			width: 1280,
 			height: 320,
 			options: {
@@ -132,19 +87,10 @@ describe("image url parsing", () => {
 			vignette: false,
 		});
 		expect(parse("x.svg", "?vignette=0").options).toEqual({ vignette: false });
-		expect(parse("x.png").format).toBe("png");
-		expect(parse("dawid%2Fmeshy.jpg", "?w=1200&h=630")).toMatchObject({
-			seed: "dawid/meshy",
-			format: "jpg",
-			width: 1200,
-		});
 	});
 
 	test("rejects bad input", () => {
-		expect(parseError("x.gif")).toBe("Not found");
-		expect(parseError("x.jpeg")).toBe("Not found");
-		expect(parseError("x.png", "?w=2401")).toContain("2400");
-		expect(parse("x.svg", "?w=4096").width).toBe(4096);
+		expect(parseError("x.png")).toBe("Not found");
 		expect(parseError(".svg")).toContain("missing");
 		expect(parseError(`${"a".repeat(257)}.svg`)).toContain("longer");
 		expect(parseError("%E0%A4%A.svg")).toContain("encoding");
@@ -172,31 +118,6 @@ describe("image rendering", () => {
 		);
 	});
 
-	test("png and jpg keep the look and grain of the raw pixels", async () => {
-		const request = parse("noyzi.jpg", "?w=1200&h=630");
-		const pixels = renderPixels("v1", request);
-		for (const format of ["png", "jpg"] as const) {
-			const decoded = await sharp(await encodePixels(pixels, format))
-				.ensureAlpha()
-				.raw()
-				.toBuffer();
-			const look = lookDiff(decoded, pixels.data, pixels.width, pixels.height);
-			const grain =
-				grainOf(decoded, pixels.width, pixels.height) /
-				grainOf(pixels.data, pixels.width, pixels.height);
-			console.log(`${format}: look diff ${look.toFixed(2)}, grain ${(grain * 100).toFixed(0)}%`);
-			expect(look).toBeLessThanOrEqual(format === "png" ? 0 : 1);
-			expect(grain).toBeGreaterThanOrEqual(format === "png" ? 1 : 0.85);
-		}
-	});
-
-	test("raster pixels come from the same spec as the svg", () => {
-		const request = parse("dawid.png", "?w=300&h=200");
-		const pixels = renderPixels("v1", request);
-		const expected = toPixels(generate(seedHash("dawid")), { width: 300, height: 200 });
-		expect(Buffer.from(pixels.data).equals(Buffer.from(expected.data))).toBe(true);
-	});
-
 	test("every version keeps its frozen output", async () => {
 		for (const [version, cases] of Object.entries(FROZEN)) {
 			for (const [url, hash] of Object.entries(cases)) {
@@ -219,7 +140,7 @@ describe("image rendering", () => {
 
 describe("image responses", () => {
 	test("serves cacheable svg", async () => {
-		const response = await imageResponse(get("/img/v1/noyzi.svg?w=320&h=200"), "v1");
+		const response = imageResponse(get("/img/v1/noyzi.svg?w=320&h=200"), "v1");
 		expect(response.status).toBe(200);
 		expect(response.headers.get("content-type")).toBe(
 			"image/svg+xml; charset=utf-8",
@@ -229,42 +150,15 @@ describe("image responses", () => {
 		);
 		expect(response.headers.get("access-control-allow-origin")).toBe("*");
 		expect(response.headers.get("x-noyzi-version")).toBe("v1");
-		expect(response.headers.get("content-disposition")).toBe(
-			'inline; filename="noyzi-noyzi.svg"',
-		);
 		expect(await response.text()).toContain('width="320"');
 	});
 
-	test("serves png and jpg", async () => {
-		for (const [format, type] of [
-			["png", "image/png"],
-			["jpg", "image/jpeg"],
-		] as const) {
-			const response = await imageResponse(
-				get(`/img/v1/dawid%2Fmeshy.${format}?w=120&h=63`),
-				"v1",
-			);
-			expect(response.status).toBe(200);
-			expect(response.headers.get("content-type")).toBe(type);
-			expect(response.headers.get("cache-control")).toBe(
-				"public, max-age=31536000, immutable",
-			);
-			expect(response.headers.get("content-disposition")).toBe(
-				`inline; filename="noyzi-dawid-meshy.${format}"`,
-			);
-			const meta = await sharp(await response.arrayBuffer()).metadata();
-			expect(meta.format).toBe(format === "jpg" ? "jpeg" : "png");
-			expect(meta.width).toBe(120);
-			expect(meta.height).toBe(63);
-		}
-	});
-
 	test("returns readable errors", async () => {
-		const response = await imageResponse(get("/img/v1/x.svg?nope=1"), "v1");
+		const response = imageResponse(get("/img/v1/x.svg?nope=1"), "v1");
 		expect(response.status).toBe(400);
 		expect(response.headers.get("cache-control")).toBe("public, max-age=300");
 		expect(await response.text()).toContain("unknown parameter");
-		expect((await imageResponse(get("/img/v1/x.gif"), "v1")).status).toBe(404);
+		expect(imageResponse(get("/img/v1/x.png"), "v1").status).toBe(404);
 	});
 
 	test("latest redirects to the current version", () => {

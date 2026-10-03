@@ -16,7 +16,7 @@
 	},
 	"dependencies": {
 		"@noyzi/core": "workspace:*",
-		"@noyzi/core-v1": "npm:@noyzi/core@1.1.0",
+		"@noyzi/core-v1": "npm:@noyzi/core@1.0.0",
 		"@noyzi/react": "workspace:*",
 		"@tailwindcss/vite": "^4.1.18",
 		"@tanstack/react-devtools": "latest",
@@ -36,7 +36,6 @@
 		"react": "^19.2.0",
 		"react-dom": "^19.2.0",
 		"react-intersection-observer": "^10.0.3",
-		"sharp": "^0.34.4",
 		"shiki": "^4.3.1",
 		"sonner": "^2.0.7",
 		"tailwind-merge": "^3.0.2",
