@@ -614,25 +614,7 @@ https://img.noyzi.dev/latest/{seed}.svg  redirects to the newest version`,
 		signatureLabel: "Server URL",
 		signatureLang: "text",
 		description:
-			"Let an AI assistant create Noyzi gradients using generate_gradient. Add a remote MCP server in any client that supports Streamable HTTP, paste this URL, and select no authentication. No API key or package install is needed.",
-		details: [
-			{
-				label: "Transport",
-				description:
-					"Stateless Streamable HTTP. MCP requests use POST; browser clients can connect from any origin.",
-			},
-			{
-				label: "Try it",
-				description:
-					'Ask your assistant: "Use Noyzi to create a 1600×900 PNG background with seed summer-launch and palette #fff4df, #ff9166, #eaa0c5."',
-			},
-			{
-				label: "Local development",
-				description:
-					"Run bun run dev and connect to http://localhost:3000/mcp.",
-			},
-		],
-		note: "The endpoint is a protocol URL, not a web page. Opening it in a browser returns 405; connect through an MCP client instead.",
+			"Gradient backgrounds, covers, and avatars for AI assistants. Connect your MCP client to this URL.",
 	},
 	{
 		id: "generate-gradient",
@@ -646,19 +628,7 @@ format    png | webp | jpg | svg. Default png`,
 		signatureLabel: "Tool parameters",
 		signatureLang: "text",
 		description:
-			"Creates a deterministic textured gradient for backgrounds, covers, placeholders, or avatars. Returns a versioned public image URL and its seed, resolved palette, width, height, format, and renderer version. Fetch the URL to get the image; the tool returns its settings rather than image bytes. Artwork contains no text, logos, or illustrations.",
-		details: [
-			{
-				label: "Palette",
-				description:
-					"Omit it for colors derived from the seed. Reuse the seed and palette size to preserve composition; change the colors to recolor or the seed for a new variation.",
-			},
-			{
-				label: "Dimensions",
-				description:
-					"PNG, WebP, and JPG support up to 2400 px per side. SVG supports up to 4096 px per side.",
-			},
-		],
+			"Returns a gradient image URL from a seed, with optional colors, size, and format.",
 		example: `{
   "name": "generate_gradient",
   "arguments": {
@@ -670,7 +640,6 @@ format    png | webp | jpg | svg. Default png`,
   }
 }`,
 		exampleLang: "json",
-		note: "Seeds appear in public image URLs. Use non-sensitive labels.",
 	},
 ];
 

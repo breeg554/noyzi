@@ -29,7 +29,7 @@ Use Noyzi for avatars, placeholders, covers, app icons, branded surfaces, and fu
 
 ## MCP
 
-Connect any MCP client that supports Streamable HTTP to `https://noyzi.dev/mcp`, with no authentication. The `generate_gradient` tool accepts a seed, optional palette, dimensions, and format, and returns a versioned public image URL. See the [MCP docs](https://noyzi.dev/docs#mcp) for connection settings and an example tool call.
+Gradient backgrounds, covers, and avatars for AI assistants. Connect your MCP client to `https://noyzi.dev/mcp`. See the [MCP docs](https://noyzi.dev/docs#mcp) for the tool and an example.
 
 ## License
 

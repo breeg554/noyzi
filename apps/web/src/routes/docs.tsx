@@ -168,9 +168,8 @@ function GetStarted() {
 					banners, and avatars.
 				</li>
 				<li>
-					<PackageLink pkg="MCP" /> — connect your AI assistant to generate
-					gradients and get public image URLs. Works with any client supporting
-					Streamable HTTP.
+					<PackageLink pkg="MCP" /> — gradient backgrounds, covers, and avatars
+					for AI assistants.
 				</li>
 			</ul>
 
