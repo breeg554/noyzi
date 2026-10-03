@@ -35,7 +35,7 @@ export async function encodePixels(
 	const encoded =
 		format === "png"
 			? image.png()
-			: image.jpeg({ quality: JPEG_QUALITY, mozjpeg: true });
+			: image.jpeg({ quality: JPEG_QUALITY, chromaSubsampling: "4:4:4" });
 	return new Uint8Array(await encoded.toBuffer());
 }
 
