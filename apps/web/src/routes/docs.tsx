@@ -34,7 +34,7 @@ export const Route = createFileRoute("/docs")({
 		createMeta({
 			title: "Docs",
 			description:
-				"Get started with Noyzi. Installation, usage, and API reference.",
+				"Get started with Noyzi. Installation, usage, API reference, and image URLs.",
 			path: "/docs",
 		}),
 });
@@ -48,6 +48,7 @@ export function Avatar({ email }: { email: string }) {
 const PACKAGE_URLS: Record<DocPackage, string> = {
 	"@noyzi/core": "https://www.npmjs.com/package/@noyzi/core",
 	"@noyzi/react": "https://www.npmjs.com/package/@noyzi/react",
+	"img.noyzi.dev": "https://img.noyzi.dev/v1/noyzi.svg",
 };
 
 function DocsPage() {
@@ -154,6 +155,11 @@ function GetStarted() {
 					<code className="font-mono">&lt;NoyziAnimated /&gt;</code> on top:
 					SVG-first rendering with optional WebGL motion.
 				</li>
+				<li>
+					<PackageLink pkg="img.noyzi.dev" /> — no install: every seed is an
+					image URL in SVG, PNG, or JPG, for link previews, README banners, and
+					avatars.
+				</li>
 			</ul>
 
 			<h2 className="mt-10 font-semibold text-xl tracking-tight">
@@ -182,7 +188,7 @@ function PackageLink({ pkg }: { pkg: DocPackage }) {
 			href={PACKAGE_URLS[pkg]}
 			target="_blank"
 			rel="noreferrer"
-			aria-label={`${pkg} on npm`}
+			aria-label={pkg.startsWith("@") ? `${pkg} on npm` : pkg}
 			onClick={() => {
 				playExternalLink();
 				analytics.externalLinkClicked(PACKAGE_URLS[pkg], "docs");
@@ -350,8 +356,8 @@ function MethodSection({ entry }: { entry: DocEntry }) {
 
 			<CodeBlock
 				className="mt-4"
-				label="Signature"
-				lang="typescript"
+				label={entry.signatureLabel ?? "Signature"}
+				lang={entry.signatureLang ?? "typescript"}
 				code={entry.signature}
 			/>
 
@@ -376,7 +382,7 @@ function MethodSection({ entry }: { entry: DocEntry }) {
 				<CodeBlock
 					className="mt-4"
 					label="Example"
-					lang="tsx"
+					lang={entry.exampleLang ?? "tsx"}
 					code={entry.example}
 				/>
 			) : null}

@@ -1,4 +1,6 @@
-export type DocPackage = "@noyzi/core" | "@noyzi/react";
+import type { CodeLang } from "#/components/code-block.tsx";
+
+export type DocPackage = "@noyzi/core" | "@noyzi/react" | "img.noyzi.dev";
 
 export type DocPreviewKind = "animated" | "generate" | "gradient" | "palette";
 
@@ -7,10 +9,13 @@ export interface DocEntry {
 	name: string;
 	pkg: DocPackage;
 	signature: string;
+	signatureLabel?: string;
+	signatureLang?: CodeLang;
 	description: string;
 	details?: { description: string; label: string }[];
 	note?: string;
 	example?: string;
+	exampleLang?: CodeLang;
 	preview?: DocPreviewKind;
 }
 
@@ -123,7 +128,7 @@ background.oklch; // { l, c, h }`,
 		signature:
 			"function toSvg(spec: GradientSpec, options?: SvgOptions): string",
 		description:
-			"The reference renderer: an SVG string with one continuous palette surface, warped by deterministic low-frequency noise and softly diffused. Every other static output is derived from it. Default 1000×1000.",
+			"The reference renderer: an SVG string with one continuous palette surface, warped by deterministic low-frequency noise and softly diffused. CSS, canvas, and browser raster outputs draw from it, and toPixels() reproduces it in plain JavaScript. Default 1000×1000.",
 		example: `const svg = toSvg(generate("ada"), { width: 512, height: 512 });`,
 	},
 	{
@@ -137,6 +142,30 @@ background.oklch; // { l, c, h }`,
 		example: `const uri = toSvgDataUri(generate("ada"));
 
 <div style={{ backgroundImage: \`url("\${uri}")\` }} />`,
+	},
+	{
+		id: "topixels",
+		name: "toPixels()",
+		pkg: "@noyzi/core",
+		signature: `interface Pixels {
+  width: number;
+  height: number;
+  data: Uint8ClampedArray; // RGBA, fully opaque
+}
+
+function toPixels(spec: GradientSpec, options?: SvgOptions): Pixels`,
+		description:
+			"Renders the gradient to raw RGBA pixels in plain JavaScript — no browser, canvas, or native code. Use it on servers, workers, and edge functions to make PNG or JPG files, then encode with any image encoder. Default 1000×1000.",
+		note: "The result matches the browser's SVG rendering closely, including grain, but not byte for byte. For JPG, use a high quality (90+) so the grain survives compression.",
+		example: `import sharp from "sharp";
+
+const pixels = toPixels(generate("ada"), { width: 1200, height: 630 });
+
+const jpg = await sharp(pixels.data, {
+  raw: { width: pixels.width, height: pixels.height, channels: 4 },
+})
+  .jpeg({ quality: 92 })
+  .toBuffer();`,
 	},
 	{
 		id: "tocanvas",
@@ -411,9 +440,102 @@ interface NoyziBaseProps
   </div>
 </NoyziAnimatedGroup>`,
 	},
+	{
+		id: "image-urls",
+		name: "Image URLs",
+		pkg: "img.noyzi.dev",
+		signature: `https://img.noyzi.dev/v1/{seed}.svg
+https://img.noyzi.dev/v1/{seed}.png
+https://img.noyzi.dev/v1/{seed}.jpg`,
+		signatureLabel: "URL",
+		signatureLang: "text",
+		description:
+			"Every seed has a public image URL — no install, no key. Use it anywhere an image goes: link previews, README banners, avatars, emails. The seed is the path, so slashes are fine (user/repo), and it gives the same gradient as <NoyziGradient seed=\"...\" />.",
+		details: [
+			{
+				label: "Forever",
+				description:
+					"A v1 URL always returns the same image, so it's cached for a year at the edge and in browsers.",
+			},
+			{
+				label: "Formats",
+				description:
+					"SVG is the smallest and sharpest. Use PNG or JPG where SVG isn't accepted, like Open Graph images and email.",
+			},
+			{
+				label: "Anywhere",
+				description: "CORS is open, so you can also fetch the images from your own code.",
+			},
+		],
+		example: `<img src="https://img.noyzi.dev/v1/ada.svg" width="40" height="40" alt="" />
+
+<img src="https://img.noyzi.dev/v1/breeg554/noyzi.svg?w=1280&h=320" alt="" />`,
+		exampleLang: "html",
+	},
+	{
+		id: "image-options",
+		name: "Options",
+		pkg: "img.noyzi.dev",
+		signature: `w         width in px. Default 1000
+h         height in px. Default 1000
+colors    2-8. Default 4
+palette   2-8 hex colors without #, background first
+vignette  0-1, or false`,
+		signatureLabel: "Parameters",
+		signatureLang: "text",
+		description:
+			"The same options as generate(), passed as query parameters. SVG goes up to 4096 px per side, PNG and JPG up to 2400. Unknown or invalid parameters return a 400 with a readable message.",
+		note: "Use either colors or palette, not both.",
+		example: `https://img.noyzi.dev/v1/ada.png?w=512&h=512
+https://img.noyzi.dev/v1/ada.svg?colors=6&vignette=false
+https://img.noyzi.dev/v1/brand.jpg?palette=0b1020,ff5a5f,ffd166`,
+		exampleLang: "text",
+	},
+	{
+		id: "og-images",
+		name: "Open Graph images",
+		pkg: "img.noyzi.dev",
+		signature: "https://img.noyzi.dev/v1/{slug}.jpg?w=1200&h=630",
+		signatureLabel: "URL",
+		signatureLang: "text",
+		description:
+			"Give every page its own link preview: use the page slug as the seed. Social sites don't show SVG previews, so use JPG at 1200×630.",
+		example: `<meta property="og:image" content="https://img.noyzi.dev/v1/my-first-post.jpg?w=1200&h=630" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />`,
+		exampleLang: "html",
+	},
+	{
+		id: "readme-banners",
+		name: "README banners",
+		pkg: "img.noyzi.dev",
+		signature: "https://img.noyzi.dev/v1/{user}/{repo}.svg?w=1280&h=320",
+		signatureLabel: "URL",
+		signatureLang: "text",
+		description:
+			"One line of Markdown gives your repo a banner that's unique to it. GitHub shows SVG images in READMEs.",
+		example: `![](https://img.noyzi.dev/v1/breeg554/noyzi.svg?w=1280&h=320)`,
+		exampleLang: "markdown",
+	},
+	{
+		id: "image-versions",
+		name: "Versions",
+		pkg: "img.noyzi.dev",
+		signature: `https://img.noyzi.dev/v1/{seed}.svg      never changes
+https://img.noyzi.dev/latest/{seed}.svg  redirects to the newest version`,
+		signatureLabel: "URL",
+		signatureLang: "text",
+		description:
+			"If the renderer ever changes how gradients look, it ships as /v2 and /v1 stays the same. Link to /v1 when the image must never change; use /latest to always get the newest look.",
+	},
 ];
 
-export const DOC_PACKAGES: DocPackage[] = ["@noyzi/core", "@noyzi/react"];
+export const DOC_PACKAGES: DocPackage[] = [
+	"@noyzi/core",
+	"@noyzi/react",
+	"img.noyzi.dev",
+];
 
 export function entriesForPackage(pkg: DocPackage): DocEntry[] {
 	return DOC_ENTRIES.filter((entry) => entry.pkg === pkg);

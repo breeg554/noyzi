@@ -5,7 +5,7 @@ import { codeToHtml } from "shiki";
 import { Button } from "#/components/ui/button.tsx";
 import { analytics } from "#/lib/analytics.ts";
 
-export type CodeLang = "bash" | "typescript" | "tsx";
+export type CodeLang = "bash" | "html" | "markdown" | "text" | "typescript" | "tsx";
 
 function CodeBlock({
 	code,
