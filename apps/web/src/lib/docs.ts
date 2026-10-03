@@ -155,7 +155,7 @@ background.oklch; // { l, c, h }`,
 
 function toPixels(spec: GradientSpec, options?: SvgOptions): Pixels`,
 		description:
-			"Renders the gradient to raw RGBA pixels in plain JavaScript — no browser, canvas, or native code. Use it on servers, workers, and edge functions to make PNG or JPG files, then encode with any image encoder. Default 1000×1000.",
+			"Renders the gradient to raw RGBA pixels in plain JavaScript — no browser, canvas, or native code. Use it on servers, workers, and edge functions to make PNG, JPG, or WebP files, then encode with any image encoder. Default 1000×1000.",
 		note: "The result matches the browser's SVG rendering closely, including grain, but not byte for byte. For JPG, use a high quality (90+) so the grain survives compression.",
 		example: `import sharp from "sharp";
 
@@ -446,7 +446,8 @@ interface NoyziBaseProps
 		pkg: "img.noyzi.dev",
 		signature: `https://img.noyzi.dev/v1/{seed}.svg
 https://img.noyzi.dev/v1/{seed}.png
-https://img.noyzi.dev/v1/{seed}.jpg`,
+https://img.noyzi.dev/v1/{seed}.jpg
+https://img.noyzi.dev/v1/{seed}.webp`,
 		signatureLabel: "URL",
 		signatureLang: "text",
 		description:
@@ -460,7 +461,7 @@ https://img.noyzi.dev/v1/{seed}.jpg`,
 			{
 				label: "Formats",
 				description:
-					"SVG is the smallest and sharpest. Use PNG or JPG where SVG isn't accepted, like Open Graph images and email.",
+					"SVG is the smallest and sharpest. WebP is the best raster for websites. Use JPG for Open Graph images and email, where SVG and WebP aren't always accepted, and PNG when you need lossless.",
 			},
 			{
 				label: "Anywhere",
@@ -484,7 +485,7 @@ vignette  0-1, or false`,
 		signatureLabel: "Parameters",
 		signatureLang: "text",
 		description:
-			"The same options as generate(), passed as query parameters. SVG goes up to 4096 px per side, PNG and JPG up to 2400. Unknown or invalid parameters return a 400 with a readable message.",
+			"The same options as generate(), passed as query parameters. SVG goes up to 4096 px per side, PNG, JPG and WebP up to 2400. Unknown or invalid parameters return a 400 with a readable message.",
 		note: "Use either colors or palette, not both.",
 		example: `https://img.noyzi.dev/v1/ada.png?w=512&h=512
 https://img.noyzi.dev/v1/ada.svg?colors=6&vignette=false
@@ -499,7 +500,7 @@ https://img.noyzi.dev/v1/brand.jpg?palette=0b1020,ff5a5f,ffd166`,
 		signatureLabel: "URL",
 		signatureLang: "text",
 		description:
-			"Give every page its own link preview: use the page slug as the seed. Social sites don't show SVG previews, so use JPG at 1200×630.",
+			"Give every page its own link preview: use the page slug as the seed. Social sites don't show SVG and some skip WebP, so use JPG at 1200×630.",
 		example: `<meta property="og:image" content="https://img.noyzi.dev/v1/my-first-post.jpg?w=1200&h=630" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />

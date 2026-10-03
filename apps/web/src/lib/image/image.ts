@@ -19,6 +19,7 @@ export const IMAGE_FORMATS = {
 	svg: "image/svg+xml; charset=utf-8",
 	png: "image/png",
 	jpg: "image/jpeg",
+	webp: "image/webp",
 } as const;
 
 export type ImageFormat = keyof typeof IMAGE_FORMATS;
@@ -103,7 +104,7 @@ const PARAMS: Record<string, (value: string, request: ImageRequest) => void> = {
 };
 
 export function parseImageRequest(path: string, search: string): ImageRequest {
-	const extension = path.match(/\.(svg|png|jpg)$/)?.[1] as
+	const extension = path.match(/\.(svg|png|jpg|webp)$/)?.[1] as
 		| ImageFormat
 		| undefined;
 	if (!extension) throw new ImageError(404, "Not found");

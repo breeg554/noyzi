@@ -157,7 +157,7 @@ function GetStarted() {
 				</li>
 				<li>
 					<PackageLink pkg="img.noyzi.dev" /> — no install: every seed is an
-					image URL in SVG, PNG, or JPG, for link previews, README banners, and
+					image URL in SVG, PNG, JPG, or WebP, for link previews, README banners, and
 					avatars.
 				</li>
 			</ul>

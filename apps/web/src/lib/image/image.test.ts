@@ -133,6 +133,7 @@ describe("image url parsing", () => {
 		});
 		expect(parse("x.svg", "?vignette=0").options).toEqual({ vignette: false });
 		expect(parse("x.png").format).toBe("png");
+		expect(parse("x.webp").format).toBe("webp");
 		expect(parse("dawid%2Fmeshy.jpg", "?w=1200&h=630")).toMatchObject({
 			seed: "dawid/meshy",
 			format: "jpg",
@@ -172,11 +173,12 @@ describe("image rendering", () => {
 		);
 	});
 
-	test("png and jpg keep the look and grain of the raw pixels", async () => {
+	test("png, jpg and webp keep the look and grain of the raw pixels", async () => {
 		const request = parse("noyzi.jpg", "?w=1200&h=630");
 		const pixels = renderPixels("v1", request);
-		for (const format of ["png", "jpg"] as const) {
-			const decoded = await sharp(await encodePixels(pixels, format))
+		for (const format of ["png", "jpg", "webp"] as const) {
+			const encoded = await encodePixels(pixels, format);
+			const decoded = await sharp(encoded)
 				.ensureAlpha()
 				.raw()
 				.toBuffer();
@@ -184,7 +186,9 @@ describe("image rendering", () => {
 			const grain =
 				grainOf(decoded, pixels.width, pixels.height) /
 				grainOf(pixels.data, pixels.width, pixels.height);
-			console.log(`${format}: look diff ${look.toFixed(2)}, grain ${(grain * 100).toFixed(0)}%`);
+			console.log(
+				`${format}: look diff ${look.toFixed(2)}, grain ${(grain * 100).toFixed(0)}%, ${Math.round(encoded.length / 1024)} KB`,
+			);
 			expect(look).toBeLessThanOrEqual(format === "png" ? 0 : 1);
 			expect(grain).toBeGreaterThanOrEqual(format === "png" ? 1 : 0.85);
 		}
@@ -235,10 +239,11 @@ describe("image responses", () => {
 		expect(await response.text()).toContain('width="320"');
 	});
 
-	test("serves png and jpg", async () => {
-		for (const [format, type] of [
-			["png", "image/png"],
-			["jpg", "image/jpeg"],
+	test("serves png, jpg and webp", async () => {
+		for (const [format, type, decoded] of [
+			["png", "image/png", "png"],
+			["jpg", "image/jpeg", "jpeg"],
+			["webp", "image/webp", "webp"],
 		] as const) {
 			const response = await imageResponse(
 				get(`/img/v1/dawid%2Fmeshy.${format}?w=120&h=63`),
@@ -253,7 +258,7 @@ describe("image responses", () => {
 				`inline; filename="noyzi-dawid-meshy.${format}"`,
 			);
 			const meta = await sharp(await response.arrayBuffer()).metadata();
-			expect(meta.format).toBe(format === "jpg" ? "jpeg" : "png");
+			expect(meta.format).toBe(decoded);
 			expect(meta.width).toBe(120);
 			expect(meta.height).toBe(63);
 		}
