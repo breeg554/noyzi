@@ -16,6 +16,7 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
+		"@modelcontextprotocol/sdk": "^1.32.0",
 		"@noyzi/core": "workspace:*",
 		"@noyzi/core-v1": "npm:@noyzi/core@1.1.0",
 		"@noyzi/react": "workspace:*",
@@ -44,7 +45,8 @@
 		"sonner": "^2.0.7",
 		"tailwind-merge": "^3.0.2",
 		"tailwindcss": "^4.1.18",
-		"tw-animate-css": "^1.3.6"
+		"tw-animate-css": "^1.3.6",
+		"zod": "^4.6.5"
 	},
 	"devDependencies": {
 		"@tailwindcss/typography": "^0.5.16",
