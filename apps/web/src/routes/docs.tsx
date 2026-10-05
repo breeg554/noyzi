@@ -331,7 +331,7 @@ function PackagesSidebar() {
 				Get started
 			</AnchorLink>
 			{DOC_PACKAGES.map((pkg) => (
-				<Collapsible key={pkg} defaultOpen className="group">
+				<Collapsible key={pkg} className="group">
 					<CollapsibleTrigger className="flex w-full cursor-pointer items-center justify-between gap-2 pb-2 font-mono text-muted-foreground text-xs transition-colors hover:text-foreground">
 						{pkg}
 						<ChevronDown className="group-data-[state=closed]:-rotate-90 size-3.5 transition-transform" />
