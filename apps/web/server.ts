@@ -1,5 +1,6 @@
 import path from "node:path";
 import { IMAGE_HOST, routeImageHost } from "./src/lib/image/host.ts";
+import { preventHtmlCaching } from "./src/lib/response-cache.ts";
 
 const port = Number(process.env.PORT ?? 3000);
 const clientDirectory = "./dist/client";
@@ -103,9 +104,11 @@ async function loadStaticRoutes(): Promise<Record<string, StaticRoute>> {
 async function start() {
 	const module = (await import(serverEntryPoint)) as { default: StartHandler };
 	const routes = await loadStaticRoutes();
-	const handle = (request: Request) => {
+	const handle = async (request: Request) => {
 		const routed = routeImageHost(request);
-		return routed instanceof Response ? routed : module.default.fetch(routed);
+		const response =
+			routed instanceof Response ? routed : await module.default.fetch(routed);
+		return preventHtmlCaching(response);
 	};
 
 	const server = Bun.serve({
@@ -115,10 +118,10 @@ async function start() {
 			...Object.fromEntries(
 				Object.entries(routes).map(([route, serve]) => [
 					route,
-					(request: Request) =>
+					async (request: Request) =>
 						new URL(request.url).hostname === IMAGE_HOST
 							? handle(request)
-							: serve(request),
+							: preventHtmlCaching(await serve(request)),
 				]),
 			),
 			"/*": handle,
