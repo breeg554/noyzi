@@ -1,6 +1,7 @@
 import { seedHash } from "@noyzi/core";
 import { infiniteQueryOptions } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
+import { setResponseHeader } from "@tanstack/react-start/server";
 import { LRUCache } from "lru-cache";
 
 export const PAGE_SIZE = 50;
@@ -19,6 +20,7 @@ const getGradientsPage = createServerFn({ method: "GET" })
 		return page;
 	})
 	.handler(({ data: page }) => {
+		setResponseHeader("Cache-Control", "public, max-age=31536000, immutable");
 		const cached = pageCache.get(page);
 		if (cached) {
 			return cached;
