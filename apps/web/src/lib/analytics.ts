@@ -13,7 +13,6 @@ export interface AnalyticsEvents {
 	gradientDownloaded: { image_format: "png" | "webp" };
 	galleryOptionsChanged: { changes: Partial<GalleryOptions> };
 	galleryFiltersReset: Record<string, never>;
-	galleryMoreLoaded: { page: number; item_count: number };
 	customSeedChanged: {
 		source: "gallery" | "docs" | "output_lab";
 		seed_length: number;
@@ -138,9 +137,6 @@ export class Analytics {
 	}
 	galleryFiltersReset() {
 		this.emit("galleryFiltersReset", {});
-	}
-	galleryMoreLoaded(page: number, itemCount: number) {
-		this.emit("galleryMoreLoaded", { page, item_count: itemCount });
 	}
 	customSeedChanged(
 		source: AnalyticsEvents["customSeedChanged"]["source"],

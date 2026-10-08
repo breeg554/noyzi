@@ -23,7 +23,6 @@ export const POSTHOG_EVENTS = {
 	gradientDownloaded: "gradient_downloaded",
 	galleryOptionsChanged: "gallery_options_changed",
 	galleryFiltersReset: "gallery_filters_reset",
-	galleryMoreLoaded: "gallery_more_loaded",
 	customSeedChanged: "custom_seed_changed",
 	themeChanged: "theme_changed",
 	imageServed: "image_served",
